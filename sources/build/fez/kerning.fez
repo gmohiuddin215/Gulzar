@@ -67,6 +67,11 @@ Feature kern {
 	# And finally some ad-hoc fixes...
 
 	Routine OtherKerningFixes {
+		# The Urdu space is narrow, so that words sit close together as in
+		# traditional Nastaliq setting. Dots after a space are never dropped
+		# (they help mark the start of the word), so when the next word starts
+		# with dots below, give them back room to clear the previous word.
+		Position (space.urdu <xAdvance=+100>) @inits [sdb ddb tdb];
 		Position @bigbowlfina space.urdu (/([KG]AF|LAM)i/ <xAdvance=+50>) /JIMm|BEm/ [ddb tdb];
 		Position REf3 (/[KG]AFi/ <xAdvance=-120>);
 		Position @vao_like (space.urdu <xAdvance=50>) /AINi/;
@@ -76,4 +81,9 @@ Feature kern {
 		Position @dal_like (ALIFu1 <xAdvance=-50>); # جدا
 		Position AINi17 [REf2 REf3] (/SAD/ <xAdvance=+150>); # عرصئہِ
 	} UseMarkFilteringSet /[sdt]db/;
+
+	# A madda overhangs to the left, into the (narrow) space.
+	Routine MaddaBeforeSpace {
+		Position MADDA (space.urdu <xAdvance=+100>);
+	};
 };
