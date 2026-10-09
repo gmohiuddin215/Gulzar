@@ -1,10 +1,21 @@
-git+https://github.com/simoncozens/karakul
 glyphsLib
 uharfbuzz>=0.31.0
-kurbopy>=0.8.21
 fontmake
 youseedee
 tqdm
 fontbakery
 font-v
 gftools
+stringbrewer
+# The FEZ / karakul toolchain is no longer maintained, so we pin a set of
+# versions which are known to work together (on Python 3.11). karakul itself
+# is installed separately with --no-deps (see the Makefile), because it pins
+# a fontTools fork; the small API differences are bridged in sitecustomize.py.
+fez-language==1.3.4
+fontFeatures==1.7.4
+glyphtools==0.8.0
+collidoscope==0.6.5
+kerndeterminer==0.0.1
+kurbopy==0.10.40
+numpy<2
+orjson>=3.9

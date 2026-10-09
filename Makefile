@@ -4,6 +4,8 @@ FINAL_FONT=fonts/ttf/Gulzar-Regular.ttf
 FEA_FILES=sources/build/fea/languagesystem.fea sources/build/featurenames.fea sources/build/fea/decomposition.fea sources/build/fea/connections.fea sources/build/fea/bariye-drop.fea sources/build/fea/bariye-drop2.fea sources/build/fea/anchor-attachment.fea  sources/build/fea/kerning.fea sources/build/fea/latin-kerning.fea sources/build/fea/post-mkmk-repositioning.fea sources/build/fea/bariye-overhang.fea
 RELEASE_ARG=
 PYTHON=python3
+# kerndeterminer only ships wheels up to Python 3.11
+VENV_PYTHON=python3.11
 OPTIMIZATION_LEVEL=-O0
 
 export FONTTOOLS_LOOKUP_DEBUGGING=1
@@ -21,8 +23,9 @@ build.stamp: venv
 	. venv/bin/activate
 
 venv/touchfile: requirements.txt
-	test -d venv || python3 -m venv venv
+	test -d venv || $(VENV_PYTHON) -m venv venv
 	. venv/bin/activate; pip install -Ur requirements.txt
+	. venv/bin/activate; pip install --no-deps babelfont==3.0.4 git+https://github.com/simoncozens/karakul
 	touch venv/touchfile
 
 replace: venv sources/build/features.fea

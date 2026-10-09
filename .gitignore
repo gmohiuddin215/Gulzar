@@ -3,3 +3,10 @@ instance_ufo
 master_ttf
 *.ufo
 *.designspace
+venv/
+__pycache__/
+collisioncache.db*
+sources/build/Gulzar.glyphs
+sources/build/features.fea
+sources/build/rules.csv
+sources/build/fea/*.fea
