@@ -84,15 +84,17 @@ LAYOUTS = {
                   ("اللہُ", 300, 0, {"clear": 28})],
     },
     # the durood ﷺ, with its harakat: صَلَّی at the right; اللّٰہُ starting with
-    # its alif above the ye of صلی; عَلَیْہِ low, level with the foot of that
-    # ye; وَ above the he of علیہ; سَلَّمَ on the left, its mim tail running
-    # down to the foot. اللہ's pesh sits over its he, clear of سلم.
+    # its alif above the ye of صلی; عَلیْہِ low beside it, its ain set on the
+    # ye's tail (brought down a little so it runs into the ain's stroke); و
+    # above the he of علیہ; سَلَّم on the left, its mim tail running down to
+    # the foot. اللہ's pesh sits over its he, clear of سلم.
     "sallallahuAlayhiWasallam": {
         "unicodes": ["FDFA"],
         "scale": 0.4,
         "bottom": 40,
-        "parts": [("صَلَّی", 2872, -178), ("عَلَیْہِ", 1960, -262), ("وَ", 1976, -48),
-                  ("اللہُ", 2140, 0, {"clear": 40, "nudge": {"DAMMA": (150, 300)}}), ("سَلَّمَ", 1130, 134)],
+        "parts": [("صَلَّی", 2872, -178, {"lower": {"CH_YEf1": (150, 0.85, 200, 320)}}),
+                  ("عَلیْہِ", 2100, -90), ("و", 2116, 124),
+                  ("اللہُ", 2140, 0, {"clear": 40, "nudge": {"DAMMA": (150, 300)}}), ("سَلَّم", 1130, 134)],
     },
     "rahmatullahAlayh": {
         "unicodes": ["0612"],
