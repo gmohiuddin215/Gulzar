@@ -1,17 +1,32 @@
 {
- "radiAllahuAnhu": {"unicodes": ["0613", "FD41"], "scale": 0.5, "width": 990, "components": [
+ "radiAllahuAnhu": {"unicodes": ["0613", "FD41"], "scale": 0.5, "width": 970, "components": [
     ["dammainverted-ar", 38, 160],
     ["HAYCf1", 18, 135],
     ["sda", 172, 338],
     ["BEm3", 167, 202],
     ["AINi2", 243, 250],
-    ["CH_YEf1", 468, 135],
-    ["sda", 758, 614],
-    ["SADi13", 678, 404],
-    ["REu1", 754, 135],
-    ["DAMMA", 163, 480],
-    ["ALLAHu1", 188, 515],
-    ["ALIFu1", 608, 515]
+    ["CH_YEf1", 448, 135],
+    ["sda", 738, 614],
+    ["SADi13", 658, 404],
+    ["REu1", 734, 135],
+    ["DAMMA", 153, 480],
+    ["ALLAHu1", 178, 515],
+    ["ALIFu1", 598, 515]
+ ]},
+ "radiAllahuAnhaa": {"unicodes": ["FD42"], "scale": 0.5, "width": 1036, "components": [
+    ["ALIFf1", 5, 282],
+    ["haydb", 157, 214],
+    ["HAYCm3", 92, 350],
+    ["sda", 228, 530],
+    ["BEm6", 218, 260],
+    ["AINi2", 310, 444],
+    ["CH_YEf1", 515, 282],
+    ["sda", 804, 760],
+    ["SADi13", 724, 550],
+    ["REu1", 800, 282],
+    ["DAMMA", 189, 666],
+    ["ALLAHu1", 214, 701],
+    ["ALIFu1", 634, 701]
  ]},
  "rahmatullahAlayh": {"unicodes": ["0612"], "scale": 0.44, "width": 1036, "components": [
     ["HAYCf1", 17, 397],
