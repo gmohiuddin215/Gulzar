@@ -87,6 +87,18 @@ Feature kern {
 		Position AINi17 [REf2 REf3] (/SAD/ <xAdvance=+150>); # عرصئہِ
 	} UseMarkFilteringSet /[sdt]db/;
 
+	# The long re of پیرو, خبریں is raised a little, so its tail now reaches
+	# into the dots below the letter after it, and the dot of its zain comes
+	# close to the next word's kaf or dots: give them a little more room.
+	Routine RaisedLongRe {
+		Position REf3 (@inits <xAdvance=+60>) [sdb ddb tdb ddb.one tdb.one sdb.one]; # خبریں
+		Position REf3 (space.urdu <xAdvance=+60>) @inits KASRA; # باہر نِکال
+	} UseMarkFilteringSet [sdb ddb tdb ddb.one tdb.one sdb.one KASRA];
+	Routine ZainDotBeforeWord {
+		Position REf3 sda (space.urdu <xAdvance=+60>) /^[KG]AFi/; # کنکشنز کا
+		Position REf3 sda (space.urdu <xAdvance=+60>) @inits [sda dda tda]; # آئیکنز شامل
+	} UseMarkFilteringSet [sda dda tda];
+
 	# The rounded tail of re/zain lets the next letter come in closer; a
 	# kasra under the re then meets the dots below that letter (زِیادہ).
 	Routine KasraUnderRe {
