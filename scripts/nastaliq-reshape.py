@@ -342,7 +342,7 @@ BOWLS = {
     #        bottom  entry
     "NUN":   (-0.89, 2.96),
     "QAF":   (-0.91, 2.90),
-    "SIN":   (-0.82, 3.01),
+    "SIN":   (-0.82, None),  # lift only: seen keeps its full height, ~0.9 of sad
     "LAM":   (-0.91, 1.97),
     "AIN":   (-0.82, 3.00),
     "CH_YE": (-0.85, 2.86),
@@ -449,6 +449,8 @@ def bowl_field(layer, target_bottom, target_entry):
     bottom = min(min(p[0][1] for p in outline_segments(layer)), 0)
     entry = anchor(layer, "entry").position.y
     span = entry - bottom
+    if target_entry is None:  # lift only
+        target_entry = entry + (target_bottom - bottom)
     # bottom' = bottom + D + R, entry' = entry + D
     R = (target_bottom - bottom) - (target_entry - entry)
     R = max(0.0, min(R, MAX_BOWL_SQUASH * span))
@@ -476,7 +478,9 @@ def step_bowls(font):
     for family in {fam for _, fam in targets}:
         final = font.glyphs[family + "f1"]
         tb, te = BOWLS[family]
-        fields[family] = bowl_field(master_layer(font, final), tb * NUQTA, te * NUQTA)
+        fields[family] = bowl_field(
+            master_layer(font, final), tb * NUQTA, None if te is None else te * NUQTA
+        )
     for name, family in targets:
         warp_strokes(master_layer(font, font.glyphs[name]), fields[family])
 
