@@ -13,19 +13,19 @@
     ["ALLAHu1", 188, 515],
     ["ALIFu1", 608, 515]
  ]},
- "rahmatullahAlayh": {"unicodes": ["0612"], "scale": 0.44, "width": 1067, "components": [
-    ["HAYCf1", 17, 463],
-    ["ddb", 126, 364],
-    ["TEm3", 148, 522],
-    ["LAMm2", 229, 564],
-    ["AINi2", 621, 746, {"kashida": ["LAMm2", 229, 564]}],
+ "rahmatullahAlayh": {"unicodes": ["0612"], "scale": 0.44, "width": 1036, "components": [
+    ["HAYCf1", 17, 397],
+    ["ddb", 126, 298],
+    ["TEm3", 148, 456],
+    ["LAMm2", 229, 498],
+    ["AINi2", 542, 630, {"kashida": ["LAMm2", 229, 498]}],
     ["ALLAHu1", 123, 89],
     ["ALIFu1", 493, 89],
-    ["DAMMA", 607, 274],
-    ["dda", 602, 217],
-    ["HAYCf1", 602, 89],
-    ["MIMm3", 733, 148],
-    ["JIMi9", 812, 194],
-    ["REu1", 854, 89]
+    ["DAMMA", 576, 274],
+    ["dda", 571, 217],
+    ["HAYCf1", 571, 89],
+    ["MIMm3", 703, 148],
+    ["JIMi9", 781, 194],
+    ["REu1", 824, 89]
  ]}
 }
