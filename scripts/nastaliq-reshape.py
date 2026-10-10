@@ -1571,13 +1571,16 @@ def _set_paths(layer, paths):
 # width, so it grows slightly heavier as it goes, like a calligrapher's
 # drawn-out ain.
 KASHIDA_CUT = 150  # x in the ain where its own tail gives way to the stroke
-KASHIDA_LAM_BASE = {"LAMm2": ((272, 85), (236, -50))}  # top and bottom of the lam's base
+# Where the stroke leaves the lam: a point on the round of its neck (top)
+# and of its base (bottom), each where the lam's own curve is already
+# heading down at the angle the stroke leaves at, so the lam's outline runs
+# straight on into the stroke. Leaving slightly downward, the stroke dips
+# below the lam's base mid-way and rises back into the lam, as a pen does.
+KASHIDA_LAM_BASE = {"LAMm2": ((266, 86), (222, -49))}
 # How the top and bottom edges leave the lam: angle (degrees) and handle
-# length (share of the chord). The top rises from the lam's neck as the
-# strokes of be and sin do where they join it; the bottom comes off the
-# round of the lam's base level and turns up promptly into the sweep.
-KASHIDA_LEAVE = ((20, 0.36), (0, 0.15))
-KASHIDA_HANDLE = 0.36  # handle length at the ain end, as a share of the chord
+# length (share of the chord).
+KASHIDA_LEAVE = ((-6.4, 0.36), (-10.6, 0.2))
+KASHIDA_HANDLE = 0.42  # handle length at the ain end, as a share of the chord
 KASHIDA_OVERLAP = 14  # the stroke runs on into the tail by this much, hidden
 
 
@@ -1676,7 +1679,19 @@ def _kashida(font, ain, lam, lam_pos):
     sk.cubicTo(*c2, *c1, *b0)
     sk.close()
     out = pathops.op(tail, sk, pathops.PathOp.UNION)
-    return pathops.op(out, _skia(body), pathops.PathOp.UNION)
+    out = pathops.op(out, _skia(body), pathops.PathOp.UNION)
+    # The lam's neck runs level for a few units past where the stroke leaves
+    # it going down; this trims that sliver off above the stroke's top edge.
+    from fontTools.misc.bezierTools import splitCubicAtT
+
+    first = splitCubicAtT(t0, *edge(t0, t1, KASHIDA_LEAVE[0], at), 0.1)[0]
+    trim = pathops.Path()
+    trim.moveTo(*t0)
+    trim.cubicTo(*first[1], *first[2], *first[3])
+    trim.lineTo(first[3][0], t0[1] + 15)
+    trim.lineTo(t0[0], t0[1] + 15)
+    trim.close()
+    return out, trim
 
 
 def honorific_outline(font, components, scale):
@@ -1684,16 +1699,21 @@ def honorific_outline(font, components, scale):
     import pathops
     from fontTools.pens.transformPen import TransformPen
 
-    out = pathops.Path()
+    out, trims = pathops.Path(), []
     for comp, x, y, *opts in components:
         if opts and "kashida" in opts[0]:
             lam, lx, ly = opts[0]["kashida"]
-            piece = _kashida(font, comp, lam, ((lx - x) / scale, (ly - y) / scale))
+            piece, trim = _kashida(font, comp, lam, ((lx - x) / scale, (ly - y) / scale))
+            cut = pathops.Path()
+            trim.draw(TransformPen(cut.getPen(), (scale, 0, 0, scale, x, y)))
+            trims.append(cut)
         else:
             piece = _skia(_glyph_paths(font, comp, (1, 0, 0, 1, 0, 0)))
         placed = pathops.Path()
         piece.draw(TransformPen(placed.getPen(), (scale, 0, 0, scale, x, y)))
         out = pathops.op(out, placed, pathops.PathOp.UNION)
+    for cut in trims:
+        out = pathops.op(out, cut, pathops.PathOp.DIFFERENCE)
     return out
 
 
