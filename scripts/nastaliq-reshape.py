@@ -1341,7 +1341,17 @@ TIP_JOIN_CLEARANCE = 90
 TIP_SKIP = re.compile(r"^(ALIF|LAM_ALIF|KAF|GAF|TOE|ALLAH|RE[uf])|^LAM[im]")
 
 
-def round_tips(layer):
+def _runs_on(p, q, u):
+    # True when the edge p->q carries on in the direction of the cut: the cut
+    # is then a pen-cut corner (under the head of mim), not the end of a
+    # stroke, and rounding it leaves a knob
+    px, py = (p.x, p.y) if hasattr(p, "x") else p
+    qx, qy = (q.x, q.y) if hasattr(q, "x") else q
+    d = math.hypot(qx - px, qy - py)
+    return bool(d) and abs(((qx - px) * u[0] + (qy - py) * u[1]) / d) > 0.9
+
+
+def round_tips(layer, keep_corners=False):
     from glyphsLib.classes import GSNode
 
     joins = [anchor(layer, n) for n in ("entry", "exit")]
@@ -1377,7 +1387,7 @@ def round_tips(layer):
             after = nodes[(i + 1) % n].position
             if ((ax - before.x) * nx + (ay - before.y) * ny) <= 0 or (
                 (after.x - bx) * nx + (after.y - by) * ny
-            ) >= 0:
+            ) >= 0 or keep_corners and (_runs_on(before, (ax, ay), (ux, uy)) or _runs_on((bx, by), after, (ux, uy))):
                 out.append(nd)
                 continue
             # narrow the tip, then close it with a round cap
@@ -1398,7 +1408,7 @@ def step_tips(font):
         if RASM.match(g.name) and not TIP_SKIP.match(g.name):
             layer = master_layer(font, g)
             if layer.paths:
-                round_tips(layer)
+                round_tips(layer, keep_corners=g.name.startswith("MIM"))
 
 
 # Calligraphic strokes never end in a hard cut: even the head of alif, the
