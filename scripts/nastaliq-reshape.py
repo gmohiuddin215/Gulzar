@@ -820,6 +820,7 @@ def step_re_tail(font):
 # the join it offers the letter before it; the build keeps grouping these
 # glyphs by their original join height (see RISE_PINS).
 HAYA_SCALE = 1.12
+HAYA_JOIN_KEEP = 140  # font units around the join left unchanged
 
 
 def step_haya_size(font):
@@ -831,10 +832,13 @@ def step_haya_size(font):
         ex, en = anchor(layer, "exit"), anchor(layer, "entry")
         ox = ex.position.x if ex is not None else en.position.x
 
-        # only what is above the line grows: the joining stroke below it
-        # stays where it was, so it doesn't poke out under the next letter
+        # only what is above the line grows, and the growth fades out near
+        # the join on the left, so the joining stroke keeps exactly its old
+        # shape where it meets the next letter (no ledge or step there)
         def field(x, y, ox=ox):
-            return ((s - 1) * (x - ox), (s - 1) * max(y, 0))
+            d = math.hypot(x - ox, y) / HAYA_JOIN_KEEP
+            w = 1.0 if d >= 1 else d * d * (3 - 2 * d)
+            return ((s - 1) * (x - ox) * w, (s - 1) * max(y, 0) * w)
 
         xmin, _ = layer_bounds(layer)
         old = {a.name: (a.position.x, a.position.y) for a in layer.anchors}
