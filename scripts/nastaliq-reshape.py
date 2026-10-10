@@ -777,15 +777,17 @@ def step_component_shifts(font):
 # The tail of the isolated re (and so of ڑ ز ژ, which are built on it) is
 # short for Nastaliq. The part left of the neck is stretched horizontally,
 # keeping its thickness, so the tail runs further along the line.
-RE_TAIL = {"REu1": 1.25}
+# The final re of کر, پر gets the same longer tail. Stretch, and the x
+# where the neck turns into the tail (None: just right of the bottom anchor).
+RE_TAIL = {"REu1": (1.25, None), "REf1": (1.25, 260)}
 
 
 def step_re_tail(font):
-    for name, s in RE_TAIL.items():
+    for name, (s, bend) in RE_TAIL.items():
         layer = master_layer(font, font.glyphs[name])
         decompose_components(font, layer)
         xmin, _ = layer_bounds(layer)
-        xb = anchor(layer, "bottom").position.x + 40  # where the neck turns into the tail
+        xb = bend if bend is not None else anchor(layer, "bottom").position.x + 40
         warp_strokes(layer, lambda x, y, s=s, xb=xb: (-(s - 1) * (xb - x), 0) if x < xb else (0, 0))
         nmin, _ = layer_bounds(layer)
         dx = round(xmin - nmin)
@@ -803,6 +805,61 @@ def step_re_tail(font):
                     if c.name != name:
                         c.position = Point(c.position.x + dx, c.position.y)
                 lay.width = lay.width + dx
+
+
+# ---------------------------------------------------------------------------
+# Step 3n: do-chashmi he
+# ---------------------------------------------------------------------------
+
+# Do-chashmi he is small in every form (isolated 2.8 x 1.9 nuqta, against
+# ~3.2 x 2.3 in the calligraphic form). Each drawn form (the isolated one and
+# the initial ones, on which the final and medial forms are built) is
+# enlarged about its join on the line, moving the strokes rather than
+# scaling them so the pen weight and shape are unchanged. The glyphs built
+# from them get their joins moved to match. Growing a joined letter raises
+# the join it offers the letter before it; the build keeps grouping these
+# glyphs by their original join height (see RISE_PINS).
+HAYA_SCALE = 1.12
+
+
+def step_haya_size(font):
+    s = HAYA_SCALE
+    names = ["HAYAu1"] + [g.name for g in font.glyphs if re.match(r"^HAYAi\d+$", g.name)]
+    for name in names:
+        layer = master_layer(font, font.glyphs[name])
+        decompose_components(font, layer)
+        ex, en = anchor(layer, "exit"), anchor(layer, "entry")
+        ox = ex.position.x if ex is not None else en.position.x
+
+        def field(x, y, ox=ox):
+            return ((s - 1) * (x - ox), (s - 1) * y)
+
+        xmin, _ = layer_bounds(layer)
+        old = {a.name: (a.position.x, a.position.y) for a in layer.anchors}
+        warp_strokes(layer, field)
+        nmin, _ = layer_bounds(layer)
+        dx = round(xmin - nmin)
+        for path in layer.paths:
+            for nd in path.nodes:
+                nd.position = Point(nd.position.x + dx, nd.position.y)
+        for a in layer.anchors:
+            a.position = Point(a.position.x + dx, a.position.y)
+        layer.width += dx
+        if en is not None:
+            RISE_PINS[name] = round(old["entry"][1] - (old["exit"][1] if "exit" in old else 0))
+        # glyphs built on this one (final and medial forms)
+        for g in font.glyphs:
+            lay = master_layer(font, g)
+            if not any(c.name == name for c in lay.components):
+                continue
+            for a in lay.anchors:
+                fx, fy = field(a.position.x, a.position.y)
+                if a.name in ("entry", "exit"):
+                    if a.name == "entry":
+                        rise = a.position.y - (anchor(lay, "exit").position.y if anchor(lay, "exit") else 0)
+                        RISE_PINS[g.name] = round(rise)
+                a.position = Point(round(a.position.x + fx + dx), round(a.position.y + fy))
+            lay.width += dx
 
 
 # ---------------------------------------------------------------------------
@@ -920,13 +977,10 @@ def step_re_neck(font):
 # scaling them so the pen weight is unchanged; it is then shifted so the
 # gap before the next word stays the same.
 DAL_SCALE = {"DALf1": 1.20, "DALu1": 1.10}
-# Isolated do-chashmi he is small (2.8 x 1.9 nuqta, against ~3.2 x 2.3 in
-# the calligraphic form); it is enlarged the same way, keeping its shape.
-SIZE_SCALE = {"HAYAu1": 1.12}
 
 
 def step_dal_size(font):
-    for name, s in list(DAL_SCALE.items()) + list(SIZE_SCALE.items()):
+    for name, s in DAL_SCALE.items():
         layer = master_layer(font, font.glyphs[name])
         decompose_components(font, layer)
         b = layer_bounds(layer)
@@ -1274,6 +1328,7 @@ STEPS = [
     ("tilts", step_tilts),
     ("component-shifts", step_component_shifts),
     ("re-tail", step_re_tail),
+    ("haya-size", step_haya_size),
     ("ascenders", step_ascenders),
     ("re-neck", step_re_neck),
     ("dal-size", step_dal_size),
