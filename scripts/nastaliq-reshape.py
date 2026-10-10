@@ -1531,7 +1531,7 @@ HONORIFICS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "sou
 
 # The durood ligatures hung far below the line (to -0.7 em) beside the name
 # they follow; they are set smaller and raised so they sit on the line.
-DUROOD = ("uniFDFA", "uniFD4C")
+DUROOD = ("uniFD4C",)  # ﷺ itself is now drawn by the honorifics step
 DUROOD_SCALE = 0.55
 DUROOD_BOTTOM = 40
 DUROOD_SIDE = 60
