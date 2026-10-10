@@ -1576,8 +1576,17 @@ def step_honorifics(font):
                 g.unicodes = [u for u in g.unicodes if u not in codes]
         s = spec["scale"]
         paths = []
-        for comp, x, y in spec["components"]:
-            paths += _glyph_paths(font, comp, (s, 0, 0, s, x, y))
+        for comp, x, y, *stretch in spec["components"]:
+            if stretch:
+                # a drawn-out stroke: points right of the ramp move over,
+                # blending across it (see scripts/honorific-layouts.py)
+                x0, x1, extra = stretch[0]
+                pts = _glyph_paths(font, comp, (1, 0, 0, 1, 0, 0))
+                pts = [[(px + (extra if px >= x1 else extra * (px - x0) / (x1 - x0) if px > x0 else 0), py, t)
+                        for px, py, t in p] for p in pts]
+                paths += [[(s * px + x, s * py + y, t) for px, py, t in p] for p in pts]
+            else:
+                paths += _glyph_paths(font, comp, (s, 0, 0, s, x, y))
         glyph = GSGlyph(name)
         glyph.unicodes = spec["unicodes"]
         glyph.category, glyph.subCategory = "Symbol", "Other"
