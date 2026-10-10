@@ -31,6 +31,13 @@ Routine FinaQafUpLeft {
 };
 
 Feature kern {
+  # The two dots of a medial ye sit under its curve, left of the tooth,
+  # where the next letter is also medial. Before a final letter (ین, یل,
+  # یو...) there is no room there, so they stay under the tooth.
+  Routine YeDotsUnderCurve {
+    Position @BEm (ddb <xPlacement=-60>) /^(BE|TE|SIN|SAD|TOE|AIN|FE|KAF|GAF|LAM|MIM|HAYC|HAYA)m/;
+  } UseMarkFilteringSet [ddb];
+
   # Sequences like پی have problems - where is the right place to
   # put the dots? We tuck them down out of the way.
   Routine GiveChYeDotsMoreSpace {
