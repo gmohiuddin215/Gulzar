@@ -63,6 +63,12 @@ Feature kern {
     Position /^JIMm/ (sdb.yb <yPlacement=684>) /^HAYAm/;
   } UseMarkFilteringSet [sdb.yb];
 
+  # A zabar over re sits against the head of a following vao (پیرَو):
+  # move it to the right, away from the vao.
+  Routine FathaOnReBeforeVao {
+    Position /^RE[fu]/ (FATHA <xPlacement=80>) /^VAO/;
+  } UseMarkFilteringSet [FATHA];
+
   # Dots below a letter before do-chashmi he hang into the loop of the he
   # (پھر, بھی): drop them a little.
   Routine DotsBeforeHaya {

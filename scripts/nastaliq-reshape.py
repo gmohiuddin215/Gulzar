@@ -831,8 +831,10 @@ def step_haya_size(font):
         ex, en = anchor(layer, "exit"), anchor(layer, "entry")
         ox = ex.position.x if ex is not None else en.position.x
 
+        # only what is above the line grows: the joining stroke below it
+        # stays where it was, so it doesn't poke out under the next letter
         def field(x, y, ox=ox):
-            return ((s - 1) * (x - ox), (s - 1) * y)
+            return ((s - 1) * (x - ox), (s - 1) * max(y, 0))
 
         xmin, _ = layer_bounds(layer)
         old = {a.name: (a.position.x, a.position.y) for a in layer.anchors}
