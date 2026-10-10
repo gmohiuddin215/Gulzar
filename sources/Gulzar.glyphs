@@ -15380,7 +15380,7 @@ name = JIMu1;
 },
 {
 name = tdi;
-transform = "{1, 0, 0, 1, 192, -31}";
+transform = "{1, 0, 0, 1, 192, 4}";
 }
 );
 layerId = "6E34CE51-C086-4FF0-804E-D019E96D60E0";
@@ -15435,7 +15435,7 @@ name = JIMu1;
 },
 {
 name = sda;
-transform = "{1, 0, 0, 1, 143, 795}";
+transform = "{1, 0, 0, 1, 143, 830}";
 }
 );
 layerId = "6E34CE51-C086-4FF0-804E-D019E96D60E0";
@@ -15635,11 +15635,11 @@ layers = (
 anchors = (
 {
 name = bottom;
-position = "{188, -6}";
+position = "{216, -6}";
 },
 {
 name = top;
-position = "{327, 437}";
+position = "{365, 437}";
 }
 );
 layerId = "6E34CE51-C086-4FF0-804E-D019E96D60E0";
@@ -15647,31 +15647,32 @@ paths = (
 {
 closed = 1;
 nodes = (
-"192 16 LINE SMOOTH",
-"215 18 OFFCURVE",
-"227 23 OFFCURVE",
-"245 39 CURVE SMOOTH",
-"275 66 OFFCURVE",
-"304 172 OFFCURVE",
-"329 293 CURVE SMOOTH",
-"354 421 LINE",
-"353 432 OFFCURVE",
-"330 436 OFFCURVE",
-"324 427 CURVE",
-"303 349 LINE SMOOTH",
-"289 298 OFFCURVE",
-"279 200 OFFCURVE",
-"238 157 CURVE SMOOTH",
-"212 131 OFFCURVE",
-"174 100 OFFCURVE",
-"140 81 CURVE",
-"108 60 OFFCURVE",
-"64 9 OFFCURVE",
-"87 6 CURVE"
+"220 16 LINE SMOOTH",
+"243 18 OFFCURVE",
+"261 23 OFFCURVE",
+"279 39 CURVE SMOOTH",
+"309 66 OFFCURVE",
+"342 172 OFFCURVE",
+"367 293 CURVE SMOOTH",
+"392 421 LINE",
+"391 432 OFFCURVE",
+"368 436 OFFCURVE",
+"362 427 CURVE",
+"341 349 LINE SMOOTH",
+"327 298 OFFCURVE",
+"317 200 OFFCURVE",
+"276 157 CURVE SMOOTH",
+"250 131 OFFCURVE",
+"187 100 OFFCURVE",
+"127 66 CURVE SMOOTH",
+"59 33 LINE",
+"51 26 OFFCURVE",
+"57 6 OFFCURVE",
+"67 4 CURVE"
 );
 }
 );
-width = 406;
+width = 444;
 }
 );
 note = REu1;
@@ -15688,11 +15689,11 @@ name = REu1;
 },
 {
 name = sda;
-transform = "{1, 0, 0, 1, 182, 515}";
+transform = "{1, 0, 0, 1, 220, 515}";
 }
 );
 layerId = "6E34CE51-C086-4FF0-804E-D019E96D60E0";
-width = 406;
+width = 444;
 }
 );
 unicode = 0632;
@@ -15710,11 +15711,11 @@ name = REu1;
 {
 alignment = -1;
 name = toeda;
-transform = "{1, 0, 0, 1, 165, 390}";
+transform = "{1, 0, 0, 1, 203, 390}";
 }
 );
 layerId = "6E34CE51-C086-4FF0-804E-D019E96D60E0";
-width = 406;
+width = 444;
 }
 );
 unicode = 0691;
@@ -15730,11 +15731,11 @@ name = REu1;
 },
 {
 name = tda;
-transform = "{1, 0, 0, 1, 108, 515}";
+transform = "{1, 0, 0, 1, 146, 515}";
 }
 );
 layerId = "6E34CE51-C086-4FF0-804E-D019E96D60E0";
-width = 406;
+width = 444;
 }
 );
 unicode = 0698;
@@ -27326,25 +27327,25 @@ transform = "{1, 0, 0, 1, 968, -204}";
 {
 alignment = -1;
 name = BEi3;
-transform = "{1, 0, 0, 1, 942, 54}";
+transform = "{1, 0, 0, 1, 980, 54}";
 },
 {
 alignment = -1;
 name = ALIFf1;
-transform = "{1, 0, 0, 1, 766, -81}";
+transform = "{1, 0, 0, 1, 804, -81}";
 },
 {
 name = LAMu1;
-transform = "{1, 0, 0, 1, 20, -131}";
+transform = "{1, 0, 0, 1, 58, -131}";
 },
 {
 alignment = -1;
 name = ddb;
-transform = "{1, 0, 0, 1, 689, -494}";
+transform = "{1, 0, 0, 1, 727, -494}";
 }
 );
 layerId = "6E34CE51-C086-4FF0-804E-D019E96D60E0";
-width = 1348;
+width = 1386;
 }
 );
 note = uniFDFC;
@@ -109467,6 +109468,7 @@ sarkash,
 "isolated-kaf",
 tilts,
 "component-shifts",
+"re-tail",
 ascenders,
 "re-neck",
 "dal-size",
