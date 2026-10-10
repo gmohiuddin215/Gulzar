@@ -659,15 +659,21 @@ def step_final_kaf_entry(font):
 # The base of isolated kaf/gaf is short for Nastaliq: it runs ~3.1 nuqta to
 # the left of the upright, against ~4.4 in the calligraphic form. It is
 # lengthened most of the way (to ~4.2); the rest of the letter keeps its
-# shape.
+# shape. Its sarkash is also a little long, and is shortened along its own
+# direction (the second stroke of gaf follows it).
 ISOLATED_KAF_BASE = 1.35
+ISOLATED_KAF_SARKASH = 0.90
 
 
 def step_isolated_kaf(font):
+    plan = None
     for name in ("KAFu1", "GAFu1"):
         layer = master_layer(font, font.glyphs[name])
         decompose_components(font, layer)
         xmin, xmax = layer_bounds(layer)
+        plan = plan or find_sarkash(layer)
+        pivot, tip, _ = plan
+        warp_strokes(layer, length_field(pivot, tip, ISOLATED_KAF_SARKASH))
         # left side of the upright, measured on the stem above the base
         spans = []
         for path in layer.paths:
