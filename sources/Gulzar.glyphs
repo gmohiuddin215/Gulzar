@@ -34,7 +34,7 @@ value = (
 },
 {
 name = vendorID;
-value = GOOG;
+value = UKWN;
 },
 {
 name = license;
@@ -47,7 +47,7 @@ value = "https://scripts.sil.org/OFL";
 );
 date = "2022-02-02 17:24:20 +0000";
 designer = "Borna Izadpanah, Alice Savoie, Simon Cozens, Fiona Ross";
-familyName = Gulzar;
+familyName = "Gulzar Nastaliq";
 features = (
 {
 code = "sub zero.lf by zero.osf;\012sub one.lf by one.osf;\012sub two.lf by two.osf;\012sub three.lf by three.osf;\012sub four.lf by four.osf;\012sub five.lf by five.osf;\012sub six.lf by six.osf;\012sub seven.lf by seven.osf;\012sub eight.lf by eight.osf;\012sub nine.lf by nine.osf;\012";
@@ -109472,7 +109472,8 @@ ascenders,
 "dot-positions",
 tips,
 ends,
-"line-metrics"
+"line-metrics",
+naming
 );
 };
 versionMajor = 1;

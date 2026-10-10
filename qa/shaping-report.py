@@ -5,7 +5,7 @@ This uses the same building blocks as fontbakery's shaping checks
 (stringbrewer for pattern expansion, collidoscope for collision detection)
 but prints plain counts, which makes it easy to compare two builds:
 
-    python3 qa/shaping-report.py fonts/ttf/Gulzar-Regular.ttf [-o failures.txt]
+    python3 qa/shaping-report.py fonts/ttf/GulzarNastaliq-Regular.ttf [-o failures.txt]
 """
 import argparse
 import glob
