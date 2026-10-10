@@ -220,7 +220,6 @@ WIDTH_SCALES = {
     ("SAD", "m"): 0.93,
     ("BE", "f"): 1.04, ("TE", "f"): 1.04,
     ("FE", "f"): 1.10, ("FE", "u"): 1.03,
-    ("SIN", "f"): 1.05,
     ("TOE", "f"): 1.04,
 }
 
@@ -635,6 +634,88 @@ def step_medial_dots(font):
 
 
 # ---------------------------------------------------------------------------
+# Step 3e: dot placement
+# ---------------------------------------------------------------------------
+
+# Dot (and other mark) anchors moved towards where a Nastaliq calligrapher
+# puts the nuqtas, measured relative to each letter: the dot of sad/dad,
+# ain/ghain and toe/zoe sits lower and further into the letter. About
+# 60-75% of the measured difference is applied. Font units. (Medial dots
+# are not moved further: calligraphers hang them left of the tooth, but in
+# common endings like ین that only works with ligatures Gulzar lacks.)
+DOT_MOVES = [
+    # families, forms, anchor, dx, dy
+    (("SAD",), ("i", "m", "f", "u"), "top", -150, -95),
+    (("AIN",), ("u", "f"), "top", -60, -130),
+    (("AIN",), ("i",), "top", -85, -100),
+    (("AIN",), ("m",), "top", -140, 0),
+    (("TOE",), ("u", "f"), "top", 0, -105),
+    (("TOE",), ("i", "m"), "top", 0, -35),
+    (("TE",), ("u", "f"), "top", 0, 40),
+]
+
+
+def step_dot_positions(font):
+    for g in font.glyphs:
+        m = RASM.match(g.name)
+        if not m:
+            continue
+        for families, forms, name, dx, dy in DOT_MOVES:
+            if m.group(1) in families and m.group(2) in forms:
+                a = anchor(master_layer(font, g), name)
+                if a is not None:
+                    a.position = Point(a.position.x + dx, a.position.y + dy)
+
+
+# ---------------------------------------------------------------------------
+# Step 2d: bowl length
+# ---------------------------------------------------------------------------
+
+# The bowls of noon, seen/sheen and sad/dad still read a little drawn out
+# compared with the calligraphic forms: the part of the bowl to the left of
+# its lowest point is shortened, easing in from the bottom of the bowl so
+# the curve stays smooth; the letter then moves back so the gap before the
+# next word is unchanged.
+BOWL_LENGTH = {"NUN": 0.90, "SIN": 0.90, "SAD": 0.92}
+
+
+def step_bowl_length(font):
+    for g in font.glyphs:
+        m = RASM.match(g.name)
+        if not (m and m.group(1) in BOWL_LENGTH and m.group(2) in ("f", "u")):
+            continue
+        layer = master_layer(font, g)
+        decompose_components(font, layer)
+        k = BOWL_LENGTH[m.group(1)]
+        segs = outline_segments(layer)
+        pts = [p for seg in segs for p in seg]
+        xmin = min(p[0] for p in pts)
+        low = min(pts, key=lambda p: p[1])
+        pivot = low[0] + 0.3 * (low[0] - xmin)  # just right of the lowest point
+        band = 0.5 * (pivot - xmin)
+
+        def field(x, y, pivot=pivot, band=band, k=k):
+            if x >= pivot:
+                return (0, 0)
+            d = pivot - x
+            if d < band:  # ease in: displacement grows quadratically
+                shift = (1 - k) * d * d / (2 * band)
+            else:
+                shift = (1 - k) * (d - band / 2)
+            return (shift, 0)
+
+        warp_strokes(layer, field)
+        new_xmin = min(p[0] for seg in outline_segments(layer) for p in seg)
+        dx = round(xmin - new_xmin)  # negative: move back left
+        for path in layer.paths:
+            for nd in path.nodes:
+                nd.position = Point(nd.position.x + dx, nd.position.y)
+        for a in layer.anchors:
+            a.position = Point(a.position.x + dx, a.position.y)
+        layer.width = layer.width + dx
+
+
+# ---------------------------------------------------------------------------
 # Step 3d: stroke tips
 # ---------------------------------------------------------------------------
 
@@ -736,9 +817,11 @@ STEPS = [
     ("scale-and-spacing", step_scale_and_spacing),
     ("proportions", step_proportions),
     ("bowls", step_bowls),
+    ("bowl-length", step_bowl_length),
     ("sarkash", step_sarkash),
     ("ascenders", step_ascenders),
     ("medial-dots", step_medial_dots),
+    ("dot-positions", step_dot_positions),
     ("tips", step_tips),
     ("line-metrics", step_line_metrics),
 ]
