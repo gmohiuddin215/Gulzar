@@ -31,7 +31,15 @@ LAYOUTS = {
         "scale": 0.5,
         "bottom": 60,
         # رضی and عنہٗ side by side, اللہُ above them in the middle
-        "parts": [("عنہٗ", 0, 0), ("رضی", 900, 0), ("اللہُ", 340, 760)],
+        "parts": [("عنہٗ", 0, 0), ("رضی", 860, 0), ("اللہُ", 320, 760)],
+    },
+    # the same for a woman: اللہُ sits above, as clear of the row beneath as
+    # in رضی اللہُ عنہٗ
+    "radiAllahuAnhaa": {
+        "unicodes": ["FD42"],
+        "scale": 0.5,
+        "bottom": 60,
+        "parts": [("عنہا", 0, 0), ("رضی", 1019, 0), ("اللہُ", 417, 0, {"clear": 51})],
     },
     "rahmatullahAlayh": {
         "unicodes": ["0612"],
@@ -73,6 +81,35 @@ def with_kashida(glyphs, source, length, rise):
     return rest + [ain]
 
 
+def columns(path, step=8):
+    """Ink extent of a pathops Path in narrow vertical slices: {x: (bottom, top)}."""
+    import pathops
+
+    x0, _, x1, _ = path.bounds
+    out = {}
+    x = x0
+    while x < x1:
+        r = pathops.Path()
+        r.moveTo(x, -5000)
+        r.lineTo(x + step, -5000)
+        r.lineTo(x + step, 5000)
+        r.lineTo(x, 5000)
+        r.close()
+        cut = pathops.op(path, r, pathops.PathOp.INTERSECTION)
+        if cut.bounds and cut.bounds[2] > cut.bounds[0]:
+            out[round(x / step)] = (cut.bounds[1], cut.bounds[3])
+        x += step
+    return out
+
+
+def clearance(below, part, step=8):
+    """How far `part` sits above `below`: the smallest vertical gap between
+    them, over the slices where both have ink."""
+    a, b = columns(below, step), columns(part, step)
+    gaps = [b[k][0] - a[k][1] for k in b if k in a]
+    return min(gaps) if gaps else None
+
+
 def main(path):
     font = hb.Font(hb.Face(open(path, "rb").read()))
     here = os.path.dirname(os.path.abspath(__file__))
@@ -86,6 +123,12 @@ def main(path):
         comps = []
         for text, dx, dy, *opts in spec["parts"]:
             glyphs = [(g, x, y, None) for g, x, y in shape(font, text)]
+            if opts and "clear" in opts[0]:
+                # sit this part just above what is already placed, the given
+                # distance clear of it at the closest point
+                below = reshape.honorific_outline(source, comps, s)
+                trial = reshape.honorific_outline(source, [[g, (x + dx) * s, y * s] for g, x, y, _ in glyphs], s)
+                dy = (opts[0]["clear"] - clearance(below, trial)) / s
             if opts and "kashida" in opts[0]:
                 glyphs = with_kashida(glyphs, source, *opts[0]["kashida"])
             for g, x, y, opt in glyphs:
