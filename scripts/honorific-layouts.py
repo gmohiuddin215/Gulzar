@@ -24,9 +24,9 @@ import uharfbuzz as hb
 # drawn in its long-stroke form, moved over by `length` and up by `rise`,
 # and its tail carried to the next letter by a drawn stroke (see
 # step_honorifics in scripts/nastaliq-reshape.py), so the word spans the
-# row beneath it. Option "lower": {glyph: (y0, factor, x0, x1)}: in this
-# part only, that letter's rising stroke is brought down (see
-# honorific_outline in scripts/nastaliq-reshape.py).
+# row beneath it. Options "lower" / "shorten": {glyph: (y0, factor, x0, x1)}:
+# in this part only, that letter's rising stroke is brought down, or its
+# falling tail drawn up (see honorific_outline in scripts/nastaliq-reshape.py).
 LAYOUTS = {
     "radiAllahuAnhu": {
         "unicodes": ["0613", "FD41"],
@@ -50,6 +50,17 @@ LAYOUTS = {
         "scale": 0.5,
         "bottom": 60,
         "parts": [("عنہما", 0, 0), ("رضی", 760, 0, {"lower": {"CH_YEf1": (150, 0.6, 200, 320)}}),
+                  ("اللہُ", 60, 0, {"clear": 28})],
+    },
+    # for men: the same, with عنہم
+    "radiAllahuAnhum": {
+        "unicodes": ["FD43"],
+        "scale": 0.5,
+        "bottom": 60,
+        # its mim's long tail is drawn up here so the honorific isn't taller
+        # than the others
+        "parts": [("عنہم", 0, -324, {"shorten": {"MIMf1": (0, 0.5, 200, 300)}}),
+                  ("رضی", 760, 0, {"lower": {"CH_YEf1": (150, 0.6, 200, 320)}}),
                   ("اللہُ", 60, 0, {"clear": 28})],
     },
     "rahmatullahAlayh": {
@@ -142,11 +153,12 @@ def main(path):
                 dy = (opts[0]["clear"] - clearance(below, trial)) / s
             if opts and "kashida" in opts[0]:
                 glyphs = with_kashida(glyphs, source, *opts[0]["kashida"])
-            lower = opts[0].get("lower", {}) if opts else {}
+            reshapes = {k: opts[0][k] for k in ("lower", "shorten") if opts and k in opts[0]}
             for g, x, y, opt in glyphs:
                 comp = [g, (x + dx) * s, (y + dy) * s]
-                if g in lower:
-                    comp.append({"lower": lower[g]})
+                for kind, letters in reshapes.items():
+                    if g in letters:
+                        comp.append({kind: letters[g]})
                 if opt:
                     lam, lx, ly = opt["kashida"][:3]
                     comp.append({"kashida": [lam, (lx + dx) * s, (ly + dy) * s]})

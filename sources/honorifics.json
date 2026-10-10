@@ -44,6 +44,21 @@
     ["ALLAHu1", 40, 619],
     ["ALIFu1", 460, 619]
  ]},
+ "radiAllahuAnhum": {"unicodes": ["FD43"], "scale": 0.5, "width": 916, "components": [
+    ["MIMf1", 15, 175, {"shorten": [0, 0.5, 200, 300]}],
+    ["haydb", 262, 401],
+    ["HAYCm9", 187, 456],
+    ["sda", 335, 718],
+    ["BEm6", 325, 448],
+    ["AINi2", 416, 632],
+    ["CH_YEf1", 395, 337, {"lower": [150, 0.6, 200, 320]}],
+    ["sda", 684, 816],
+    ["SADi13", 604, 606],
+    ["REu1", 680, 337],
+    ["DAMMA", 20, 775],
+    ["ALLAHu1", 45, 810],
+    ["ALIFu1", 466, 810]
+ ]},
  "rahmatullahAlayh": {"unicodes": ["0612"], "scale": 0.44, "width": 1036, "components": [
     ["HAYCf1", 17, 397],
     ["ddb", 126, 298],
