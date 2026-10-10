@@ -71,6 +71,9 @@ Feature kern {
 		# traditional Nastaliq setting. Dots after a space are never dropped
 		# (they help mark the start of the word), so when the next word starts
 		# with dots below, give them back room to clear the previous word.
+		# ...except after a re, whose tail leaves room under it (منبر پر).
+		Position [REf1 REu1] (space.urdu <xAdvance=+20>) @inits [sdb ddb tdb];
+		Position [REf2 REf3] (space.urdu <xAdvance=+50>) @inits [sdb ddb tdb];
 		Position (space.urdu <xAdvance=+100>) @inits [sdb ddb tdb];
 		Position @bigbowlfina space.urdu (/([KG]AF|LAM)i/ <xAdvance=+50>) /JIMm|BEm/ [ddb tdb];
 		Position REf3 (/[KG]AFi/ <xAdvance=-120>);
