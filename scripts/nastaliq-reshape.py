@@ -1351,6 +1351,14 @@ def _runs_on(p, q, u):
     return bool(d) and abs(((qx - px) * u[0] + (qy - py) * u[1]) / d) > 0.9
 
 
+def _tucked_in(polys, pi, mx, my, nx, ny):
+    # Some letters are drawn as overlapping pieces (initial ain: the lower
+    # stroke runs into the body). Where a stroke ends inside another piece
+    # its cut is hidden: it is not a free end, and rounding it leaves a notch.
+    px, py = mx + 12 * nx, my + 12 * ny
+    return any(point_in_polygon(px, py, o) for oi, o in enumerate(polys) if oi != pi)
+
+
 def round_tips(layer, keep_corners=False):
     from glyphsLib.classes import GSNode
 
@@ -1388,6 +1396,9 @@ def round_tips(layer, keep_corners=False):
             if ((ax - before.x) * nx + (ay - before.y) * ny) <= 0 or (
                 (after.x - bx) * nx + (after.y - by) * ny
             ) >= 0 or keep_corners and (_runs_on(before, (ax, ay), (ux, uy)) or _runs_on((bx, by), after, (ux, uy))):
+                out.append(nd)
+                continue
+            if _tucked_in(polys, pi, mx, my, nx, ny):
                 out.append(nd)
                 continue
             # narrow the tip, then close it with a round cap
@@ -1469,7 +1480,7 @@ def round_ends(layer):
             # both sides of the stroke must run back from the cut
             ax, ay, _ = _unit(before.position.x - A.x, before.position.y - A.y)
             bx, by, _ = _unit(after.position.x - B.x, after.position.y - B.y)
-            if ax * nx + ay * ny >= -0.2 or bx * nx + by * ny >= -0.2:
+            if ax * nx + ay * ny >= -0.2 or bx * nx + by * ny >= -0.2 or _tucked_in(polys, pi, mx, my, nx, ny):
                 i += 1
                 continue
             h = END_RETRACT * width
