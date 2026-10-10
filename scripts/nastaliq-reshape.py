@@ -968,6 +968,172 @@ def step_re_neck(font):
 
 
 # ---------------------------------------------------------------------------
+# Step 3o: final re takes the tail of the isolated re
+# ---------------------------------------------------------------------------
+
+# The isolated re has the better tail end: a wedge that sits flat on the
+# line and ends in a blunt round, where the final re of کر, پر tapers to a
+# point. Along most of the tail the two letters lie on top of each other
+# (within a few units), so the final re keeps everything right of CUT and
+# takes the isolated re's tail end left of it, overlapping by OVERLAP so the
+# outline runs on smoothly. Font units.
+RE_FINAL_TAIL = {"REf1": ("REu1", 140, 1)}
+
+
+def _to_skia(layer, dx=0):
+    import pathops
+    sk = pathops.Path()
+    for path in layer.paths:
+        nodes = list(path.nodes)
+        last = nodes[-1].position
+        sk.moveTo(last.x + dx, last.y)
+        buf = []
+        for nd in nodes:
+            p = nd.position
+            if nd.type == "offcurve":
+                buf.append(p)
+            elif len(buf) == 2:
+                sk.cubicTo(buf[0].x + dx, buf[0].y, buf[1].x + dx, buf[1].y, p.x + dx, p.y)
+                buf = []
+            else:
+                sk.lineTo(p.x + dx, p.y)
+                buf = []
+        sk.close()
+    return sk
+
+
+def _rect(x0, y0, x1, y1):
+    import pathops
+    r = pathops.Path()
+    r.moveTo(x0, y0)
+    r.lineTo(x1, y0)
+    r.lineTo(x1, y1)
+    r.lineTo(x0, y1)
+    r.close()
+    return r
+
+
+def _from_skia(sk, layer):
+    from glyphsLib.classes import GSNode, GSPath
+
+    paths = []
+    cur = None
+    for verb, pts in sk.segments:
+        if verb == "moveTo":
+            cur = [GSNode(Point(round(pts[0][0]), round(pts[0][1])), "line")]
+        elif verb == "lineTo":
+            cur.append(GSNode(Point(round(pts[0][0]), round(pts[0][1])), "line"))
+        elif verb == "curveTo":
+            cur.append(GSNode(Point(round(pts[0][0]), round(pts[0][1])), "offcurve"))
+            cur.append(GSNode(Point(round(pts[1][0]), round(pts[1][1])), "offcurve"))
+            cur.append(GSNode(Point(round(pts[2][0]), round(pts[2][1])), "curve"))
+        elif verb == "qCurveTo":
+            # promote quadratic to cubic
+            (cx, cy), (ex, ey) = pts[0], pts[-1]
+            sx, sy = cur[-1].position.x, cur[-1].position.y
+            cur.append(GSNode(Point(round(sx + 2 / 3 * (cx - sx)), round(sy + 2 / 3 * (cy - sy))), "offcurve"))
+            cur.append(GSNode(Point(round(ex + 2 / 3 * (cx - ex)), round(ey + 2 / 3 * (cy - ey))), "offcurve"))
+            cur.append(GSNode(Point(round(ex), round(ey)), "curve"))
+        elif verb in ("closePath", "endPath"):
+            if cur and len(cur) > 1:
+                first = cur.pop(0)  # the start point is repeated by the last segment
+                if (cur[-1].position.x, cur[-1].position.y) != (first.position.x, first.position.y):
+                    cur.append(GSNode(first.position, "line"))
+                # drop zero-length segments left by the boolean operation
+                clean = []
+                for nd in cur:
+                    clean.append(nd)
+                    if nd.type != "offcurve" and len(clean) > 1:
+                        seg = [clean.pop()]
+                        while clean and clean[-1].type == "offcurve":
+                            seg.insert(0, clean.pop())
+                        prev = clean[-1].position if clean else cur[-1].position
+                        if all(abs(q.position.x - prev.x) <= 1 and abs(q.position.y - prev.y) <= 1 for q in seg):
+                            continue
+                        clean.extend(seg)
+                # the contour may end on its own start point: drop that last segment
+                if len(clean) > 1:
+                    first = clean[0].position
+                    seg = [clean[-1]]
+                    k = len(clean) - 2
+                    while k >= 0 and clean[k].type == "offcurve":
+                        seg.insert(0, clean[k])
+                        k -= 1
+                    if all(abs(q.position.x - first.x) <= 1 and abs(q.position.y - first.y) <= 1 for q in seg):
+                        clean = clean[: k + 1]
+                cur = clean
+                gp = GSPath()
+                gp.nodes = cur
+                gp.closed = True
+                paths.append(gp)
+            cur = None
+    layer.paths = paths
+
+
+def step_re_final_tail(font):
+    import pathops
+
+    for name, (src, cut, overlap) in RE_FINAL_TAIL.items():
+        dst = master_layer(font, font.glyphs[name])
+        donor = master_layer(font, font.glyphs[src])
+        decompose_components(font, dst)
+        big = 5000
+        own = pathops.op(_to_skia(dst), _rect(cut - overlap, -big, big, big), pathops.PathOp.INTERSECTION)
+        tail = pathops.op(_to_skia(donor), _rect(-big, -big, cut + overlap, big), pathops.PathOp.INTERSECTION)
+        merged = pathops.op(own, tail, pathops.PathOp.UNION)
+        _from_skia(merged, dst)
+
+
+# ---------------------------------------------------------------------------
+# Step 3p: re after fe/qaf, and the weight of re
+# ---------------------------------------------------------------------------
+
+# The long re after fe and qaf (فر, قر, and فز, which uses the same re) is
+# lengthened a little along its tail. Every re is then made a little heavier
+# in the middle of its stroke, fading to nothing at the join and at the end
+# of the tail so those keep their shape.
+RE_LONG_TAIL = {"REf2": 1.10}
+RE_WEIGHT = 5  # font units added on each side at the middle of the stroke
+RE_WEIGHT_GLYPHS = ("REu1", "REf1", "REf2", "REf3")
+
+
+def step_re_weight(font):
+    for name, scale in RE_LONG_TAIL.items():
+        layer = master_layer(font, font.glyphs[name])
+        decompose_components(font, layer)
+        pts = [(nd.position.x, nd.position.y) for p in layer.paths for nd in p.nodes]
+        ymax = max(p[1] for p in pts)
+        tip = min(pts, key=lambda q: q[0] + q[1])
+        top = max(pts, key=lambda q: q[0] + q[1])
+        pivot = ((top[0] + tip[0]) / 2 + 0.25 * (top[0] - tip[0]), (top[1] + tip[1]) / 2 + 0.25 * (top[1] - tip[1]))
+        warp_strokes(layer, length_field(pivot, tip, scale))
+    for name in RE_WEIGHT_GLYPHS:
+        layer = master_layer(font, font.glyphs[name])
+        decompose_components(font, layer)
+        ys = [nd.position.y for p in layer.paths for nd in p.nodes]
+        y0, y1 = min(ys), max(ys)
+        ym, h = (y0 + y1) / 2, (y1 - y0)
+        normals = outward_normals(layer)
+        for path, nrms in zip(layer.paths, normals):
+            nodes = list(path.nodes)
+            n = len(nodes)
+            moves = [None] * n
+            for i, (nd, nrm) in enumerate(zip(nodes, nrms)):
+                if nrm is None:
+                    continue
+                w = math.exp(-(((nd.position.y - ym) / (0.28 * h)) ** 2))
+                moves[i] = (nrm[0] * RE_WEIGHT * w, nrm[1] * RE_WEIGHT * w)
+            for i in range(n):
+                if moves[i] is None:
+                    j = (i - 1) % n if nodes[(i - 1) % n].type != "offcurve" else (i + 1) % n
+                    while moves[j] is None:
+                        j = (j + 1) % n
+                    moves[i] = moves[j]
+            for nd, (dx, dy) in zip(nodes, moves):
+                nd.position = Point(round(nd.position.x + dx), round(nd.position.y + dy))
+
+
+# ---------------------------------------------------------------------------
 # Step 3h: dal size
 # ---------------------------------------------------------------------------
 
@@ -1331,6 +1497,8 @@ STEPS = [
     ("haya-size", step_haya_size),
     ("ascenders", step_ascenders),
     ("re-neck", step_re_neck),
+    ("re-final-tail", step_re_final_tail),
+    ("re-weight", step_re_weight),
     ("dal-size", step_dal_size),
     ("medial-dots", step_medial_dots),
     ("dot-positions", step_dot_positions),

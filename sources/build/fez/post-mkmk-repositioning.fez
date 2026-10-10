@@ -56,6 +56,13 @@ Feature kern {
     Position @inits [tda tda.one tda.two] ([DAMMA FATHA] <yPlacement=-40>) /^[KG]AFfs?1$/;
   } UseMarkFilteringSet [DAMMA FATHA tda tda.one tda.two];
 
+  # Under a bari-ye the dot of a medial jim is moved down into a row below
+  # the ye. Before do-chashmi he (مجھے, سمجھے, الجھے) there is plenty of
+  # room between the ye and the jim, so the dot goes back up into it.
+  Routine JimDotAboveBariYe {
+    Position /^JIMm/ (sdb.yb <yPlacement=684>) /^HAYAm/;
+  } UseMarkFilteringSet [sdb.yb];
+
   # Dots below a letter before do-chashmi he hang into the loop of the he
   # (پھر, بھی): drop them a little.
   Routine DotsBeforeHaya {
