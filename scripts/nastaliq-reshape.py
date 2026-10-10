@@ -757,8 +757,8 @@ def step_tilts(font):
 # sits low over the head; both are raised a little. Only these two
 # precomposed letters change. Font units.
 COMPONENT_SHIFTS = {
-    "tcheh-ar": ("tdi", 0, 40),
-    "khah-ar": ("sda", 0, 40),
+    "tcheh-ar": ("tdi", 0, 75),
+    "khah-ar": ("sda", 0, 75),
 }
 
 
@@ -768,6 +768,41 @@ def step_component_shifts(font):
         for c in layer.components:
             if c.name == comp:
                 c.position = Point(c.position.x + dx, c.position.y + dy)
+
+
+# ---------------------------------------------------------------------------
+# Step 3m: tail of isolated re
+# ---------------------------------------------------------------------------
+
+# The tail of the isolated re (and so of ڑ ز ژ, which are built on it) is
+# short for Nastaliq. The part left of the neck is stretched horizontally,
+# keeping its thickness, so the tail runs further along the line.
+RE_TAIL = {"REu1": 1.25}
+
+
+def step_re_tail(font):
+    for name, s in RE_TAIL.items():
+        layer = master_layer(font, font.glyphs[name])
+        decompose_components(font, layer)
+        xmin, _ = layer_bounds(layer)
+        xb = anchor(layer, "bottom").position.x + 40  # where the neck turns into the tail
+        warp_strokes(layer, lambda x, y, s=s, xb=xb: (-(s - 1) * (xb - x), 0) if x < xb else (0, 0))
+        nmin, _ = layer_bounds(layer)
+        dx = round(xmin - nmin)
+        for path in layer.paths:
+            for nd in path.nodes:
+                nd.position = Point(nd.position.x + dx, nd.position.y)
+        for a in layer.anchors:
+            a.position = Point(a.position.x + dx, a.position.y)
+        layer.width = layer.width + dx
+        # the dots of ڑ ز ژ move with the letter
+        for g in font.glyphs:
+            lay = master_layer(font, g)
+            if any(c.name == name for c in lay.components):
+                for c in lay.components:
+                    if c.name != name:
+                        c.position = Point(c.position.x + dx, c.position.y)
+                lay.width = lay.width + dx
 
 
 # ---------------------------------------------------------------------------
@@ -1238,6 +1273,7 @@ STEPS = [
     ("isolated-kaf", step_isolated_kaf),
     ("tilts", step_tilts),
     ("component-shifts", step_component_shifts),
+    ("re-tail", step_re_tail),
     ("ascenders", step_ascenders),
     ("re-neck", step_re_neck),
     ("dal-size", step_dal_size),
