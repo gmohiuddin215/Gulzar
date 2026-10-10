@@ -576,6 +576,69 @@ def step_sarkash(font):
             warp_strokes(layer, rotation_field(pivot, tip, turn))
 
 
+# The sarkash is also shorter in calligraphic Nastaliq: its tip is ~0.85 of
+# Gulzar's distance from the stem (تک, تکبر, لگا). It is shortened along its
+# own axis, easing in from the stem; the pen-cut head keeps its shape.
+SARKASH_LENGTH = 0.86
+
+
+def length_field(pivot, tip, scale):
+    px, py = pivot
+    ux, uy = tip[0] - px, tip[1] - py
+    length = math.hypot(ux, uy)
+    ux, uy = ux / length, uy / length
+
+    def field(x, y):
+        t = ((x - px) * ux + (y - py) * uy) / length
+        if t <= 0:
+            return (0, 0)
+        # smooth ramp from the stem, then uniform; the head moves rigidly
+        g = t * t / 0.4 if t < 0.2 else min(t, 1.0) - 0.1
+        d = -(1 - scale) * length * g / 0.9
+        return (d * ux, d * uy)
+
+    return field
+
+
+def step_sarkash_length(font):
+    family = [g.name for g in font.glyphs if re.match(r"^[KG]AF(i|m|f|u|isd|msd)\d+$", g.name)]
+    plans = {}
+    for name in family:
+        layer = master_layer(font, font.glyphs[name])
+        decompose_components(font, layer)
+        if name.startswith("KAF"):
+            plans[name] = find_sarkash(layer)
+    for name in family:
+        layer = master_layer(font, font.glyphs[name])
+        found = plans.get("KAF" + name[3:]) or find_sarkash(layer)
+        if not found:
+            print(f"  {name}: no sarkash found, left alone")
+            continue
+        pivot, tip, _ = found
+        warp_strokes(layer, length_field(pivot, tip, SARKASH_LENGTH))
+
+
+# ---------------------------------------------------------------------------
+# Step 3j: smooth joins
+# ---------------------------------------------------------------------------
+
+# A few medial be forms rise just after their entry, which leaves a dip in
+# the stroke where the previous letter hands over (the ک-ب of تکبر). Their
+# upper edge is levelled with the join.
+FLAT_ENTRY = ("BEm13", "BEm16")
+
+
+def step_flat_entry(font):
+    for name in FLAT_ENTRY:
+        layer = master_layer(font, font.glyphs[name])
+        decompose_components(font, layer)
+        en = anchor(layer, "entry").position
+        for path in layer.paths:
+            for nd in path.nodes:
+                if en.x - 200 <= nd.position.x <= en.x and nd.position.y > en.y:
+                    nd.position = Point(nd.position.x, en.y)
+
+
 # ---------------------------------------------------------------------------
 # Step 3b: tall letters
 # ---------------------------------------------------------------------------
@@ -921,6 +984,8 @@ STEPS = [
     ("bowls", step_bowls),
     ("bowl-length", step_bowl_length),
     ("sarkash", step_sarkash),
+    ("sarkash-length", step_sarkash_length),
+    ("flat-entry", step_flat_entry),
     ("ascenders", step_ascenders),
     ("re-neck", step_re_neck),
     ("dal-size", step_dal_size),

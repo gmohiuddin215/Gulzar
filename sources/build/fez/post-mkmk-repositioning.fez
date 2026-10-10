@@ -41,6 +41,20 @@ Feature kern {
     Position @BEm ([ddb ddb.one ddb.two] <xPlacement=60>) NUNf1;
   } UseMarkFilteringSet [ddb ddb.one ddb.two];
 
+  # The dots above a te/the/noon before kaf or gaf sit close to the kaf's
+  # upright (تک, تکبر): move them a little to the right, over the tooth.
+  Routine DotsBeforeKaf {
+    Position /^(BE|TE)(i|m)/ ([sda dda tda sda.one dda.one tda.one sda.two dda.two tda.two] <xPlacement=40>) /^[KG]AF(msd|f|u)/;
+  } UseMarkFilteringSet [sda dda tda sda.one dda.one tda.one sda.two dda.two tda.two];
+
+  # Dots below a letter before do-chashmi he hang into the loop of the he
+  # (پھر, بھی): drop them a little.
+  Routine DotsBeforeHaya {
+    # ...but not under the tail of a re or dal just before (سرپھر)
+    Position [@dal_like @long_re] /^(BE|TE)i/ ([sdb ddb tdb sdb.one ddb.one tdb.one sdb.two ddb.two tdb.two] <yPlacement=0>) /^HAYA(m|f)/;
+    Position /^(BE|TE)(i|m)/ ([sdb ddb tdb sdb.one ddb.one tdb.one sdb.two ddb.two tdb.two] <yPlacement=-60>) /^HAYA(m|f)/;
+  } UseMarkFilteringSet [sdb ddb tdb sdb.one ddb.one tdb.one sdb.two ddb.two tdb.two];
+
   # Final qaf now sits on the line, which lifts the
   # letters before it (by 203 units). When such a short letter group follows a dal or re,
   # keep the dots below its last letter where they were, clear of the dal
