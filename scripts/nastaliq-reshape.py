@@ -1572,6 +1572,12 @@ def _set_paths(layer, paths):
 # drawn-out ain.
 KASHIDA_CUT = 150  # x in the ain where its own tail gives way to the stroke
 KASHIDA_LAM_BASE = {"LAMm2": ((272, 85), (236, -50))}  # top and bottom of the lam's base
+# How the top and bottom edges leave the lam: angle (degrees) and handle
+# length (share of the chord). The top rises from the lam's neck as the
+# strokes of be and sin do where they join it; the bottom comes off the
+# round of the lam's base level and turns up promptly into the sweep.
+KASHIDA_LEAVE = ((20, 0.36), (0, 0.15))
+KASHIDA_HANDLE = 0.36  # handle length at the ain end, as a share of the chord
 KASHIDA_OVERLAP = 14  # the stroke runs on into the tail by this much, hidden
 
 
@@ -1647,28 +1653,26 @@ def _kashida(font, ain, lam, lam_pos):
     lx, ly = lam_pos
     sk = pathops.Path()
 
-    def edge(p0, p1, arrive):
-        # a circular arc from p0 that turns evenly and reaches p1 at the given
-        # slope: it leaves at the chord's angle mirrored about the arrival
-        dx, dy = p1[0] - p0[0], p1[1] - p0[1]
-        chord, c = math.hypot(dx, dy), math.atan2(dy, dx)
-        a = math.atan(arrive)
-        leave = 2 * c - a
-        turn = a - leave
-        h = chord / 3 if abs(turn) < 1e-3 else 4 / 3 * math.tan(turn / 4) * chord / (2 * math.sin(turn / 2))
-        return ((p0[0] + h * math.cos(leave), p0[1] + h * math.sin(leave)),
-                (p1[0] - h * math.cos(a), p1[1] - h * math.sin(a)), p1)
+    def edge(p0, p1, leave, arrive):
+        # leaves the lam as its joins do and reaches the tail at the tail's
+        # own angle; between them the pen sweeps through in one movement
+        chord = math.hypot(p1[0] - p0[0], p1[1] - p0[1])
+        angle, share = leave
+        h0, h1 = share * chord, KASHIDA_HANDLE * chord
+        angle, a = math.radians(angle), math.atan(arrive)
+        return ((p0[0] + h0 * math.cos(angle), p0[1] + h0 * math.sin(angle)),
+                (p1[0] - h1 * math.cos(a), p1[1] - h1 * math.sin(a)), p1)
 
     t0, b0 = (lx + tx, ly + ty), (lx + bx, ly + by)
     t1, b1 = (cut, top), (cut, bottom)
     o = KASHIDA_OVERLAP
     sk.moveTo(*t0)
-    sk.cubicTo(*[c for pt in edge(t0, t1, at) for c in pt])
+    sk.cubicTo(*[c for pt in edge(t0, t1, KASHIDA_LEAVE[0], at) for c in pt])
     # the overlap's far corners sit inside the tail, which curves away
     sk.lineTo(cut + o, top + at * o - 0.15 * (top - bottom))
     sk.lineTo(cut + o, bottom + ab * o + 0.15 * (top - bottom))
     sk.lineTo(*b1)
-    c1, c2, _ = edge(b0, b1, ab)
+    c1, c2, _ = edge(b0, b1, KASHIDA_LEAVE[1], ab)
     sk.cubicTo(*c2, *c1, *b0)
     sk.close()
     out = pathops.op(tail, sk, pathops.PathOp.UNION)
