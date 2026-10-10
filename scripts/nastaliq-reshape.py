@@ -750,6 +750,27 @@ def step_tilts(font):
 
 
 # ---------------------------------------------------------------------------
+# Step 3l: dots of isolated tcheh and khah
+# ---------------------------------------------------------------------------
+
+# In the isolated چ the three dots sit low in the bowl, and the dot of خ
+# sits low over the head; both are raised a little. Only these two
+# precomposed letters change. Font units.
+COMPONENT_SHIFTS = {
+    "tcheh-ar": ("tdi", 0, 40),
+    "khah-ar": ("sda", 0, 40),
+}
+
+
+def step_component_shifts(font):
+    for name, (comp, dx, dy) in COMPONENT_SHIFTS.items():
+        layer = master_layer(font, font.glyphs[name])
+        for c in layer.components:
+            if c.name == comp:
+                c.position = Point(c.position.x + dx, c.position.y + dy)
+
+
+# ---------------------------------------------------------------------------
 # Step 3b: tall letters
 # ---------------------------------------------------------------------------
 
@@ -1216,6 +1237,7 @@ STEPS = [
     ("final-kaf-entry", step_final_kaf_entry),
     ("isolated-kaf", step_isolated_kaf),
     ("tilts", step_tilts),
+    ("component-shifts", step_component_shifts),
     ("ascenders", step_ascenders),
     ("re-neck", step_re_neck),
     ("dal-size", step_dal_size),

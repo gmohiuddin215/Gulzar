@@ -15380,7 +15380,7 @@ name = JIMu1;
 },
 {
 name = tdi;
-transform = "{1, 0, 0, 1, 192, -71}";
+transform = "{1, 0, 0, 1, 192, -31}";
 }
 );
 layerId = "6E34CE51-C086-4FF0-804E-D019E96D60E0";
@@ -15435,7 +15435,7 @@ name = JIMu1;
 },
 {
 name = sda;
-transform = "{1, 0, 0, 1, 143, 755}";
+transform = "{1, 0, 0, 1, 143, 795}";
 }
 );
 layerId = "6E34CE51-C086-4FF0-804E-D019E96D60E0";
@@ -109466,6 +109466,7 @@ sarkash,
 "final-kaf-entry",
 "isolated-kaf",
 tilts,
+"component-shifts",
 ascenders,
 "re-neck",
 "dal-size",
