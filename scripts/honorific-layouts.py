@@ -24,7 +24,9 @@ import uharfbuzz as hb
 # drawn in its long-stroke form, moved over by `length` and up by `rise`,
 # and its tail carried to the next letter by a drawn stroke (see
 # step_honorifics in scripts/nastaliq-reshape.py), so the word spans the
-# row beneath it.
+# row beneath it. Option "lower": {glyph: (y0, factor, x0, x1)}: in this
+# part only, that letter's rising stroke is brought down (see
+# honorific_outline in scripts/nastaliq-reshape.py).
 LAYOUTS = {
     "radiAllahuAnhu": {
         "unicodes": ["0613", "FD41"],
@@ -40,6 +42,15 @@ LAYOUTS = {
         "scale": 0.5,
         "bottom": 60,
         "parts": [("عنہا", 0, 0), ("رضی", 1019, 0), ("اللہُ", 417, 0, {"clear": 51})],
+    },
+    # for two: عنہما tucks its ain over the ye of رضی, whose rising tail is
+    # brought down here so they don't touch; اللہُ sits above ہما
+    "radiAllahuAnhumaa": {
+        "unicodes": ["FD44"],
+        "scale": 0.5,
+        "bottom": 60,
+        "parts": [("عنہما", 0, 0), ("رضی", 800, 0, {"lower": {"CH_YEf1": (150, 0.6, 200, 320)}}),
+                  ("اللہُ", 100, 0, {"clear": 51})],
     },
     "rahmatullahAlayh": {
         "unicodes": ["0612"],
@@ -131,8 +142,11 @@ def main(path):
                 dy = (opts[0]["clear"] - clearance(below, trial)) / s
             if opts and "kashida" in opts[0]:
                 glyphs = with_kashida(glyphs, source, *opts[0]["kashida"])
+            lower = opts[0].get("lower", {}) if opts else {}
             for g, x, y, opt in glyphs:
                 comp = [g, (x + dx) * s, (y + dy) * s]
+                if g in lower:
+                    comp.append({"lower": lower[g]})
                 if opt:
                     lam, lx, ly = opt["kashida"][:3]
                     comp.append({"kashida": [lam, (lx + dx) * s, (ly + dy) * s]})
@@ -141,7 +155,7 @@ def main(path):
         dx, dy = SIDE_BEARING - x0, spec["bottom"] - y0
         for c in comps:
             c[1], c[2] = round(c[1] + dx), round(c[2] + dy)
-            if len(c) > 3:
+            if len(c) > 3 and "kashida" in c[3]:
                 k = c[3]["kashida"]
                 k[1], k[2] = round(k[1] + dx), round(k[2] + dy)
         result[name] = {
