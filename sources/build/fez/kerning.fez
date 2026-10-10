@@ -85,6 +85,12 @@ Feature kern {
 		Position AINi17 [REf2 REf3] (/SAD/ <xAdvance=+150>); # عرصئہِ
 	} UseMarkFilteringSet /[sdt]db/;
 
+	# The rounded tail of re/zain lets the next letter come in closer; a
+	# kasra under the re then meets the dots below that letter (زِیادہ).
+	Routine KasraUnderRe {
+		Position [REu1 REf1 REf2 REf3] KASRA (@inits <xAdvance=+40>) [sdb ddb tdb];
+	} UseMarkFilteringSet [KASRA sdb ddb tdb];
+
 	# A madda overhangs to the left, into the (narrow) space.
 	Routine MaddaBeforeSpace {
 		Position MADDA (space.urdu <xAdvance=+100>);
