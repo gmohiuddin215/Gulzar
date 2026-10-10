@@ -1134,6 +1134,33 @@ def step_re_weight(font):
 
 
 # ---------------------------------------------------------------------------
+# Step 3q: vao on the line
+# ---------------------------------------------------------------------------
+
+# The tail of vao dips a little below the line while the tail of re rests on
+# it; in اور the two tails stand side by side and should end level. Vao is
+# raised so its tail ends at the height of the re's. The final vao (کو) is
+# built on the isolated one and its join moves up with it (the build keeps
+# grouping it by its original join height).
+def step_vao_lift(font):
+    vao = master_layer(font, font.glyphs["VAOu1"])
+    ref = master_layer(font, font.glyphs["REu1"])
+    lift = min(nd.position.y for p in ref.paths for nd in p.nodes) - min(nd.position.y for p in vao.paths for nd in p.nodes)
+    for path in vao.paths:
+        for nd in path.nodes:
+            nd.position = Point(nd.position.x, nd.position.y + lift)
+    for a in vao.anchors:
+        a.position = Point(a.position.x, a.position.y + lift)
+    for g in font.glyphs:
+        lay = master_layer(font, g)
+        if any(c.name == "VAOu1" for c in lay.components):
+            for a in lay.anchors:
+                if a.name == "entry":
+                    RISE_PINS[g.name] = round(a.position.y)
+                a.position = Point(a.position.x, a.position.y + lift)
+
+
+# ---------------------------------------------------------------------------
 # Step 3h: dal size
 # ---------------------------------------------------------------------------
 
@@ -1499,6 +1526,7 @@ STEPS = [
     ("re-neck", step_re_neck),
     ("re-final-tail", step_re_final_tail),
     ("re-weight", step_re_weight),
+    ("vao-lift", step_vao_lift),
     ("dal-size", step_dal_size),
     ("medial-dots", step_medial_dots),
     ("dot-positions", step_dot_positions),
