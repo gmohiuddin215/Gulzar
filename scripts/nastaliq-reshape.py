@@ -1533,6 +1533,57 @@ def step_ends(font):
 
 
 # ---------------------------------------------------------------------------
+# Step 4b: joins that hold at small sizes
+# ---------------------------------------------------------------------------
+
+# Gulzar joins letters with very fine strokes: where one letter hands over to
+# the next the ink narrows to 15-40 units. On a phone at 16 px that is under a
+# device pixel, and the join fades out so the word looks broken (بیان, ہیں,
+# تعالی). Every joining letter is made a little heavier around its join
+# points, fading out smoothly, so the narrowest neck becomes roughly twice
+# as wide. Main strokes, stroke ends and dots are not touched.
+JOIN_WEIGHT = 12  # font units added on each side at the join
+JOIN_REACH = 110  # font units over which it fades out
+
+
+def step_join_weight(font):
+    """Overlaps and folds in the drawing are first merged into clean contours
+    (so nothing can open up into a hole), then the outline near each join is
+    moved outwards, fading smoothly to nothing at JOIN_REACH."""
+    for g in font.glyphs:
+        if not RASM.match(g.name):
+            continue
+        layer = master_layer(font, g)
+        if not layer.paths:
+            continue
+        joins = [(a.position.x, a.position.y) for a in layer.anchors if a.name in ("entry", "exit")]
+        if not joins:
+            continue
+        clean = _to_skia(layer)
+        clean.simplify()
+        _from_skia(clean, layer)
+        normals = outward_normals(layer)
+        for path, nrms in zip(layer.paths, normals):
+            nodes = list(path.nodes)
+            n = len(nodes)
+            moves = [None] * n
+            for i, (nd, nrm) in enumerate(zip(nodes, nrms)):
+                if nrm is None:
+                    continue
+                d = min(math.hypot(nd.position.x - jx, nd.position.y - jy) for jx, jy in joins) / JOIN_REACH
+                w = 0.0 if d >= 1 else 1 - d * d * (3 - 2 * d)
+                moves[i] = (nrm[0] * JOIN_WEIGHT * w, nrm[1] * JOIN_WEIGHT * w)
+            for i in range(n):
+                if moves[i] is None:
+                    j = (i - 1) % n if nodes[(i - 1) % n].type != "offcurve" else (i + 1) % n
+                    while moves[j] is None:
+                        j = (j + 1) % n
+                    moves[i] = moves[j]
+            for nd, (dx, dy) in zip(nodes, moves):
+                nd.position = Point(round(nd.position.x + dx), round(nd.position.y + dy))
+
+
+# ---------------------------------------------------------------------------
 # Step 5: line metrics
 # ---------------------------------------------------------------------------
 
@@ -1601,6 +1652,7 @@ STEPS = [
     ("remove-spurs", step_remove_spurs),
     ("tips", step_tips),
     ("ends", step_ends),
+    ("join-weight", step_join_weight),
     ("line-metrics", step_line_metrics),
     ("naming", step_naming),
 ]
