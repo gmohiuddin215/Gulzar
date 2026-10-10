@@ -83,6 +83,15 @@ LAYOUTS = {
                   ("رضی", 1079, 0, {"lower": {"CH_YEf1": (150, 0.95, 200, 320)}}),
                   ("اللہُ", 300, 0, {"clear": 28})],
     },
+    # the durood ﷺ: صلی at the right with اللہ above it, علیہ beside it, و
+    # above the he of علیہ and سلم above that, its mim's head over the vav
+    "sallallahuAlayhiWasallam": {
+        "unicodes": ["FDFA"],
+        "scale": 0.45,
+        "bottom": 40,
+        "parts": [("صلی", 2872, -178), ("اللہ", 2769, 1166), ("علیہ", 1919, 92),
+                  ("و", 1935, 306), ("سلم", 1681, 430)],
+    },
     "rahmatullahAlayh": {
         "unicodes": ["0612"],
         "scale": 0.44,
