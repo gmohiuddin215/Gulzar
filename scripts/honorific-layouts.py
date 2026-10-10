@@ -60,10 +60,10 @@ LAYOUTS = {
         "unicodes": ["FD43"],
         "scale": 0.5,
         "bottom": 60,
-        # its mim's long tail is drawn up here so the honorific isn't taller
-        # than the others
-        "parts": [("عنہم", 0, -324, {"shorten": {"MIMf1": (0, 0.5, 200, 300)}}),
-                  ("رضی", 760, 0, {"lower": {"CH_YEf1": (150, 0.6, 200, 320)}}),
+        # its mim's long tail is drawn up to a short one, as in Quranic
+        # hands, so the honorific isn't taller than the others
+        "parts": [("عنہم", 0, -324, {"shorten": {"MIMf1": (250, 0.25, 200, 300)}}),
+                  ("رضی", 760, 0, {"lower": {"CH_YEf1": (150, 0.95, 200, 320)}}),
                   ("اللہُ", 60, 0, {"clear": 28})],
     },
     "rahmatullahAlayh": {
