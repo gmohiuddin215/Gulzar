@@ -13,12 +13,12 @@
     ["ALLAHu1", 188, 515],
     ["ALIFu1", 608, 515]
  ]},
- "rahmatullahAlayh": {"unicodes": ["0612"], "scale": 0.44, "width": 996, "components": [
+ "rahmatullahAlayh": {"unicodes": ["0612"], "scale": 0.44, "width": 979, "components": [
     ["HAYCf1", 17, 511],
     ["ddb", 126, 412],
     ["TEm3", 148, 571],
     ["LAMm2", 229, 612],
-    ["AINi2", 335, 650, [40, 140, 950]],
+    ["AINi2", 665, 760, {"kashida": ["LAMm2", 229, 612]}],
     ["ALLAHu1", 35, 89],
     ["ALIFu1", 405, 89],
     ["DAMMA", 519, 274],
