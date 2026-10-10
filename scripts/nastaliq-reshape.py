@@ -339,16 +339,16 @@ def step_proportions(font):
 # getting a flat bottom.
 NUQTA = 176  # width of Gulzar's original dot, in font units
 BOWLS = {
-    #        bottom  entry
-    "NUN":   (-0.89, 2.96),
-    "QAF":   (-0.91, 2.90),
-    "SIN":   (-0.82, None),  # lift only: seen keeps its full height, ~0.9 of sad
-    "LAM":   (-0.91, 1.97),
-    "AIN":   (-0.82, 3.00),
-    "CH_YE": (-0.85, 2.86),
-    "JIM":   (-1.05, 4.19),
-    "SAD":   (-0.88, 3.39),
-    "MIM":   (-2.59, 3.86),
+    #        bottom  entry (None: lift only, keeping the bowl's own depth)
+    "NUN":   (-0.89, None),
+    "QAF":   (-0.91, None),
+    "SIN":   (-0.82, None),
+    "LAM":   (-0.91, None),
+    "AIN":   (-0.82, None),
+    "CH_YE": (-0.85, None),
+    "JIM":   (-1.05, None),
+    "SAD":   (-0.88, None),
+    "MIM":   (-2.59, None),
 }
 MAX_BOWL_SQUASH = 0.15
 
@@ -590,7 +590,12 @@ ASCENDERS = {
     ("LAM", "i"): 0.30, ("LAM", "isd"): 0.30, ("LAM", "m"): 0.30,
     ("LAM", "f"): 0.23, ("LAM", "u"): 0.23,
     ("LAM_ALIF", "u"): 0.50, ("LAM_ALIF", "f"): 0.50,
+    # The head of qaf stands on a taller neck in Nastaliq (5-5.6 nuqta).
+    ("QAF", "u"): 1.00, ("QAF", "f"): 1.00,
 }
+# Individual forms which need a different stretch: LAMi2 is the laam of
+# لیکن, which runs up into the kaf sarkash above it.
+ASCENDER_OVERRIDES = {"LAMi2": -0.45}
 
 
 def step_ascenders(font):
@@ -598,7 +603,9 @@ def step_ascenders(font):
     for g in font.glyphs:
         m = RASM.match(g.name)
         if m and (m.group(1), m.group(2)) in ASCENDERS:
-            targets.append((g.name, ASCENDERS[(m.group(1), m.group(2))]))
+            amount = ASCENDER_OVERRIDES.get(g.name, ASCENDERS[(m.group(1), m.group(2))])
+            if amount:
+                targets.append((g.name, amount))
     for name, _ in targets:
         decompose_components(font, master_layer(font, font.glyphs[name]))
     for name, amount in targets:
@@ -608,12 +615,24 @@ def step_ascenders(font):
         y0 = 0.35 * top  # stretch between 35% and 65% of the height
         y1 = 0.65 * top
         D = amount * NUQTA
+        # For qaf only the neck (the right part of the letter) is stretched,
+        # not the left arm of the bowl.
+        xs = [nd.position.x for p in layer.paths for nd in p.nodes]
+        if name.startswith("QAF"):
+            xa = min(xs) + 0.5 * (max(xs) - min(xs))
+            xb = min(xs) + 0.7 * (max(xs) - min(xs))
+        else:
+            xa = xb = None
 
-        def field(x, y, y0=y0, y1=y1, D=D):
+        def field(x, y, y0=y0, y1=y1, D=D, xa=xa, xb=xb):
             if y <= y0:
                 return (0, 0)
             w = min((y - y0) / (y1 - y0), 1.0)
-            return (0, D * w * w * (3 - 2 * w))
+            w = w * w * (3 - 2 * w)
+            if xa is not None:
+                u = min(max((x - xa) / (xb - xa), 0.0), 1.0)
+                w *= u * u * (3 - 2 * u)
+            return (0, D * w)
 
         warp_strokes(layer, field)
 
