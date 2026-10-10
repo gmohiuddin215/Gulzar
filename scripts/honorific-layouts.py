@@ -19,7 +19,8 @@ import glyphsLib
 import uharfbuzz as hb
 
 # glyph name: code points, scale, height of the lowest point above the
-# baseline, and the parts as (text, x, y[, options]) in font units before
+# baseline (or "align": a letter and the height to set it at), and the
+# parts as (text, x, y[, options]) in font units before
 # scaling. Option "kashida": (length, rise): the initial ain of the part is
 # drawn in its long-stroke form, moved over by `length` and up by `rise`,
 # and its tail carried to the next letter by a drawn stroke (see
@@ -42,7 +43,7 @@ LAYOUTS = {
     "radiAllahuAnhaa": {
         "unicodes": ["FD42"],
         "scale": 0.5,
-        "bottom": 60,
+        "align": ("REu1", 135),  # رضی level with رضی اللہُ عنہٗ
         "parts": [("عنہا", 0, 0), ("رضی", 1019, 0), ("اللہُ", 417, 0, {"clear": 51})],
     },
     # for two: عنہما tucks its ain over the ye of رضی, whose rising tail is
@@ -50,7 +51,7 @@ LAYOUTS = {
     "radiAllahuAnhumaa": {
         "unicodes": ["FD44"],
         "scale": 0.5,
-        "bottom": 60,
+        "align": ("REu1", 135),  # رضی level with رضی اللہُ عنہٗ
         "parts": [("عنہُما", 0, 0, {"nudge": {"sda": (0, -100)}}),
                   ("رضی", 760, 0, {"lower": {"CH_YEf1": (150, 0.95, 200, 320)}}),
                   ("اللہُ", 60, 888)],
@@ -59,7 +60,7 @@ LAYOUTS = {
     "radiAllahuAnhum": {
         "unicodes": ["FD43"],
         "scale": 0.5,
-        "bottom": 60,
+        "align": ("REu1", 135),  # رضی level with رضی اللہُ عنہٗ
         # its mim's long tail is drawn up to a short one, as in Quranic
         # hands, so the honorific isn't taller than the others
         "parts": [("عنہم", 0, -324, {"shorten": {"MIMf1": (150, 0.35, 200, 300)}}),
@@ -169,7 +170,14 @@ def main(path):
                     comp.append({"kashida": [lam, (lx + dx) * s, (ly + dy) * s]})
                 comps.append(comp)
         x0, y0, x1, _ = reshape.honorific_outline(source, comps, s).bounds
-        dx, dy = SIDE_BEARING - x0, spec["bottom"] - y0
+        dx = SIDE_BEARING - x0
+        if "align" not in spec:
+            dy = spec["bottom"] - y0
+        else:
+            # set a given letter at a given height instead, so a set of
+            # honorifics shares one line whatever hangs below it
+            letter, height = spec["align"]
+            dy = height - next(c[2] for c in comps if c[0] == letter)
         for c in comps:
             c[1], c[2] = round(c[1] + dx), round(c[2] + dy)
             if len(c) > 3 and "kashida" in c[3]:
