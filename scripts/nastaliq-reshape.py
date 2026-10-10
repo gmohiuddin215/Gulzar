@@ -698,6 +698,37 @@ def step_isolated_kaf(font):
 
 
 # ---------------------------------------------------------------------------
+# Step 3k: tilt of hamza
+# ---------------------------------------------------------------------------
+
+# The isolated hamza leans a little more in the calligraphic form. It is
+# turned anticlockwise about its centre (a rigid turn, so its shape and
+# weight are unchanged) and set back on the same bottom line and left edge.
+TILTS = {"HAMZAu1": 8}  # degrees, anticlockwise
+
+
+def step_tilts(font):
+    for name, deg in TILTS.items():
+        layer = master_layer(font, font.glyphs[name])
+        decompose_components(font, layer)
+        pts = [nd.position for p in layer.paths for nd in p.nodes]
+        x0, x1 = min(p.x for p in pts), max(p.x for p in pts)
+        y0, y1 = min(p.y for p in pts), max(p.y for p in pts)
+        cx, cy = (x0 + x1) / 2, (y0 + y1) / 2
+        a = math.radians(deg)
+        ca, sa = math.cos(a), math.sin(a)
+        for path in layer.paths:
+            for nd in path.nodes:
+                x, y = nd.position.x - cx, nd.position.y - cy
+                nd.position = Point(cx + x * ca - y * sa, cy + x * sa + y * ca)
+        pts = [nd.position for p in layer.paths for nd in p.nodes]
+        dx, dy = x0 - min(p.x for p in pts), y0 - min(p.y for p in pts)
+        for path in layer.paths:
+            for nd in path.nodes:
+                nd.position = Point(round(nd.position.x + dx), round(nd.position.y + dy))
+
+
+# ---------------------------------------------------------------------------
 # Step 3b: tall letters
 # ---------------------------------------------------------------------------
 
@@ -1161,6 +1192,7 @@ STEPS = [
     ("sarkash-length", step_sarkash_length),
     ("final-kaf-entry", step_final_kaf_entry),
     ("isolated-kaf", step_isolated_kaf),
+    ("tilts", step_tilts),
     ("ascenders", step_ascenders),
     ("re-neck", step_re_neck),
     ("dal-size", step_dal_size),
