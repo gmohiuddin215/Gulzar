@@ -621,53 +621,7 @@ def step_sarkash_length(font):
 
 
 # ---------------------------------------------------------------------------
-# Step 3i: foot of medial kaf
-# ---------------------------------------------------------------------------
-
-# Where a letter comes into a medial kaf/gaf (تکبر, بکری), Gulzar leaves a
-# deep V notch in the foot of the kaf between its exit and the hook that
-# forms the bowl of the letter before; it reads as a little horn under that
-# letter. The notch is made shallow, as a slight dent like the pen leaves.
-KAF_FOOT_DENT = 35  # font units above the higher of the two low points
-
-
-def smooth_notch(layer):
-    for path in layer.paths:
-        n = path.nodes
-        N = len(n)
-        for i in range(N):
-            a, b = n[i], n[(i + 1) % N]
-            if a.type != "curve" or b.type != "line":
-                continue
-            if abs(a.position.y - b.position.y) > 15 or abs(a.position.x - b.position.x) > 40:
-                continue
-            h1, h0, p0 = n[(i - 1) % N], n[(i - 2) % N], n[(i - 3) % N]
-            h2, h3, p1 = n[(i + 2) % N], n[(i + 3) % N], n[(i + 4) % N]
-            if not (h1.type == h0.type == h2.type == h3.type == "offcurve"):
-                continue
-            if h1.position.y > a.position.y - 30 or h2.position.y > b.position.y - 30:
-                continue
-            target = max(p0.position.y, p1.position.y) + KAF_FOOT_DENT
-            if target >= min(a.position.y, b.position.y):
-                continue
-            for on, h in ((a, h1), (b, h2)):
-                depth = on.position.y - h.position.y
-                on.position = Point(on.position.x, target)
-                h.position = Point(h.position.x, round(target - 0.3 * depth))
-            return True
-    return False
-
-
-def step_kaf_foot(font):
-    for g in font.glyphs:
-        if re.match(r"^[KG]AF(m|msd)\d+$", g.name):
-            layer = master_layer(font, g)
-            decompose_components(font, layer)
-            smooth_notch(layer)
-
-
-# ---------------------------------------------------------------------------
-# Step 3j: final kaf entry
+# Step 3i: final kaf entry
 # ---------------------------------------------------------------------------
 
 # In تک the te sits on the hook of the final kaf, level with the kaf's base;
@@ -696,27 +650,6 @@ def step_final_kaf_entry(font):
             return (0, FINAL_KAF_LIFT * w)
 
         warp_strokes(layer, field)
-
-
-# ---------------------------------------------------------------------------
-# Step 3k: smooth joins
-# ---------------------------------------------------------------------------
-
-# A few medial be forms rise just after their entry, which leaves a dip in
-# the stroke where the previous letter hands over (the ک-ب of تکبر). Their
-# upper edge is levelled with the join.
-FLAT_ENTRY = ("BEm13", "BEm16")
-
-
-def step_flat_entry(font):
-    for name in FLAT_ENTRY:
-        layer = master_layer(font, font.glyphs[name])
-        decompose_components(font, layer)
-        en = anchor(layer, "entry").position
-        for path in layer.paths:
-            for nd in path.nodes:
-                if en.x - 200 <= nd.position.x <= en.x and nd.position.y > en.y:
-                    nd.position = Point(nd.position.x, en.y)
 
 
 # ---------------------------------------------------------------------------
@@ -1065,8 +998,6 @@ STEPS = [
     ("bowl-length", step_bowl_length),
     ("sarkash", step_sarkash),
     ("sarkash-length", step_sarkash_length),
-    ("flat-entry", step_flat_entry),
-    ("kaf-foot", step_kaf_foot),
     ("final-kaf-entry", step_final_kaf_entry),
     ("ascenders", step_ascenders),
     ("re-neck", step_re_neck),
