@@ -1720,6 +1720,10 @@ def honorific_outline(font, components, scale):
             paths = [[(px, move(px, py), t) for px, py, t in p]
                      for p in _glyph_paths(font, comp, (1, 0, 0, 1, 0, 0))]
             piece = _skia(paths)
+        elif opts and "size" in opts[0]:
+            # a letter drawn smaller within the honorific
+            f = opts[0]["size"]
+            piece = _skia(_glyph_paths(font, comp, (f, 0, 0, f, 0, 0)))
         elif opts and "kashida" in opts[0]:
             lam, lx, ly = opts[0]["kashida"]
             piece, trim = _kashida(font, comp, lam, ((lx - x) / scale, (ly - y) / scale))
