@@ -38,7 +38,7 @@ LAYOUTS = {
         "scale": 0.44,
         "bottom": 60,
         # علیہ on top, its ain drawn out to span رحمۃُ اللہ beneath it
-        "parts": [("علیہ", -150, 900, {"kashida": (750, 330)}), ("رحمۃُ اللہ", 0, 0)],
+        "parts": [("علیہ", -240, 850, {"kashida": (650, 330)}), ("رحمۃُ اللہ", 0, 0)],
     },
 }
 SIDE_BEARING = 40
