@@ -656,86 +656,38 @@ def step_final_kaf_entry(font):
 # Step 3j: isolated kaf and gaf
 # ---------------------------------------------------------------------------
 
-# Measured against the calligraphic isolated kaf/gaf (in nuqta, from the tip
-# of the sarkash): the upright stands at 2.4 (Gulzar 3.3) and is 0.3 thick
-# (0.4); the sarkash leaves it at a height of ~4 (4.6) and rises at ~40
-# degrees (30); the base runs 4.4 to the left of the upright (3.1) and rests
-# on the line; the second stroke of gaf starts lower. The final forms
-# already match closely and are not changed here.
-ISOLATED_KAF = {
-    "turn": 16,       # degrees, sarkash made steeper
-    "length": 0.82,   # sarkash length
-    "drop": 0.65,     # nuqta, sarkash lowered on a shorter upright
-    "thin": 0.75,     # upright thickness
-    "base": 1.45,     # base length, left of the upright
-    "gaf_bar": 0.7,   # nuqta, second stroke of gaf extended at its foot
-}
+# The base of isolated kaf/gaf is short for Nastaliq: it runs ~3.1 nuqta to
+# the left of the upright, against ~4.4 in the calligraphic form. It is
+# lengthened part of the way (to ~3.8); the rest of the letter keeps its
+# shape.
+ISOLATED_KAF_BASE = 1.22
 
 
 def step_isolated_kaf(font):
-    P = ISOLATED_KAF
-    plan = {}
     for name in ("KAFu1", "GAFu1"):
         layer = master_layer(font, font.glyphs[name])
         decompose_components(font, layer)
-        if "first" not in plan:
-            plan["first"] = find_sarkash(layer)
-        pivot, tip, _ = plan["first"]
-        b = layer_bounds(layer)
-        xmin, xmax = b[0], b[1]
-        # steeper sarkash, then a little shorter along its new direction
-        warp_strokes(layer, rotation_field(pivot, tip, P["turn"]))
-        if "second" not in plan:
-            pv, tp, _ = find_sarkash(layer)
-            plan["second"] = (pv, tp)
-        pv, tp = plan["second"]
-        warp_strokes(layer, length_field(pv, tp, P["length"]))
-        # lower the sarkash on a shorter upright
-        y0, y1, D = 2.0 * NUQTA, pivot[1], P["drop"] * NUQTA
-
-        def drop(x, y, y0=y0, y1=y1, D=D):
-            if y <= y0:
-                return (0, 0)
-            w = min((y - y0) / (y1 - y0), 1.0)
-            return (0, -D * w * w * (3 - 2 * w))
-
-        warp_strokes(layer, drop)
-        # thinner upright: its two sides move towards its centre line
-        xl, xr = xmax - 3.69 * NUQTA, xmax - 3.29 * NUQTA
-        xc = (xl + xr) / 2
-        lo, hi = 1.3 * NUQTA, pivot[1] - D
+        xmin, xmax = layer_bounds(layer)
+        # left side of the upright, measured on the stem above the base
+        spans = []
         for path in layer.paths:
-            for nd in path.nodes:
-                x, y = nd.position.x, nd.position.y
-                if abs(x - xc) < 0.45 * NUQTA and lo - 60 < y < hi + 60:
-                    w = 1.0 if lo <= y <= hi else max(0.0, 1 - min(abs(y - lo), abs(y - hi)) / 60)
-                    nd.position = Point(round(x - (x - xc) * (1 - P["thin"]) * w), y)
-        # longer base
-        s = P["base"]
+            pts = contour_points(path)
+            n = len(pts)
+            for i in range(n):
+                (x1, y1), (x2, y2) = pts[i], pts[(i + 1) % n]
+                y = 2.5 * NUQTA
+                if (y1 <= y < y2) or (y2 <= y < y1):
+                    spans.append(x1 + (y - y1) * (x2 - x1) / (y2 - y1))
+        xl = min(spans)
+        s = ISOLATED_KAF_BASE
         warp_strokes(layer, lambda x, y, s=s, xl=xl: (-(s - 1) * (xl - x), 0) if x < xl else (0, 0))
-        # gaf: the second stroke starts lower down
-        if name.startswith("GAF"):
-            bar = min(layer.paths, key=lambda p: len(p.nodes))
-            pts = [(nd.position.x, nd.position.y) for nd in bar.nodes]
-            top = max(pts, key=lambda q: q[0] + q[1])
-            foot = min(pts, key=lambda q: q[0] + q[1])
-            ux, uy, L = _unit(foot[0] - top[0], foot[1] - top[1])
-            ext = P["gaf_bar"] * NUQTA
-            for nd in bar.nodes:
-                t = ((nd.position.x - top[0]) * ux + (nd.position.y - top[1]) * uy) / L
-                if t > 0:
-                    w = min(t / 0.6, 1.0)
-                    w = w * w * (3 - 2 * w)
-                    nd.position = Point(round(nd.position.x + ux * ext * w), round(nd.position.y + uy * ext * w))
-        # rest the base on the line and keep the left side bearing
-        lift = -min(nd.position.y for p in layer.paths for nd in p.nodes)
-        nb = layer_bounds(layer)
-        dx = round(xmin - nb[0])
+        nmin, _ = layer_bounds(layer)
+        dx = round(xmin - nmin)
         for path in layer.paths:
             for nd in path.nodes:
-                nd.position = Point(nd.position.x + dx, nd.position.y + lift)
+                nd.position = Point(nd.position.x + dx, nd.position.y)
         for a in layer.anchors:
-            a.position = Point(a.position.x + dx, a.position.y + lift)
+            a.position = Point(a.position.x + dx, a.position.y)
         layer.width = layer.width + dx
 
 
