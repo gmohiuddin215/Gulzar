@@ -203,6 +203,7 @@ def decompose_components(font, layer):
 # get the generous, sweeping width typical of Nastaliq.
 # KAF/GAF are handled in step 3 (squeezing them would steepen the sarkash).
 # BARI_YE is left alone: its width drives the bari-ye overhang machinery.
+# NUN and QAF keep their width: wider bowls look stretched.
 # DAL, VAO, RE and do-chashmi HE finals are also wider in the reference, but
 # widening them pushes them into the dots of the following letter.
 WIDTH_SCALES = {
@@ -219,9 +220,7 @@ WIDTH_SCALES = {
     ("SAD", "m"): 0.93,
     ("BE", "f"): 1.04, ("TE", "f"): 1.04,
     ("FE", "f"): 1.10, ("FE", "u"): 1.03,
-    ("NUN", "f"): 1.10, ("NUN", "u"): 1.10,
     ("SIN", "f"): 1.05,
-    ("QAF", "f"): 1.09,
     ("TOE", "f"): 1.04,
 }
 
@@ -331,26 +330,28 @@ def step_proportions(font):
 # Step 2b: bowls sit on the line
 # ---------------------------------------------------------------------------
 
-# In traditional Nastaliq the final bowls (noon, seen, laam, ain, ye...) are
-# shallow and dip only ~0.9 nuqta below the baseline, so a line of words
-# sits evenly on the line. Gulzar's bowls hang ~2 nuqta below, and noon,
-# ain and qaf are also rounder and deeper. For each family: how much
-# shallower the bowl gets (flatten) and how far the whole letter rises
-# (raise), in nuqta units; together they bring the bottom of every bowl to
-# ~0.9 nuqta below the baseline.
-NUQTA = 176  # width of Gulzar's dot, in font units
+# In traditional Nastaliq the final bowls (noon, seen, laam, ain, ye...) dip
+# only ~0.9 nuqta below the baseline, so a line of words sits evenly on the
+# line; Gulzar's bowls hang ~2 nuqta below. For each family, the measured
+# height (in nuqta) of the bottom of the bowl and of the entry join in the
+# reference; each bowl is lifted, and if needed made a little shallower, to
+# meet both. The shallowing is an even vertical scale of the whole bowl
+# below the join (never more than 15%), so the bowl stays round instead of
+# getting a flat bottom.
+NUQTA = 176  # width of Gulzar's original dot, in font units
 BOWLS = {
-    #        flatten  raise
-    "NUN":    (0.50, 0.66),
-    "SIN":    (0.25, 0.98),
-    "LAM":    (0.20, 0.94),
-    "AIN":    (0.50, 0.84),
-    "QAF":    (0.35, 0.80),
-    "CH_YE":  (0.20, 1.00),
-    "JIM":    (0.00, 1.00),
-    "SAD":    (0.00, 1.17),
-    "MIM":    (0.00, 0.74),
+    #        bottom  entry
+    "NUN":   (-0.89, 2.96),
+    "QAF":   (-0.91, 2.90),
+    "SIN":   (-0.82, 3.01),
+    "LAM":   (-0.91, 1.97),
+    "AIN":   (-0.82, 3.00),
+    "CH_YE": (-0.85, 2.86),
+    "JIM":   (-1.05, 4.19),
+    "SAD":   (-0.88, 3.39),
+    "MIM":   (-2.59, 3.86),
 }
+MAX_BOWL_SQUASH = 0.15
 
 
 def outline_segments(layer, steps=8):
@@ -443,39 +444,42 @@ def warp_strokes(layer, field, max_thickness=260):
         a.position = Point(round(a.position.x + dx), round(a.position.y + dy))
 
 
+def bowl_field(layer, target_bottom, target_entry):
+    """Displacement field lifting a final bowl so that its bottom and its
+    entry join land at the target heights (font units)."""
+    bottom = min(min(p[0][1] for p in outline_segments(layer)), 0)
+    entry = anchor(layer, "entry").position.y
+    span = entry - bottom
+    # bottom' = bottom + D + R, entry' = entry + D
+    R = (target_bottom - bottom) - (target_entry - entry)
+    R = max(0.0, min(R, MAX_BOWL_SQUASH * span))
+    D = target_bottom - bottom - R
+
+    def field(x, y):
+        if y >= entry:
+            return (0, D)
+        return (0, D + R * (entry - y) / span)
+
+    return field
+
+
 def step_bowls(font):
     targets = []
     for g in font.glyphs:
         m = RASM.match(g.name)
         if m and m.group(1) in BOWLS and m.group(2) in ("f", "u"):
-            targets.append((g.name, BOWLS[m.group(1)]))
+            targets.append((g.name, m.group(1)))
     for name, _ in targets:
         decompose_components(font, master_layer(font, font.glyphs[name]))
-    for name, (flatten, rise) in targets:
-        layer = master_layer(font, font.glyphs[name])
-        ys = [nd.position.y for p in layer.paths for nd in p.nodes if nd.type != "offcurve"]
-        bottom = min(ys)
-        en = anchor(layer, "entry")
-        top = en.position.y if en is not None else bottom + 0.6 * (max(ys) - bottom)
-        # Flatten the lower part of the bowl: points at the bottom rise by R,
-        # with no movement (and no kink) above `ym`.
-        ym = bottom + 0.6 * (top - bottom)
-        R = flatten * NUQTA
-        D = rise * NUQTA
-
-        # An even (elliptical) squash of the lower bowl keeps it round; the
-        # first 30% eases in quadratically so there is no kink at `ym`.
-        def ease(u, u0=0.3):
-            h = u * u / (2 * u0) if u < u0 else u - u0 / 2
-            return h / (1 - u0 / 2)
-
-        def field(x, y, ym=ym, R=R, D=D, bottom=bottom):
-            if y >= ym or R == 0:
-                return (0, D)
-            u = (ym - y) / (ym - bottom)
-            return (0, D + R * ease(u))
-
-        warp_strokes(layer, field)
+    # The field is worked out on the final form (which has the entry join)
+    # and applied unchanged to the isolated form, which has the same bowl.
+    fields = {}
+    for family in {fam for _, fam in targets}:
+        final = font.glyphs[family + "f1"]
+        tb, te = BOWLS[family]
+        fields[family] = bowl_field(master_layer(font, final), tb * NUQTA, te * NUQTA)
+    for name, family in targets:
+        warp_strokes(master_layer(font, font.glyphs[name]), fields[family])
 
 
 # ---------------------------------------------------------------------------
