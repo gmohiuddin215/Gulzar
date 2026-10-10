@@ -95,9 +95,9 @@
     ["ALLAHu1", 260, 489],
     ["ALIFu1", 596, 489],
     ["MIMf1", 20, 260],
-    ["SHADDA_FATHA", 162, 752],
-    ["LAMm9", 158, 484],
-    ["FATHA", 310, 649],
+    ["SHADDA_FATHA", 162, 688],
+    ["LAMm9", 158, 484, {"lower": [250, 0.8, 400, 500]}],
+    ["FATHA", 278, 649],
     ["SINi3", 242, 577]
  ]},
  "rahmatullahAlayh": {"unicodes": ["0612"], "scale": 0.44, "width": 1036, "components": [
