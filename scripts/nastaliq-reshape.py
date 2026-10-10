@@ -581,9 +581,10 @@ def step_sarkash(font):
 # laam is short by a similar amount. Short ascenders make the strokes look
 # heavy for the size of the letters. The stem is stretched in its middle, so
 # the pen-cut head and the stroke width are unchanged. Values in nuqta.
+# Initial and medial laam are kept short of the kaf sarkash (as in لیکن).
 ASCENDERS = {
     ("ALIF", "u"): 0.50, ("ALIF", "f"): 0.30,
-    ("LAM", "i"): 0.76, ("LAM", "isd"): 0.76, ("LAM", "m"): 0.60,
+    ("LAM", "i"): 0.30, ("LAM", "isd"): 0.30, ("LAM", "m"): 0.30,
     ("LAM", "f"): 0.23, ("LAM", "u"): 0.23,
     ("LAM_ALIF", "u"): 0.50, ("LAM_ALIF", "f"): 0.50,
 }
@@ -612,6 +613,99 @@ def step_ascenders(font):
             return (0, D * w * w * (3 - 2 * w))
 
         warp_strokes(layer, field)
+
+
+# ---------------------------------------------------------------------------
+# Step 3c: dots of medial be/te/ye
+# ---------------------------------------------------------------------------
+
+# The dots under a medial be/te/ye sit a little to the right of where the
+# calligrapher puts them, under the tooth. Values in font units.
+MEDIAL_DOT_SHIFT = (-35, 30)
+
+
+def step_medial_dots(font):
+    dx, dy = MEDIAL_DOT_SHIFT
+    for g in font.glyphs:
+        m = RASM.match(g.name)
+        if m and m.group(1) in ("BE", "TE") and m.group(2) in ("m", "msd"):
+            a = anchor(master_layer(font, g), "bottom")
+            if a is not None:
+                a.position = Point(a.position.x + dx, a.position.y + dy)
+
+
+# ---------------------------------------------------------------------------
+# Step 3d: stroke tips
+# ---------------------------------------------------------------------------
+
+# Gulzar ends its free strokes (the tips of be, te, noon, qaf...) with a
+# short straight cut. A qalam stroke lifts off into a thin, rounded tip:
+# each short end cut is narrowed and replaced by a round cap. Cuts at the
+# joins, and the pen-cut heads of the tall letters, are left alone.
+TIP_MAX_CUT = 60  # longest end cut treated as a tip, in font units
+TIP_NARROW = 0.2  # each corner moves this fraction of the cut inwards
+TIP_JOIN_CLEARANCE = 90
+TIP_SKIP = re.compile(r"^(ALIF|LAM_ALIF|KAF|GAF|TOE|ALLAH)|^LAM[im]")
+
+
+def round_tips(layer):
+    from glyphsLib.classes import GSNode
+
+    joins = [anchor(layer, n) for n in ("entry", "exit")]
+    joins = [(a.position.x, a.position.y) for a in joins if a is not None]
+    polys = [contour_points(p) for p in layer.paths]
+    for pi, path in enumerate(layer.paths):
+        pts = polys[pi]
+        ccw = signed_area(pts) > 0
+        is_hole = any(point_in_polygon(pts[0][0], pts[0][1], o) for oi, o in enumerate(polys) if oi != pi)
+        flip = -1 if ccw == is_hole else 1
+        nodes = list(path.nodes)
+        n = len(nodes)
+        out = []
+        for i, nd in enumerate(nodes):
+            prev = nodes[i - 1]
+            if not (nd.type == "line" and prev.type != "offcurve"):
+                out.append(nd)
+                continue
+            ax, ay = prev.position.x, prev.position.y
+            bx, by = nd.position.x, nd.position.y
+            length = math.hypot(bx - ax, by - ay)
+            mx, my = (ax + bx) / 2, (ay + by) / 2
+            if not (8 < length <= TIP_MAX_CUT) or any(
+                math.hypot(mx - jx, my - jy) < TIP_JOIN_CLEARANCE for jx, jy in joins
+            ):
+                out.append(nd)
+                continue
+            # the cut is a tip only if both neighbouring edges run back the
+            # same way (the two sides of a stroke ending here)
+            ux, uy = (bx - ax) / length, (by - ay) / length
+            nx, ny = flip * uy, -flip * ux  # outward normal of the cut
+            before = nodes[i - 2].position
+            after = nodes[(i + 1) % n].position
+            if ((ax - before.x) * nx + (ay - before.y) * ny) <= 0 or (
+                (after.x - bx) * nx + (after.y - by) * ny
+            ) >= 0:
+                out.append(nd)
+                continue
+            # narrow the tip, then close it with a round cap
+            k = TIP_NARROW * length
+            prev.position = Point(round(ax + ux * k), round(ay + uy * k))
+            nb = (round(bx - ux * k), round(by - uy * k))
+            w = length * (1 - 2 * TIP_NARROW)
+            h = 0.65 * w
+            pa = prev.position
+            out.append(GSNode(Point(round(pa.x + nx * h), round(pa.y + ny * h)), "offcurve"))
+            out.append(GSNode(Point(round(nb[0] + nx * h), round(nb[1] + ny * h)), "offcurve"))
+            out.append(GSNode(Point(*nb), "curve"))
+        path.nodes = out
+
+
+def step_tips(font):
+    for g in font.glyphs:
+        if RASM.match(g.name) and not TIP_SKIP.match(g.name):
+            layer = master_layer(font, g)
+            if layer.paths:
+                round_tips(layer)
 
 
 # ---------------------------------------------------------------------------
@@ -644,6 +738,8 @@ STEPS = [
     ("bowls", step_bowls),
     ("sarkash", step_sarkash),
     ("ascenders", step_ascenders),
+    ("medial-dots", step_medial_dots),
+    ("tips", step_tips),
     ("line-metrics", step_line_metrics),
 ]
 

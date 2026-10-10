@@ -75,10 +75,14 @@ if VariableScalar is not None and not hasattr(VariableScalar, "default"):
 
     VariableScalar.value_at_location = value_at_location
     VariableScalar.default = property(_default)
-    VariableScalar.__add__ = _num(lambda a, b: a + b)
-    VariableScalar.__radd__ = _num(lambda a, b: b + a)
-    VariableScalar.__sub__ = _num(lambda a, b: a - b)
-    VariableScalar.__rsub__ = _num(lambda a, b: b - a)
+    # Results are font units, so keep them integral (bin averages are floats).
+    def _units(v):
+        return round(v) if isinstance(v, float) else v
+
+    VariableScalar.__add__ = _num(lambda a, b: _units(a + b))
+    VariableScalar.__radd__ = _num(lambda a, b: _units(b + a))
+    VariableScalar.__sub__ = _num(lambda a, b: _units(a - b))
+    VariableScalar.__rsub__ = _num(lambda a, b: _units(b - a))
     VariableScalar.__mul__ = _num(lambda a, b: int(a * b))
     VariableScalar.__rmul__ = _num(lambda a, b: int(b * a))
     VariableScalar.__truediv__ = _num(lambda a, b: int(a / b))
@@ -89,3 +93,25 @@ if VariableScalar is not None and not hasattr(VariableScalar, "default"):
     VariableScalar.__le__ = lambda self, o: self.default <= _scalar(o)
     VariableScalar.__gt__ = lambda self, o: self.default > _scalar(o)
     VariableScalar.__ge__ = lambda self, o: self.default >= _scalar(o)
+
+try:
+    # glyphtools measures glyph extents on the curves, so a curve whose
+    # extreme falls between nodes gives a fractional metric; the Nastaliq
+    # plugins write these straight into feature code, which needs integers.
+    import glyphtools as _glyphtools
+
+    _orig_metrics = _glyphtools.get_glyph_metrics
+
+    def _rounded_metrics(*args, **kwargs):
+        metrics = _orig_metrics(*args, **kwargs)
+        if isinstance(metrics, dict):
+            for key, value in metrics.items():
+                if isinstance(value, float):
+                    metrics[key] = round(value)
+        return metrics
+
+    if not getattr(_orig_metrics, "_rounded", False):
+        _rounded_metrics._rounded = True
+        _glyphtools.get_glyph_metrics = _rounded_metrics
+except ImportError:  # pragma: no cover
+    pass
