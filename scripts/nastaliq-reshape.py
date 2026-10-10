@@ -1563,6 +1563,136 @@ def _set_paths(layer, paths):
         layer.paths.append(p)
 
 
+# A word in a stacked honorific can be drawn out to span the row beneath it
+# (علیہ over رحمۃُ اللہ): the long-stroke initial ain is raised and moved over,
+# and its tail is carried to the lam by a new stroke. The stroke leaves the
+# tail at the tail's own angle and width, sags in an arc, and arrives at
+# the thick base of the lam (where a joining stroke meets it) at the lam's
+# width, so it grows slightly heavier as it goes, like a calligrapher's
+# drawn-out ain.
+KASHIDA_CUT = 150  # x in the ain where its own tail gives way to the stroke
+KASHIDA_LAM_BASE = {"LAMm2": ((272, 85), (236, -50))}  # top and bottom of the lam's base
+KASHIDA_OVERLAP = 14  # the stroke runs on into the tail by this much, hidden
+
+
+def _skia(paths):
+    import pathops
+
+    sk = pathops.Path()
+    for pts in paths:
+        sk.moveTo(*pts[-1][:2])
+        buf = []
+        for x, y, t in pts:
+            if t == "offcurve":
+                buf.append((x, y))
+            elif len(buf) == 2:
+                sk.cubicTo(*buf[0], *buf[1], x, y)
+                buf = []
+            else:
+                sk.lineTo(x, y)
+                buf = []
+        sk.close()
+    sk.simplify()
+    return sk
+
+
+def _edges_at(paths, x):
+    """Top and bottom of a stroke outline where it crosses x."""
+    pts = []
+    for path in paths:
+        start = max(i for i, p in enumerate(path) if p[2] != "offcurve")
+        prev, buf = path[start], []
+        for p in path[start + 1:] + path[:start + 1]:
+            if p[2] == "offcurve":
+                buf.append(p)
+                continue
+            seg = [prev] + buf + [p] if len(buf) == 2 else [prev, p]
+            for k in range(1, 33):
+                t = k / 32
+                if len(seg) == 4:
+                    pts.append(tuple(sum(c * q[i] for c, q in zip(((1 - t) ** 3, 3 * (1 - t) ** 2 * t, 3 * (1 - t) * t * t, t ** 3), seg)) for i in (0, 1)))
+                else:
+                    pts.append((prev[0] + t * (p[0] - prev[0]), prev[1] + t * (p[1] - prev[1])))
+            prev, buf = p, []
+    ys = [y0 + (x - x0) * (y1 - y0) / (x1 - x0)
+          for (x0, y0), (x1, y1) in zip(pts, pts[1:] + pts[:1]) if (x0 - x) * (x1 - x) <= 0 and x0 != x1]
+    return max(ys), min(ys)
+
+
+def _kashida(font, ain, lam, lam_pos):
+    """The long-stroke ain, in its own coordinates, with its tail carried to a
+    lam at lam_pos by a drawn stroke."""
+    import pathops
+
+    paths = _glyph_paths(font, ain, (1, 0, 0, 1, 0, 0))
+    stroke, body = paths[:1], paths[1:]
+    cut = KASHIDA_CUT
+    tail = pathops.op(_skia(stroke), _rect(cut, -1000, 3000, 3000), pathops.PathOp.INTERSECTION)
+    # the corners of the cut, and the tail's direction there, exactly as the
+    # boolean operation made them
+    tangents = {}
+    prev = None
+    for verb, pts in tail.segments:
+        if verb != "curveTo":
+            prev = pts[-1] if pts else prev
+            continue
+        if abs(prev[0] - cut) < 0.01:  # a curve leaving the cut
+            tangents[prev[1]] = (pts[0][1] - prev[1]) / (pts[0][0] - prev[0])
+        if abs(pts[-1][0] - cut) < 0.01:  # a curve arriving at it
+            tangents[pts[-1][1]] = (pts[-1][1] - pts[-2][1]) / (pts[-1][0] - pts[-2][0])
+        prev = pts[-1]
+    top, bottom = max(tangents), min(tangents)
+    at, ab = tangents[top], tangents[bottom]
+    (tx, ty), (bx, by) = KASHIDA_LAM_BASE[lam]
+    lx, ly = lam_pos
+    sk = pathops.Path()
+
+    def edge(p0, p1, arrive):
+        # a circular arc from p0 that turns evenly and reaches p1 at the given
+        # slope: it leaves at the chord's angle mirrored about the arrival
+        dx, dy = p1[0] - p0[0], p1[1] - p0[1]
+        chord, c = math.hypot(dx, dy), math.atan2(dy, dx)
+        a = math.atan(arrive)
+        leave = 2 * c - a
+        turn = a - leave
+        h = chord / 3 if abs(turn) < 1e-3 else 4 / 3 * math.tan(turn / 4) * chord / (2 * math.sin(turn / 2))
+        return ((p0[0] + h * math.cos(leave), p0[1] + h * math.sin(leave)),
+                (p1[0] - h * math.cos(a), p1[1] - h * math.sin(a)), p1)
+
+    t0, b0 = (lx + tx, ly + ty), (lx + bx, ly + by)
+    t1, b1 = (cut, top), (cut, bottom)
+    o = KASHIDA_OVERLAP
+    sk.moveTo(*t0)
+    sk.cubicTo(*[c for pt in edge(t0, t1, at) for c in pt])
+    # the overlap's far corners sit inside the tail, which curves away
+    sk.lineTo(cut + o, top + at * o - 0.15 * (top - bottom))
+    sk.lineTo(cut + o, bottom + ab * o + 0.15 * (top - bottom))
+    sk.lineTo(*b1)
+    c1, c2, _ = edge(b0, b1, ab)
+    sk.cubicTo(*c2, *c1, *b0)
+    sk.close()
+    out = pathops.op(tail, sk, pathops.PathOp.UNION)
+    return pathops.op(out, _skia(body), pathops.PathOp.UNION)
+
+
+def honorific_outline(font, components, scale):
+    """All the letters of a stacked honorific as one outline (a pathops Path)."""
+    import pathops
+    from fontTools.pens.transformPen import TransformPen
+
+    out = pathops.Path()
+    for comp, x, y, *opts in components:
+        if opts and "kashida" in opts[0]:
+            lam, lx, ly = opts[0]["kashida"]
+            piece = _kashida(font, comp, lam, ((lx - x) / scale, (ly - y) / scale))
+        else:
+            piece = _skia(_glyph_paths(font, comp, (1, 0, 0, 1, 0, 0)))
+        placed = pathops.Path()
+        piece.draw(TransformPen(placed.getPen(), (scale, 0, 0, scale, x, y)))
+        out = pathops.op(out, placed, pathops.PathOp.UNION)
+    return out
+
+
 def step_honorifics(font):
     from glyphsLib.classes import GSGlyph, GSLayer
 
@@ -1574,19 +1704,6 @@ def step_honorifics(font):
         for g in font.glyphs:
             if codes & set(g.unicodes or []):
                 g.unicodes = [u for u in g.unicodes if u not in codes]
-        s = spec["scale"]
-        paths = []
-        for comp, x, y, *stretch in spec["components"]:
-            if stretch:
-                # a drawn-out stroke: points right of the ramp move over,
-                # blending across it (see scripts/honorific-layouts.py)
-                x0, x1, extra = stretch[0]
-                pts = _glyph_paths(font, comp, (1, 0, 0, 1, 0, 0))
-                pts = [[(px + (extra if px >= x1 else extra * (px - x0) / (x1 - x0) if px > x0 else 0), py, t)
-                        for px, py, t in p] for p in pts]
-                paths += [[(s * px + x, s * py + y, t) for px, py, t in p] for p in pts]
-            else:
-                paths += _glyph_paths(font, comp, (s, 0, 0, s, x, y))
         glyph = GSGlyph(name)
         glyph.unicodes = spec["unicodes"]
         glyph.category, glyph.subCategory = "Symbol", "Other"
@@ -1594,7 +1711,7 @@ def step_honorifics(font):
         layer = GSLayer()
         layer.layerId = layer.associatedMasterId = master.id
         glyph.layers.append(layer)
-        _set_paths(layer, paths)
+        _from_skia(honorific_outline(font, spec["components"], spec["scale"]), layer)
         layer.width = spec["width"]
     for name in DUROOD:
         layer = master_layer(font, font.glyphs[name])

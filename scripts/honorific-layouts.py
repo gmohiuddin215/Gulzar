@@ -10,22 +10,21 @@ The glyphs and their positions go to sources/honorifics.json, which the
 "honorifics" step of scripts/nastaliq-reshape.py draws into the font.
 Run it again (and rebuild) after letters used here change shape.
 """
+import importlib.util
 import json
 import os
 import sys
 
 import glyphsLib
 import uharfbuzz as hb
-from fontTools.pens.boundsPen import BoundsPen
-from fontTools.pens.filterPen import FilterPen
-from fontTools.pens.transformPen import TransformPen
-from fontTools.ttLib import TTFont
 
 # glyph name: code points, scale, height of the lowest point above the
 # baseline, and the parts as (text, x, y[, options]) in font units before
-# scaling. Option "kashida": the initial ain of the part is drawn in its
-# long-stroke form and that stroke is lengthened by this many units, so the
-# word spans the row beneath it.
+# scaling. Option "kashida": (length, rise): the initial ain of the part is
+# drawn in its long-stroke form, moved over by `length` and up by `rise`,
+# and its tail carried to the next letter by a drawn stroke (see
+# step_honorifics in scripts/nastaliq-reshape.py), so the word spans the
+# row beneath it.
 LAYOUTS = {
     "radiAllahuAnhu": {
         "unicodes": ["0613", "FD41"],
@@ -39,14 +38,11 @@ LAYOUTS = {
         "scale": 0.44,
         "bottom": 60,
         # علیہ on top, its ain drawn out to span رحمۃُ اللہ beneath it
-        "parts": [("علیہ", -40, 960, {"kashida": 950}), ("رحمۃُ اللہ", 0, 0)],
+        "parts": [("علیہ", -40, 960, {"kashida": (750, 250)}), ("رحمۃُ اللہ", 0, 0)],
     },
 }
 SIDE_BEARING = 40
-# The ain whose lower stroke is lengthened, and the stretch of that stroke
-# (between these x positions in the glyph) that takes up the extra length.
-KASHIDA_AIN = "AINi2"
-KASHIDA_RAMP = (40, 140)
+KASHIDA_AIN = "AINi2"  # the initial ain with a long lower stroke
 
 
 def shape(font, text):
@@ -63,75 +59,53 @@ def shape(font, text):
     return out
 
 
-def stretched(pen, ramp, extra):
-    """A pen that moves points right of the ramp by `extra`, blending across it."""
-    x0, x1 = ramp
-
-    def fx(pt):
-        x, y = pt
-        if x >= x1:
-            return (x + extra, y)
-        if x > x0:
-            return (x + extra * (x - x0) / (x1 - x0), y)
-        return (x, y)
-
-    class Pen(FilterPen):
-        def moveTo(self, pt):
-            self._outPen.moveTo(fx(pt))
-
-        def lineTo(self, pt):
-            self._outPen.lineTo(fx(pt))
-
-        def curveTo(self, *pts):
-            self._outPen.curveTo(*map(fx, pts))
-
-        def qCurveTo(self, *pts):
-            self._outPen.qCurveTo(*[p if p is None else fx(p) for p in pts])
-
-    return Pen(pen)
-
-
-def with_kashida(glyphs, source, extra):
-    """Swap the initial ain of a shaped word for the long-stroke ain, joined
-    to the next letter by its anchors, with its stroke lengthened."""
-    def anchor(name, which):
-        layer = source.glyphs[name].layers[0]
-        a = next(a for a in layer.anchors if a.name == which)
-        return a.position.x, a.position.y
+def with_kashida(glyphs, source, length, rise):
+    """Swap the initial ain of a shaped word for the long-stroke ain, moved
+    over and up from where it would join the next letter."""
+    def anchors(name):
+        return {a.name: (a.position.x, a.position.y) for a in source.glyphs[name].layers[0].anchors}
 
     rest = [g for g in glyphs if not g[0].startswith("AIN")]
-    nxt = max((g for g in rest if "entry" in [a.name for a in source.glyphs[g[0]].layers[0].anchors]),
-              key=lambda g: g[1])
-    ex, ey = anchor(nxt[0], "entry")
-    ax, ay = anchor(KASHIDA_AIN, "exit")
-    ain = (KASHIDA_AIN, nxt[1] + ex - ax, nxt[2] + ey - ay, [*KASHIDA_RAMP, extra])
+    lam = max((g for g in rest if "entry" in anchors(g[0])), key=lambda g: g[1])
+    ex, ey = anchors(lam[0])["entry"]
+    ax, ay = anchors(KASHIDA_AIN)["exit"]
+    ain = (KASHIDA_AIN, lam[1] + ex - ax + length, lam[2] + ey - ay + rise, {"kashida": lam})
     return rest + [ain]
 
 
 def main(path):
-    glyphset = TTFont(path).getGlyphSet()
     font = hb.Font(hb.Face(open(path, "rb").read()))
-    source = glyphsLib.GSFont(os.path.join(os.path.dirname(__file__), "..", "sources", "Gulzar.glyphs"))
+    here = os.path.dirname(os.path.abspath(__file__))
+    source = glyphsLib.GSFont(os.path.join(here, "..", "sources", "Gulzar.glyphs"))
+    spec = importlib.util.spec_from_file_location("reshape", os.path.join(here, "nastaliq-reshape.py"))
+    reshape = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(reshape)
     result = {}
     for name, spec in LAYOUTS.items():
         s = spec["scale"]
-        parts = []
+        comps = []
         for text, dx, dy, *opts in spec["parts"]:
             glyphs = [(g, x, y, None) for g, x, y in shape(font, text)]
             if opts and "kashida" in opts[0]:
-                glyphs = with_kashida(glyphs, source, opts[0]["kashida"])
-            parts += [(g, (x + dx) * s, (y + dy) * s, st) for g, x, y, st in glyphs]
-        bounds = BoundsPen(glyphset)
-        for g, x, y, st in parts:
-            pen = TransformPen(bounds, (s, 0, 0, s, x, y))
-            glyphset[g].draw(stretched(pen, st[:2], st[2]) if st else pen)
-        x0, y0, x1, _ = bounds.bounds
+                glyphs = with_kashida(glyphs, source, *opts[0]["kashida"])
+            for g, x, y, opt in glyphs:
+                comp = [g, (x + dx) * s, (y + dy) * s]
+                if opt:
+                    lam, lx, ly = opt["kashida"][:3]
+                    comp.append({"kashida": [lam, (lx + dx) * s, (ly + dy) * s]})
+                comps.append(comp)
+        x0, y0, x1, _ = reshape.honorific_outline(source, comps, s).bounds
         dx, dy = SIDE_BEARING - x0, spec["bottom"] - y0
+        for c in comps:
+            c[1], c[2] = round(c[1] + dx), round(c[2] + dy)
+            if len(c) > 3:
+                k = c[3]["kashida"]
+                k[1], k[2] = round(k[1] + dx), round(k[2] + dy)
         result[name] = {
             "unicodes": spec["unicodes"],
             "scale": s,
             "width": round(x1 - x0 + 2 * SIDE_BEARING),
-            "components": [[g, round(x + dx), round(y + dy)] + ([st] if st else []) for g, x, y, st in parts],
+            "components": comps,
         }
     out = os.path.join(os.path.dirname(__file__), "..", "sources", "honorifics.json")
     # one component per line keeps the file readable and its diffs small
