@@ -73,9 +73,9 @@ Feature kern {
 		# with dots below, give them back room to clear the previous word.
 		# ...except after a re, whose tail leaves room under it (منبر پر).
 		Position [REf1 REu1] (space.urdu <xAdvance=+20>) @inits [sdb ddb tdb];
-		Position REf2 (space.urdu <xAdvance=+90>) @inits [sdb ddb tdb]; # the longer tail of مر، پھر
+		Position REf2 (space.urdu <xAdvance=+130>) @inits [sdb ddb tdb]; # the longer tail of مر، پھر
 		Position REf3 (space.urdu <xAdvance=+50>) @inits [sdb ddb tdb];
-		Position REf1 (@inits <xAdvance=+30>) [tdb tdb.one tdb.two]; # پرچھا
+		Position REf1 (@inits <xAdvance=+70>) [tdb tdb.one tdb.two]; # پرچھا
 		Position (space.urdu <xAdvance=+100>) @inits [sdb ddb tdb];
 		Position @bigbowlfina space.urdu (/([KG]AF|LAM)i/ <xAdvance=+50>) /JIMm|BEm/ [ddb tdb];
 		Position REf3 (/[KG]AFi/ <xAdvance=-120>);
