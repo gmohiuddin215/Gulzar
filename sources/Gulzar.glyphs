@@ -17498,11 +17498,11 @@ layers = (
 anchors = (
 {
 name = bottom;
-position = "{205, -79}";
+position = "{205, -61}";
 },
 {
 name = top;
-position = "{227, 427}";
+position = "{227, 445}";
 }
 );
 layerId = "6E34CE51-C086-4FF0-804E-D019E96D60E0";
@@ -17510,39 +17510,39 @@ paths = (
 {
 closed = 1;
 nodes = (
-"177 4 LINE SMOOTH",
-"208 9 OFFCURVE",
-"218 12 OFFCURVE",
-"238 39 CURVE SMOOTH",
-"273 86 OFFCURVE",
-"318 180 OFFCURVE",
-"318 271 CURVE SMOOTH",
-"318 366 OFFCURVE",
-"281 427 OFFCURVE",
-"227 427 CURVE SMOOTH",
-"213 427 OFFCURVE",
-"194 422 OFFCURVE",
-"180 410 CURVE",
-"126 257 LINE",
-"126 196 OFFCURVE",
-"165 179 OFFCURVE",
-"198 179 CURVE SMOOTH",
-"238 179 OFFCURVE",
-"259 199 OFFCURVE",
-"264 204 CURVE",
-"269 204 OFFCURVE",
-"279 193 OFFCURVE",
-"279 179 CURVE SMOOTH",
-"279 168 OFFCURVE",
-"267 150 OFFCURVE",
-"250 136 CURVE SMOOTH",
-"225 116 OFFCURVE",
-"192 94 OFFCURVE",
-"146 67 CURVE SMOOTH",
-"52 6 LINE",
-"42 3 OFFCURVE",
-"46 -13 OFFCURVE",
-"56 -10 CURVE"
+"177 22 LINE SMOOTH",
+"208 27 OFFCURVE",
+"218 30 OFFCURVE",
+"238 57 CURVE SMOOTH",
+"273 104 OFFCURVE",
+"318 198 OFFCURVE",
+"318 289 CURVE SMOOTH",
+"318 384 OFFCURVE",
+"281 445 OFFCURVE",
+"227 445 CURVE SMOOTH",
+"213 445 OFFCURVE",
+"194 440 OFFCURVE",
+"180 428 CURVE",
+"126 275 LINE",
+"126 214 OFFCURVE",
+"165 197 OFFCURVE",
+"198 197 CURVE SMOOTH",
+"238 197 OFFCURVE",
+"259 217 OFFCURVE",
+"264 222 CURVE",
+"269 222 OFFCURVE",
+"279 211 OFFCURVE",
+"279 197 CURVE SMOOTH",
+"279 186 OFFCURVE",
+"267 168 OFFCURVE",
+"250 154 CURVE SMOOTH",
+"225 134 OFFCURVE",
+"192 112 OFFCURVE",
+"146 85 CURVE SMOOTH",
+"52 24 LINE",
+"42 21 OFFCURVE",
+"46 5 OFFCURVE",
+"56 8 CURVE"
 );
 }
 );
@@ -95083,15 +95083,15 @@ layers = (
 anchors = (
 {
 name = bottom;
-position = "{152, -18}";
+position = "{152, 0}";
 },
 {
 name = entry;
-position = "{288, 306}";
+position = "{288, 324}";
 },
 {
 name = top;
-position = "{227, 427}";
+position = "{227, 445}";
 }
 );
 components = (
@@ -109480,6 +109480,7 @@ ascenders,
 "re-neck",
 "re-final-tail",
 "re-weight",
+"vao-lift",
 "dal-size",
 "medial-dots",
 "dot-positions",
