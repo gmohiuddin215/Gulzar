@@ -40,6 +40,9 @@ release: venv $(FINAL_FONT)
 sources/build/features.fea: $(FEA_FILES)
 	cat $^ > sources/build/features.fea
 
+webfont: $(FINAL_FONT)
+	. venv/bin/activate; python3 scripts/make-webfont.py $(FINAL_FONT) fonts/webfonts
+
 clean:
 	rm -f $(FINAL_FONT) sources/build/features.fea sources/build/rules.csv sources/build/fea/*
 
