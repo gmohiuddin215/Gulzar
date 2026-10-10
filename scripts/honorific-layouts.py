@@ -91,7 +91,7 @@ LAYOUTS = {
     "sallallahuAlayhiWasallam": {
         "unicodes": ["FDFA"],
         "scale": 0.4,
-        "bottom": 40,
+        "align": ("CH_YEf1", 120),  # the ye's foot level with the ye of رضی
         "parts": [("صَلَّی", 2872, -178, {"lower": {"CH_YEf1": (150, 0.85, 200, 320)}}),
                   ("عَلیْہِ", 2100, -90, {"nudge": {"KASRA": (-150, 100), "FATHA": (70, 0)}}), ("و", 2030, 90),
                   ("اللہ", 2250, 0, {"clear": 20}),
