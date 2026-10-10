@@ -652,6 +652,7 @@ def step_ascenders(font):
 # its middle, upwards: the join at the top and the tip of the tail keep
 # their shape, and the tail does not reach further down.
 RE_NECK = {"REf1": 0.35, "REu1": 0.35}  # nuqta
+RE_LIFT = 10  # font units
 
 
 def step_re_neck(font):
@@ -672,6 +673,12 @@ def step_re_neck(font):
             return (0, D * w * w * (3 - 2 * w))
 
         warp_strokes(layer, field)
+        # the tail tip dipped a few units below the baseline: rest it on it
+        for path in layer.paths:
+            for nd in path.nodes:
+                nd.position = Point(nd.position.x, nd.position.y + RE_LIFT)
+        for a in layer.anchors:
+            a.position = Point(a.position.x, a.position.y + RE_LIFT)
 
 
 # ---------------------------------------------------------------------------
@@ -786,7 +793,8 @@ def step_bowl_length(font):
 TIP_MAX_CUT = 60  # longest end cut treated as a tip, in font units
 TIP_NARROW = 0.2  # each corner moves this fraction of the cut inwards
 TIP_JOIN_CLEARANCE = 90
-TIP_SKIP = re.compile(r"^(ALIF|LAM_ALIF|KAF|GAF|TOE|ALLAH)|^LAM[im]")
+# re already ends in a fine point; a cap there makes a knob on the line.
+TIP_SKIP = re.compile(r"^(ALIF|LAM_ALIF|KAF|GAF|TOE|ALLAH|RE[uf])|^LAM[im]")
 
 
 def round_tips(layer):
