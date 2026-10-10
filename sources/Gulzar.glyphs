@@ -79883,19 +79883,19 @@ layers = (
 anchors = (
 {
 name = bottom;
-position = "{263, -96}";
+position = "{263, -46}";
 },
 {
 name = entry;
-position = "{509, 358}";
+position = "{509, 408}";
 },
 {
 name = toeda;
-position = "{117, 266}";
+position = "{117, 316}";
 },
 {
 name = top;
-position = "{161, 276}";
+position = "{161, 326}";
 }
 );
 hints = (
@@ -79914,33 +79914,33 @@ paths = (
 {
 closed = 1;
 nodes = (
-"-22 -199 OFFCURVE",
-"54 -139 OFFCURVE",
-"82 -111 CURVE SMOOTH",
-"189 -4 OFFCURVE",
-"228 104 OFFCURVE",
-"297 178 CURVE SMOOTH",
-"325 208 OFFCURVE",
-"374 263 OFFCURVE",
-"445 259 CURVE",
-"475 282 OFFCURVE",
-"495 314 OFFCURVE",
-"509 358 CURVE",
-"491 364 OFFCURVE",
-"473 367 OFFCURVE",
-"456 367 CURVE SMOOTH",
-"387 367 OFFCURVE",
-"329 320 OFFCURVE",
-"288 268 CURVE SMOOTH",
-"225 189 OFFCURVE",
-"169 81 OFFCURVE",
-"82 -30 CURVE SMOOTH",
-"31 -94 OFFCURVE",
-"-33 -155 OFFCURVE",
-"-95 -186 CURVE",
-"-100 -191 OFFCURVE",
-"-97 -203 OFFCURVE",
-"-91 -205 CURVE"
+"-22 -149 OFFCURVE",
+"54 -89 OFFCURVE",
+"82 -61 CURVE SMOOTH",
+"189 46 OFFCURVE",
+"228 154 OFFCURVE",
+"297 228 CURVE SMOOTH",
+"325 258 OFFCURVE",
+"374 313 OFFCURVE",
+"445 309 CURVE",
+"475 332 OFFCURVE",
+"495 364 OFFCURVE",
+"509 408 CURVE",
+"491 414 OFFCURVE",
+"473 417 OFFCURVE",
+"456 417 CURVE SMOOTH",
+"387 417 OFFCURVE",
+"329 370 OFFCURVE",
+"288 318 CURVE SMOOTH",
+"225 239 OFFCURVE",
+"169 131 OFFCURVE",
+"82 20 CURVE SMOOTH",
+"31 -44 OFFCURVE",
+"-33 -105 OFFCURVE",
+"-95 -136 CURVE",
+"-100 -141 OFFCURVE",
+"-97 -153 OFFCURVE",
+"-91 -155 CURVE"
 );
 }
 );
@@ -109481,6 +109481,7 @@ ascenders,
 "re-final-tail",
 "re-weight",
 "vao-lift",
+"re-raise",
 "dal-size",
 "medial-dots",
 "dot-positions",

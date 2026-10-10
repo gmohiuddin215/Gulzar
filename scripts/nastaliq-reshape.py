@@ -1163,6 +1163,31 @@ def step_vao_lift(font):
 
 
 # ---------------------------------------------------------------------------
+# Step 3r: long re sits higher
+# ---------------------------------------------------------------------------
+
+# The long re of پیرو, بیر, تیر hangs ~1.2 nuqta below the line, against
+# ~0.9 in the calligraphic form. The whole letter (and so the letters
+# joined before it) is raised without changing its shape; the build keeps
+# grouping it by its original join height.
+RE_RAISE = {"REf3": 50}  # font units
+
+
+def step_re_raise(font):
+    for name, dy in RE_RAISE.items():
+        layer = master_layer(font, font.glyphs[name])
+        decompose_components(font, layer)
+        en = anchor(layer, "entry")
+        if en is not None:
+            RISE_PINS[name] = round(en.position.y)
+        for path in layer.paths:
+            for nd in path.nodes:
+                nd.position = Point(nd.position.x, nd.position.y + dy)
+        for a in layer.anchors:
+            a.position = Point(a.position.x, a.position.y + dy)
+
+
+# ---------------------------------------------------------------------------
 # Step 3h: dal size
 # ---------------------------------------------------------------------------
 
@@ -1529,6 +1554,7 @@ STEPS = [
     ("re-final-tail", step_re_final_tail),
     ("re-weight", step_re_weight),
     ("vao-lift", step_vao_lift),
+    ("re-raise", step_re_raise),
     ("dal-size", step_dal_size),
     ("medial-dots", step_medial_dots),
     ("dot-positions", step_dot_positions),
