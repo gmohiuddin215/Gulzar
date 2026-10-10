@@ -1084,6 +1084,26 @@ def step_line_metrics(font):
             param.value = LINE_METRICS[param.name]
 
 
+# ---------------------------------------------------------------------------
+# Step 6: naming
+# ---------------------------------------------------------------------------
+
+# The reshaped font is a Modified Version of Gulzar under the SIL OFL (which
+# reserves no font name). It gets its own family name so it can be installed
+# alongside Gulzar without the two being confused, and a neutral vendor ID
+# ("UKWN") since it is not a Google Fonts release. The original copyright
+# notice is kept.
+FAMILY_NAME = "Gulzar Nastaliq"
+VENDOR_ID = "UKWN"
+
+
+def step_naming(font):
+    font.familyName = FAMILY_NAME
+    for param in font.customParameters:
+        if param.name == "vendorID":
+            param.value = VENDOR_ID
+
+
 STEPS = [
     ("scale-and-spacing", step_scale_and_spacing),
     ("proportions", step_proportions),
@@ -1100,6 +1120,7 @@ STEPS = [
     ("tips", step_tips),
     ("ends", step_ends),
     ("line-metrics", step_line_metrics),
+    ("naming", step_naming),
 ]
 
 

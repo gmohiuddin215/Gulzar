@@ -7,7 +7,7 @@
 \script[src=packages/linespacing]
 \set[parameter=linespacing.method,value=fixed]
 \set[parameter=linespacing.fixed.baselinedistance,value=25pt]
-\font[filename=../fonts/ttf/Gulzar-Regular.ttf,size=14pt]
+\font[filename=../fonts/ttf/GulzarNastaliq-Regular.ttf,size=14pt]
 \begin{center}
 \font[size=90pt]{گُلزار}
 \skip[height=45pt]\par

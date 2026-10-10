@@ -3,7 +3,7 @@
 \script[src=packages/color]
 \set[parameter=linespacing.method,value=fixed]
 \set[parameter=linespacing.fixed.baselinedistance,value=29pt]
-\font[filename=fonts/ttf/Gulzar-Regular.ttf,size=14pt]
+\font[filename=fonts/ttf/GulzarNastaliq-Regular.ttf,size=14pt]
 \define[command=G]{\color[color=#ff0000]{G}}
 \neverindent
 \font[size=20pt]{Persian | Every possible combination}

@@ -1,4 +1,8 @@
-# Gulzar
+# Gulzar Nastaliq
+
+Gulzar Nastaliq is a modified version of [Gulzar](https://github.com/googlefonts/gulzar), reshaped towards the proportions of traditional Nastaliq: lower, rounder bowls, a lower, shorter kaf sarkash, taller ascenders, rounded stroke ends and tighter word spacing. Every outline is Gulzar's own, transformed geometrically by `scripts/nastaliq-reshape.py`; the shaping engine is Gulzar's. It is released, like Gulzar, under the SIL Open Font License 1.1.
+
+The rest of this file is Gulzar's original documentation.
 
 Gulzar is a Nastaliq font for Urdu text with a typographic, rather than calligraphic feel.
 
@@ -19,7 +23,7 @@ sudo pip3 install -r requirements.txt
 Don't try exporting from Glyphs! It's not going to work!
 
 * Run `make`
-* Output can be found in `fonts/ttf/Gulzar-Regular.ttf`
+* Output can be found in `fonts/ttf/GulzarNastaliq-Regular.ttf`
 
 ## Makefile targets
 

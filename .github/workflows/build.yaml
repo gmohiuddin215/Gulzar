@@ -34,12 +34,12 @@ jobs:
     - name: Build specimen & proof
       run: make specimen proof
     - name: Rename font
-      run: mv fonts/ttf/Gulzar-Regular.ttf .
+      run: mv fonts/ttf/GulzarNastaliq-Regular.ttf .
     - name: Archive artifacts
       uses: actions/upload-artifact@v2
       with:
-        name: Gulzar
+        name: GulzarNastaliq
         path: |
-          Gulzar-Regular.ttf
+          GulzarNastaliq-Regular.ttf
           specimen/specimen.pdf
           qa/proof.pdf
