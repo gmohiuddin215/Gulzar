@@ -967,6 +967,99 @@ def step_tips(font):
                 round_tips(layer)
 
 
+# Calligraphic strokes never end in a hard cut: even the head of alif, the
+# end of the kaf sarkash and the tail of re finish in a small round (Gulzar
+# ends them with one or two short straight cuts). These remaining cut ends
+# are rounded inside the outline: the two sides of the stroke are pulled
+# back along their own direction and closed with a curve that just reaches
+# the old cut, so nothing grows past the original shape (the tail of re
+# stays on the line).
+END_MAX_CUT = 90
+END_SEGMENT = 80
+END_RETRACT = 0.35  # of the cut width
+
+
+def _unit(dx, dy):
+    d = math.hypot(dx, dy)
+    return (dx / d, dy / d, d) if d else (0.0, 0.0, 0.0)
+
+
+def round_ends(layer):
+    from glyphsLib.classes import GSNode
+
+    joins = [anchor(layer, n) for n in ("entry", "exit")]
+    joins = [(a.position.x, a.position.y) for a in joins if a is not None]
+    polys = [contour_points(p) for p in layer.paths]
+    changed = False
+    for pi, path in enumerate(layer.paths):
+        pts = polys[pi]
+        ccw = signed_area(pts) > 0
+        is_hole = any(point_in_polygon(pts[0][0], pts[0][1], o) for oi, o in enumerate(polys) if oi != pi)
+        flip = -1 if ccw == is_hole else 1
+        nodes = list(path.nodes)
+        n = len(nodes)
+        i = 0
+        while i < n:
+            nd = nodes[i]
+            if nd.type != "line" or nodes[i - 1].type == "offcurve":
+                i += 1
+                continue
+            # the cut runs from node ia to node ib through straight lines
+            ia, ib = (i - 1) % n, i
+            nxt = nodes[(i + 1) % n]
+            if nxt.type == "line":
+                l1 = math.hypot(nd.position.x - nodes[ia].position.x, nd.position.y - nodes[ia].position.y)
+                l2 = math.hypot(nxt.position.x - nd.position.x, nxt.position.y - nd.position.y)
+                if l1 <= END_SEGMENT and l2 <= END_SEGMENT:
+                    ib = (i + 1) % n
+            A, B = nodes[ia].position, nodes[ib].position
+            ux, uy, width = _unit(B.x - A.x, B.y - A.y)
+            mx, my = (A.x + B.x) / 2, (A.y + B.y) / 2
+            if not (8 < width <= END_MAX_CUT) or any(
+                math.hypot(mx - jx, my - jy) < TIP_JOIN_CLEARANCE for jx, jy in joins
+            ):
+                i += 1
+                continue
+            nx, ny = flip * uy, -flip * ux
+            before, after = nodes[ia - 1], nodes[(ib + 1) % n]
+            # both sides of the stroke must run back from the cut
+            ax, ay, _ = _unit(before.position.x - A.x, before.position.y - A.y)
+            bx, by, _ = _unit(after.position.x - B.x, after.position.y - B.y)
+            if ax * nx + ay * ny >= -0.2 or bx * nx + by * ny >= -0.2:
+                i += 1
+                continue
+            h = END_RETRACT * width
+            # don't pull a point back past its own handle
+            ha = min(h, 0.6 * math.hypot(before.position.x - A.x, before.position.y - A.y))
+            hb = min(h, 0.6 * math.hypot(after.position.x - B.x, after.position.y - B.y))
+            A2 = Point(round(A.x + ax * ha), round(A.y + ay * ha))
+            B2 = Point(round(B.x + bx * hb), round(B.y + by * hb))
+            k = 0.1 * width
+            c1 = Point(round(A.x + ux * k), round(A.y + uy * k))
+            c2 = Point(round(B.x - ux * k), round(B.y - uy * k))
+            cap = [GSNode(A2, nodes[ia].type), GSNode(c1, "offcurve"), GSNode(c2, "offcurve"), GSNode(B2, "curve")]
+            if ib < ia:
+                # the cut wraps round the start of the contour: rotate the
+                # contour so it doesn't, and look at this cut again
+                nodes = nodes[ia:] + nodes[:ia]
+                i = 1
+                continue
+            nodes[ia:ib + 1] = cap
+            n = len(nodes)
+            changed = True
+            i = ia + 4
+        path.nodes = nodes
+    return changed
+
+
+def step_ends(font):
+    for g in font.glyphs:
+        if RASM.match(g.name):
+            layer = master_layer(font, g)
+            if layer.paths:
+                round_ends(layer)
+
+
 # ---------------------------------------------------------------------------
 # Step 5: line metrics
 # ---------------------------------------------------------------------------
@@ -1005,6 +1098,7 @@ STEPS = [
     ("medial-dots", step_medial_dots),
     ("dot-positions", step_dot_positions),
     ("tips", step_tips),
+    ("ends", step_ends),
     ("line-metrics", step_line_metrics),
 ]
 
