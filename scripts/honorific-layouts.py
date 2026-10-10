@@ -27,6 +27,8 @@ import uharfbuzz as hb
 # row beneath it. Options "lower" / "shorten": {glyph: (y0, factor, x0, x1)}:
 # in this part only, that letter's rising stroke is brought down, or its
 # falling tail drawn up (see honorific_outline in scripts/nastaliq-reshape.py).
+# Option "nudge": {glyph: (dx, dy)}: in this part only, that glyph (a dot,
+# a vowel mark) is moved by so much.
 LAYOUTS = {
     "radiAllahuAnhu": {
         "unicodes": ["0613", "FD41"],
@@ -49,7 +51,8 @@ LAYOUTS = {
         "unicodes": ["FD44"],
         "scale": 0.5,
         "bottom": 60,
-        "parts": [("عنہما", 0, 0), ("رضی", 760, 0, {"lower": {"CH_YEf1": (150, 0.6, 200, 320)}}),
+        "parts": [("عنہُما", 0, 0, {"nudge": {"sda": (0, -50)}}),
+                  ("رضی", 760, 0, {"lower": {"CH_YEf1": (150, 0.6, 200, 320)}}),
                   ("اللہُ", 60, 0, {"clear": 28})],
     },
     # for men: the same, with عنہم
@@ -154,8 +157,10 @@ def main(path):
             if opts and "kashida" in opts[0]:
                 glyphs = with_kashida(glyphs, source, *opts[0]["kashida"])
             reshapes = {k: opts[0][k] for k in ("lower", "shorten") if opts and k in opts[0]}
+            nudge = opts[0].get("nudge", {}) if opts else {}
             for g, x, y, opt in glyphs:
-                comp = [g, (x + dx) * s, (y + dy) * s]
+                nx, ny = nudge.get(g, (0, 0))
+                comp = [g, (x + dx + nx) * s, (y + dy + ny) * s]
                 for kind, letters in reshapes.items():
                     if g in letters:
                         comp.append({kind: letters[g]})
