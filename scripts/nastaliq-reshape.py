@@ -483,61 +483,6 @@ def step_bowls(font):
 
 
 # ---------------------------------------------------------------------------
-# Step 2c: nuqtas
-# ---------------------------------------------------------------------------
-
-# The nuqta of the flat-nibbed qalam is a crisp rhombus: the square nib
-# pressed down and drawn along its own width, so slightly wider than tall,
-# with sharp top and bottom points. Gulzar's dots are lopsided pen dabs.
-# Every dot glyph in the font is built from these base glyphs; each dot in
-# them is redrawn as a rhombus centred where the old dot was.
-DOT_BASES = ["sda", "sdi", "ddb", "tda", "tda.ng", "tdb", "ddvb", "ddvb.yb", "ddvb.yb.collides"]
-DOT_W, DOT_H = 170, 150
-DOT_OVERLAP = 0.96  # neighbouring dots just touch at their side points
-
-
-def rhombus(cx, cy, w=DOT_W, h=DOT_H, blunt=6):
-    """Counter-clockwise rhombus with very slightly blunted side points."""
-    from glyphsLib.classes import GSPath, GSNode
-
-    p = GSPath()
-    p.closed = True
-    hw, hh = w / 2, h / 2
-    k = blunt / hw
-    for x, y in [
-        (cx, cy - hh),  # bottom point
-        (cx + hw - blunt, cy - hh * k), (cx + hw - blunt, cy + hh * k),  # right
-        (cx, cy + hh),  # top point
-        (cx - hw + blunt, cy + hh * k), (cx - hw + blunt, cy - hh * k),  # left
-    ]:
-        p.nodes.append(GSNode(Point(round(x), round(y)), "line"))
-    return p
-
-
-def step_dots(font):
-    for name in DOT_BASES:
-        layer = master_layer(font, font.glyphs[name])
-        centres = []
-        for path in layer.paths:
-            xs = [n.position.x for n in path.nodes]
-            ys = [n.position.y for n in path.nodes]
-            cx, cy = (min(xs) + max(xs)) / 2, (min(ys) + max(ys)) / 2
-            w, h = max(xs) - min(xs), max(ys) - min(ys)
-            if w > 1.5 * h:  # two dots side by side
-                d = DOT_W * DOT_OVERLAP / 2
-                centres += [(cx - d, cy), (cx + d, cy)]
-            elif h > 1.5 * w:  # two dots one above the other
-                d = DOT_H * DOT_OVERLAP / 2
-                centres += [(cx, cy - d), (cx, cy + d)]
-            else:
-                centres.append((cx, cy))
-        while layer.paths:
-            del layer.paths[0]
-        for cx, cy in centres:
-            layer.paths.append(rhombus(cx, cy))
-
-
-# ---------------------------------------------------------------------------
 # Step 3a: kaf / gaf sarkash
 # ---------------------------------------------------------------------------
 
@@ -697,7 +642,6 @@ STEPS = [
     ("scale-and-spacing", step_scale_and_spacing),
     ("proportions", step_proportions),
     ("bowls", step_bowls),
-    ("dots", step_dots),
     ("sarkash", step_sarkash),
     ("ascenders", step_ascenders),
     ("line-metrics", step_line_metrics),
