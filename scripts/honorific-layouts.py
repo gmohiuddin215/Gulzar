@@ -29,7 +29,9 @@ import uharfbuzz as hb
 # in this part only, that letter's rising stroke is brought down, or its
 # falling tail drawn up (see honorific_outline in scripts/nastaliq-reshape.py).
 # Option "nudge": {glyph: (dx, dy)}: in this part only, that glyph (a dot,
-# a vowel mark) is moved by so much.
+# a vowel mark) is moved by so much. Option "shrink": {glyph: (factor,
+# [marks])}: in this part only, that letter is drawn smaller about the point
+# where it joins the letter before, and the listed marks move in with it.
 LAYOUTS = {
     "radiAllahuAnhu": {
         "unicodes": ["0613", "FD41"],
@@ -73,7 +75,11 @@ LAYOUTS = {
         "unicodes": ["FD45"],
         "scale": 0.5,
         "align": ("REu1", 135),  # رضی level with رضی اللہُ عنہٗ
-        "parts": [("عنہنَّ", 0, -218),
+        # its final noon is drawn smaller, nearer the size of the ye, with its
+        # dot and shadda-zabar; the first noon's dot sits nearer its tooth
+        # and the he hook under the he
+        "parts": [("عنہنَّ", 0, -218, {"shrink": {"NUNf1": (0.8, ["sdi", "SHADDA_FATHA"])},
+                                    "nudge": {"sda": (0, -100), "haydb": (-220, 0)}}),
                   ("رضی", 1079, 0, {"lower": {"CH_YEf1": (150, 0.95, 200, 320)}}),
                   ("اللہُ", 300, 0, {"clear": 28})],
     },
@@ -169,9 +175,23 @@ def main(path):
                 glyphs = with_kashida(glyphs, source, *opts[0]["kashida"])
             reshapes = {k: opts[0][k] for k in ("lower", "shorten") if opts and k in opts[0]}
             nudge = opts[0].get("nudge", {}) if opts else {}
+            size = {}
+            for letter, (f, marks) in (opts[0].get("shrink", {}) if opts else {}).items():
+                # the letter is drawn smaller about the point where it joins
+                # the letter before it, and its marks move in with it
+                g0 = next(g for g in glyphs if g[0] == letter)
+                ex, ey = next((a.position.x, a.position.y) for a in source.glyphs[letter].layers[0].anchors
+                              if a.name == "entry")
+                cx, cy = g0[1] + ex, g0[2] + ey
+                glyphs = [(g, x + (1 - f) * ex, y + (1 - f) * ey, o) if g == letter else
+                          (g, cx + f * (x - cx), cy + f * (y - cy), o) if g in marks else (g, x, y, o)
+                          for g, x, y, o in glyphs]
+                size[letter] = f
             for g, x, y, opt in glyphs:
                 nx, ny = nudge.get(g, (0, 0))
                 comp = [g, (x + dx + nx) * s, (y + dy + ny) * s]
+                if g in size:
+                    comp.append({"size": size[g]})
                 for kind, letters in reshapes.items():
                     if g in letters:
                         comp.append({kind: letters[g]})
