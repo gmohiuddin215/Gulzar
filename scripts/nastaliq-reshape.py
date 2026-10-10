@@ -701,10 +701,30 @@ def step_isolated_kaf(font):
 # Step 3k: tilt of hamza
 # ---------------------------------------------------------------------------
 
-# The isolated hamza leans a little more in the calligraphic form. It is
-# turned anticlockwise about its centre (a rigid turn, so its shape and
-# weight are unchanged) and set back on the same bottom line and left edge.
+# The isolated hamza leans a little more in the calligraphic form and dips
+# below the line. It is turned anticlockwise about its centre (a rigid turn,
+# so its shape and weight are unchanged), set back on its left edge and
+# lowered. Its upper tip ends in a straight cut with a tiny cap (from the
+# tips step); the stroke-end step folds the cap into the cut and rounds it.
 TILTS = {"HAMZAu1": 8}  # degrees, anticlockwise
+LOWER = {"HAMZAu1": 60}  # font units
+
+
+def fold_tiny_caps(layer, size=15):
+    for path in layer.paths:
+        nodes = list(path.nodes)
+        i = 0
+        while i < len(nodes):
+            n = len(nodes)
+            a, h1, h2, c = (nodes[(i + k) % n] for k in range(4))
+            if (a.type == "line" and h1.type == h2.type == "offcurve" and c.type == "curve"
+                    and math.hypot(c.position.x - a.position.x, c.position.y - a.position.y) < size):
+                c.type = "line"
+                for k in sorted({i % n, (i + 1) % n, (i + 2) % n}, reverse=True):
+                    del nodes[k]
+                continue
+            i += 1
+        path.nodes = nodes
 
 
 def step_tilts(font):
@@ -722,7 +742,8 @@ def step_tilts(font):
                 x, y = nd.position.x - cx, nd.position.y - cy
                 nd.position = Point(cx + x * ca - y * sa, cy + x * sa + y * ca)
         pts = [nd.position for p in layer.paths for nd in p.nodes]
-        dx, dy = x0 - min(p.x for p in pts), y0 - min(p.y for p in pts)
+        dx = x0 - min(p.x for p in pts)
+        dy = y0 - min(p.y for p in pts) - LOWER.get(name, 0)
         for path in layer.paths:
             for nd in path.nodes:
                 nd.position = Point(round(nd.position.x + dx), round(nd.position.y + dy))
@@ -1135,6 +1156,8 @@ def step_ends(font):
     for g in font.glyphs:
         if RASM.match(g.name):
             layer = master_layer(font, g)
+            if g.name in TILTS:
+                fold_tiny_caps(layer)
             if layer.paths:
                 round_ends(layer)
 
