@@ -591,9 +591,15 @@ ASCENDERS = {
     ("LAM", "f"): 0.23, ("LAM", "u"): 0.23,
     ("LAM_ALIF", "u"): 0.50, ("LAM_ALIF", "f"): 0.50,
 }
-# Individual forms which need a different stretch: LAMi2 is the laam of
-# لیکن, which runs up into the kaf sarkash above it.
-ASCENDER_OVERRIDES = {"LAMi2": -0.45}
+# Individual forms which need a different stretch. The laams which stand
+# under a following kaf/gaf sarkash (لیکن LAMi2, لک/لکھا/الگ LAMi3, لگا
+# LAMi8, ملک/بلکہ LAMm3) all get the same, shorter height, leaving ~0.6
+# nuqta under the sarkash. LAMi13 (تعالیٰ, before a final ye) is lifted with
+# the ye and rose well above the alif.
+ASCENDER_OVERRIDES = {
+    "LAMi2": -0.35, "LAMi3": -0.35, "LAMi8": -0.35, "LAMm3": -0.35,
+    "LAMi13": -1.2,
+}
 
 
 def step_ascenders(font):
@@ -633,6 +639,37 @@ def step_ascenders(font):
                 u = min(max((x - xa) / (xb - xa), 0.0), 1.0)
                 w *= u * u * (3 - 2 * u)
             return (0, D * w)
+
+        warp_strokes(layer, field)
+
+
+# ---------------------------------------------------------------------------
+# Step 3g: re neck
+# ---------------------------------------------------------------------------
+
+# Final and isolated re are 0.4-0.5 nuqta taller in calligraphic Nastaliq;
+# Gulzar's look short in the neck (کر, پر, اور). The stroke is lengthened in
+# its middle, upwards: the join at the top and the tip of the tail keep
+# their shape, and the tail does not reach further down.
+RE_NECK = {"REf1": 0.35, "REu1": 0.35}  # nuqta
+
+
+def step_re_neck(font):
+    for name, amount in RE_NECK.items():
+        layer = master_layer(font, font.glyphs[name])
+        decompose_components(font, layer)
+        ys = [nd.position.y for p in layer.paths for nd in p.nodes]
+        lo, hi = min(ys), max(ys)
+        y0, y1 = lo + 0.3 * (hi - lo), lo + 0.7 * (hi - lo)
+        D = amount * NUQTA
+
+        def field(x, y, y0=y0, y1=y1, D=D):
+            # everything above the band moves up; the tail stays where it
+            # is, clear of the dots of the next letter
+            if y <= y0:
+                return (0, 0)
+            w = min((y - y0) / (y1 - y0), 1.0)
+            return (0, D * w * w * (3 - 2 * w))
 
         warp_strokes(layer, field)
 
@@ -843,6 +880,7 @@ STEPS = [
     ("bowl-length", step_bowl_length),
     ("sarkash", step_sarkash),
     ("ascenders", step_ascenders),
+    ("re-neck", step_re_neck),
     ("medial-dots", step_medial_dots),
     ("dot-positions", step_dot_positions),
     ("tips", step_tips),

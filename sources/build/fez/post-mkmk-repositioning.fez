@@ -36,7 +36,10 @@ Feature kern {
   # یو...) there is no room there, so they stay under the tooth.
   Routine YeDotsUnderCurve {
     Position @BEm (ddb <xPlacement=-60>) /^(BE|TE|SIN|SAD|TOE|AIN|FE|KAF|GAF|LAM|MIM|HAYC|HAYA)m/;
-  } UseMarkFilteringSet [ddb];
+    # Before a final noon (ہیں, میں) the dots would sit close to the noon:
+    # move them a little to the right instead.
+    Position @BEm ([ddb ddb.one ddb.two] <xPlacement=60>) NUNf1;
+  } UseMarkFilteringSet [ddb ddb.one ddb.two];
 
   # Final qaf now sits on the line, which lifts the
   # letters before it (by 203 units). When such a short letter group follows a dal or re,
