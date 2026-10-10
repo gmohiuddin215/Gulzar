@@ -1701,7 +1701,19 @@ def honorific_outline(font, components, scale):
 
     out, trims = pathops.Path(), []
     for comp, x, y, *opts in components:
-        if opts and "kashida" in opts[0]:
+        if opts and "lower" in opts[0]:
+            # a letter whose rising stroke is brought down to fit under the
+            # word beside it: above y0, and left of x0 (fading out by x1),
+            # heights are scaled by the factor
+            y0, factor, x0, x1 = opts[0]["lower"]
+
+            def weight(px):
+                return 1 if px <= x0 else 0 if px >= x1 else (x1 - px) / (x1 - x0)
+
+            paths = [[(px, py if py <= y0 else y0 + (py - y0) * (1 - (1 - factor) * weight(px)), t)
+                      for px, py, t in p] for p in _glyph_paths(font, comp, (1, 0, 0, 1, 0, 0))]
+            piece = _skia(paths)
+        elif opts and "kashida" in opts[0]:
             lam, lx, ly = opts[0]["kashida"]
             piece, trim = _kashida(font, comp, lam, ((lx - x) / scale, (ly - y) / scale))
             cut = pathops.Path()

@@ -28,6 +28,22 @@
     ["ALLAHu1", 214, 701],
     ["ALIFu1", 634, 701]
  ]},
+ "radiAllahuAnhumaa": {"unicodes": ["FD44"], "scale": 0.5, "width": 927, "components": [
+    ["ALIFf1", 5, 150],
+    ["MIMm3", 93, 218],
+    ["haydb", 258, 214],
+    ["HAYCm9", 183, 270],
+    ["sda", 331, 531],
+    ["BEm6", 321, 261],
+    ["AINi2", 412, 445],
+    ["CH_YEf1", 405, 150, {"lower": [150, 0.6, 200, 320]}],
+    ["sda", 695, 629],
+    ["SADi13", 615, 419],
+    ["REu1", 691, 150],
+    ["DAMMA", 30, 619],
+    ["ALLAHu1", 55, 654],
+    ["ALIFu1", 476, 654]
+ ]},
  "rahmatullahAlayh": {"unicodes": ["0612"], "scale": 0.44, "width": 1036, "components": [
     ["HAYCf1", 17, 397],
     ["ddb", 126, 298],
