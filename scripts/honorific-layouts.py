@@ -44,7 +44,8 @@ LAYOUTS = {
         "unicodes": ["FD42"],
         "scale": 0.5,
         "align": ("REu1", 135),  # رضی level with رضی اللہُ عنہٗ
-        "parts": [("عنہا", 0, 0), ("رضی", 1019, 0), ("اللہُ", 417, 0, {"clear": 51})],
+        "parts": [("عنہا", 0, 0, {"nudge": {"haydb": (-40, 70)}}), ("رضی", 1019, 0),
+                  ("اللہُ", 417, 0, {"clear": 51})],
     },
     # for two: عنہما tucks its ain over the ye of رضی, whose rising tail is
     # brought down just enough to end inside the ain's stroke; اللہُ sits above ہما
