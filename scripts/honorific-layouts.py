@@ -26,7 +26,8 @@ LAYOUTS = {
         "unicodes": ["0613", "FD41"],
         "scale": 0.5,
         "bottom": 60,
-        "parts": [("عنہ", -90, -60), ("اللہ", 700, 600), ("رضی", 1420, 60)],
+        # رضی and عنہٗ side by side, اللہُ above them in the middle
+        "parts": [("عنہٗ", 0, 0), ("رضی", 900, 0), ("اللہُ", 340, 760)],
     },
     "rahmatullahAlayh": {
         "unicodes": ["0612"],
