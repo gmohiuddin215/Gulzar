@@ -46,13 +46,13 @@ LAYOUTS = {
         "parts": [("عنہا", 0, 0), ("رضی", 1019, 0), ("اللہُ", 417, 0, {"clear": 51})],
     },
     # for two: عنہما tucks its ain over the ye of رضی, whose rising tail is
-    # brought down here so they don't touch; اللہُ sits above ہما
+    # brought down just enough to end inside the ain's stroke; اللہُ sits above ہما
     "radiAllahuAnhumaa": {
         "unicodes": ["FD44"],
         "scale": 0.5,
         "bottom": 60,
         "parts": [("عنہُما", 0, 0, {"nudge": {"sda": (0, -100)}}),
-                  ("رضی", 760, 0, {"lower": {"CH_YEf1": (150, 0.6, 200, 320)}}),
+                  ("رضی", 760, 0, {"lower": {"CH_YEf1": (150, 0.95, 200, 320)}}),
                   ("اللہُ", 60, 888)],
     },
     # for men: the same, with عنہم
