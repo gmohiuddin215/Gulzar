@@ -1188,6 +1188,42 @@ def step_re_raise(font):
 
 
 # ---------------------------------------------------------------------------
+# Step 3s: spur on the head of initial mim
+# ---------------------------------------------------------------------------
+
+# One initial mim (ممبر, ممکن) ends the bottom of its head in a pointed
+# pen-cut corner with a little spur into the stroke going down; it reads as a
+# horn. The corner and spur are replaced by one curve that turns from the
+# edge of the head into the stroke, inside the old outline.
+def step_remove_spurs(font):
+    for g in font.glyphs:
+        if not re.match(r"^MIM(i|m|f|u)\d+$", g.name):
+            continue
+        layer = master_layer(font, g)
+        for path in layer.paths:
+            nodes = list(path.nodes)
+            n = len(nodes)
+            for k in range(n):
+                a, b, c = nodes[k], nodes[(k + 1) % n], nodes[(k + 2) % n]
+                if not (a.type == b.type == c.type == "line"):
+                    continue
+                d1 = math.hypot(b.position.x - a.position.x, b.position.y - a.position.y)
+                d2 = math.hypot(c.position.x - b.position.x, c.position.y - b.position.y)
+                if d1 < 70 and d2 < 25 and b.position.x > a.position.x and b.position.y < a.position.y:
+                    from glyphsLib.classes import GSNode
+
+                    mid = Point(round((a.position.x + c.position.x) / 2), round(min(a.position.y, c.position.y) - 8))
+                    curve = [GSNode(Point(a.position.x, a.position.y), "offcurve"), GSNode(mid, "offcurve"),
+                             GSNode(Point(c.position.x, c.position.y), "curve")]
+                    if k + 2 < n:
+                        nodes[k:k + 3] = curve
+                    else:
+                        continue
+                    path.nodes = nodes
+                    break
+
+
+# ---------------------------------------------------------------------------
 # Step 3h: dal size
 # ---------------------------------------------------------------------------
 
@@ -1558,6 +1594,7 @@ STEPS = [
     ("dal-size", step_dal_size),
     ("medial-dots", step_medial_dots),
     ("dot-positions", step_dot_positions),
+    ("remove-spurs", step_remove_spurs),
     ("tips", step_tips),
     ("ends", step_ends),
     ("line-metrics", step_line_metrics),
