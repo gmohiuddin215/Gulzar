@@ -682,6 +682,40 @@ def step_re_neck(font):
 
 
 # ---------------------------------------------------------------------------
+# Step 3h: dal size
+# ---------------------------------------------------------------------------
+
+# Final dal is ~25% larger in the calligraphic forms (2.8 x 2.7 nuqta
+# against 2.3 x 2.1), isolated dal ~12%. The letter is scaled about its
+# foot on the baseline, below the join, moving the strokes rather than
+# scaling them so the pen weight is unchanged; it is then shifted so the
+# gap before the next word stays the same.
+DAL_SCALE = {"DALf1": 1.20, "DALu1": 1.10}
+
+
+def step_dal_size(font):
+    for name, s in DAL_SCALE.items():
+        layer = master_layer(font, font.glyphs[name])
+        decompose_components(font, layer)
+        b = layer_bounds(layer)
+        en = anchor(layer, "entry")
+        x0 = en.position.x if en is not None else b[1]
+
+        def field(x, y, x0=x0, s=s):
+            return ((s - 1) * (x - x0), (s - 1) * y)
+
+        warp_strokes(layer, field)
+        nb = layer_bounds(layer)
+        dx = round(b[0] - nb[0])
+        for path in layer.paths:
+            for nd in path.nodes:
+                nd.position = Point(nd.position.x + dx, nd.position.y)
+        for an in layer.anchors:
+            an.position = Point(an.position.x + dx, an.position.y)
+        layer.width = layer.width + dx + round((s - 1) * (layer.width - x0)) if en is None else layer.width + dx
+
+
+# ---------------------------------------------------------------------------
 # Step 3c: dots of medial be/te/ye
 # ---------------------------------------------------------------------------
 
@@ -889,6 +923,7 @@ STEPS = [
     ("sarkash", step_sarkash),
     ("ascenders", step_ascenders),
     ("re-neck", step_re_neck),
+    ("dal-size", step_dal_size),
     ("medial-dots", step_medial_dots),
     ("dot-positions", step_dot_positions),
     ("tips", step_tips),

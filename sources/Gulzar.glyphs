@@ -15449,11 +15449,11 @@ layers = (
 anchors = (
 {
 name = bottom;
-position = "{178, -8}";
+position = "{189, -9}";
 },
 {
 name = top;
-position = "{254, 397}";
+position = "{272, 437}";
 }
 );
 layerId = "6E34CE51-C086-4FF0-804E-D019E96D60E0";
@@ -15461,37 +15461,37 @@ paths = (
 {
 closed = 1;
 nodes = (
-"178 4 LINE SMOOTH",
-"218 10 OFFCURVE",
-"227 13 OFFCURVE",
-"251 52 CURVE SMOOTH",
-"293 119 OFFCURVE",
-"323 204 OFFCURVE",
-"323 264 CURVE SMOOTH",
-"323 316 OFFCURVE",
-"299 367 OFFCURVE",
-"247 395 CURVE SMOOTH",
-"226 407 OFFCURVE",
-"200 414 OFFCURVE",
-"169 417 CURVE",
-"137 259 LINE",
-"167 257 OFFCURVE",
-"193 248 OFFCURVE",
-"215 236 CURVE SMOOTH",
-"252 217 OFFCURVE",
-"275 188 OFFCURVE",
-"275 168 CURVE SMOOTH",
-"275 155 OFFCURVE",
-"256 122 OFFCURVE",
-"159 70 CURVE SMOOTH",
+"188 8 LINE SMOOTH",
+"228 14 OFFCURVE",
+"242 20 OFFCURVE",
+"266 59 CURVE SMOOTH",
+"308 126 OFFCURVE",
+"339 230 OFFCURVE",
+"339 290 CURVE SMOOTH",
+"339 342 OFFCURVE",
+"312 399 OFFCURVE",
+"260 427 CURVE SMOOTH",
+"239 439 OFFCURVE",
+"217 446 OFFCURVE",
+"186 449 CURVE",
+"151 290 LINE",
+"181 288 OFFCURVE",
+"211 278 OFFCURVE",
+"233 266 CURVE SMOOTH",
+"270 247 OFFCURVE",
+"297 205 OFFCURVE",
+"297 185 CURVE SMOOTH",
+"297 172 OFFCURVE",
+"266 126 OFFCURVE",
+"169 74 CURVE SMOOTH",
 "52 7 LINE",
 "42 4 OFFCURVE",
-"46 -12 OFFCURVE",
-"56 -9 CURVE"
+"46 -11 OFFCURVE",
+"56 -8 CURVE"
 );
 }
 );
-width = 373;
+width = 403;
 }
 );
 note = DALu1;
@@ -44064,20 +44064,15 @@ layers = (
 anchors = (
 {
 name = bottom;
-position = "{226, -50}";
+position = "{256, -60}";
 },
 {
 name = entry;
-position = "{449, 135}";
+position = "{524, 162}";
 },
 {
 name = top;
-position = "{332, 369}";
-}
-);
-components = (
-{
-name = "dal-ar.fina";
+position = "{384, 443}";
 }
 );
 hints = (
@@ -44092,7 +44087,52 @@ type = Stem;
 }
 );
 layerId = "6E34CE51-C086-4FF0-804E-D019E96D60E0";
-width = 450;
+paths = (
+{
+closed = 1;
+nodes = (
+"216 20 LINE SMOOTH",
+"240 24 OFFCURVE",
+"254 33 OFFCURVE",
+"271 56 CURVE SMOOTH",
+"286 77 OFFCURVE",
+"325 134 OFFCURVE",
+"330 154 CURVE",
+"319 161 OFFCURVE",
+"308 144 OFFCURVE",
+"319 137 CURVE",
+"339 59 OFFCURVE",
+"416 14 OFFCURVE",
+"465 14 CURVE SMOOTH",
+"461 25 LINE",
+"493 44 OFFCURVE",
+"518 103 OFFCURVE",
+"513 150 CURVE",
+"522 157 LINE SMOOTH",
+"445 157 OFFCURVE",
+"393 239 OFFCURVE",
+"393 284 CURVE SMOOTH",
+"393 305 OFFCURVE",
+"405 375 OFFCURVE",
+"408 434 CURVE",
+"410 445 OFFCURVE",
+"394 449 OFFCURVE",
+"392 438 CURVE",
+"351 300 LINE SMOOTH",
+"337 246 OFFCURVE",
+"299 175 OFFCURVE",
+"275 150 CURVE SMOOTH",
+"257 132 OFFCURVE",
+"199 93 OFFCURVE",
+"156 70 CURVE SMOOTH",
+"52 12 LINE",
+"42 9 OFFCURVE",
+"46 -6 OFFCURVE",
+"56 -3 CURVE"
+);
+}
+);
+width = 525;
 }
 );
 note = DALf1;
@@ -106709,6 +106749,7 @@ bowls,
 sarkash,
 ascenders,
 "re-neck",
+"dal-size",
 "medial-dots",
 "dot-positions",
 tips,

@@ -34,6 +34,7 @@ Feature rlig {
     Substitute SADm1 ( REf1 ) -> REf3;
 
     Substitute AINi1 ( REf1 ) -> REf2;
+    Substitute FEi1 ( REf1 ) -> REf2; # فر / قر: re sweeps below the line, as after toe
     Substitute HAYAi1 ( REf1 ) -> REf2;
     Substitute MIMi1 ( REf1 ) -> REf2;
     Substitute SINi1 ( REf1 ) -> REf2;
