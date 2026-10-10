@@ -102,12 +102,29 @@ try:
 
     _orig_metrics = _glyphtools.get_glyph_metrics
 
+    # The Nastaliq plugins group letters by "rise" (the height of the join),
+    # and Gulzar's hand-written spacing and dot rules were tuned to those
+    # groups. Where the reshaping deliberately moved a join, the build keeps
+    # grouping the glyph by its original rise (scripts/nastaliq-reshape.py
+    # writes these to sources/rise-pins.json).
+    import json as _json
+    import os as _os
+
+    try:
+        with open(_os.path.join("sources", "rise-pins.json")) as _fh:
+            _rise_pins = _json.load(_fh)
+    except (OSError, ValueError):
+        _rise_pins = {}
+
     def _rounded_metrics(*args, **kwargs):
         metrics = _orig_metrics(*args, **kwargs)
         if isinstance(metrics, dict):
             for key, value in metrics.items():
                 if isinstance(value, float):
                     metrics[key] = round(value)
+            glyphname = args[1] if len(args) > 1 else kwargs.get("glyphname")
+            if glyphname in _rise_pins and "rise" in metrics:
+                metrics["rise"] = _rise_pins[glyphname]
         return metrics
 
     if not getattr(_orig_metrics, "_rounded", False):

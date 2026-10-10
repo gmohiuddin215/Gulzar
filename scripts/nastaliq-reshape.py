@@ -15,7 +15,9 @@ Each step records itself in the font's userData and is skipped if it has
 already been applied, so running the script twice is harmless.
 """
 import argparse
+import json
 import math
+import os
 import re
 import sys
 
@@ -601,7 +603,7 @@ def length_field(pivot, tip, scale):
 
 
 def step_sarkash_length(font):
-    family = [g.name for g in font.glyphs if re.match(r"^[KG]AF(i|m|f|u|isd|msd)\d+$", g.name)]
+    family = [g.name for g in font.glyphs if re.match(r"^[KG]AF(i|m|f|u|isd|msd|fs|us)\d+$", g.name)]
     plans = {}
     for name in family:
         layer = master_layer(font, font.glyphs[name])
@@ -619,7 +621,85 @@ def step_sarkash_length(font):
 
 
 # ---------------------------------------------------------------------------
-# Step 3j: smooth joins
+# Step 3i: foot of medial kaf
+# ---------------------------------------------------------------------------
+
+# Where a letter comes into a medial kaf/gaf (تکبر, بکری), Gulzar leaves a
+# deep V notch in the foot of the kaf between its exit and the hook that
+# forms the bowl of the letter before; it reads as a little horn under that
+# letter. The notch is made shallow, as a slight dent like the pen leaves.
+KAF_FOOT_DENT = 35  # font units above the higher of the two low points
+
+
+def smooth_notch(layer):
+    for path in layer.paths:
+        n = path.nodes
+        N = len(n)
+        for i in range(N):
+            a, b = n[i], n[(i + 1) % N]
+            if a.type != "curve" or b.type != "line":
+                continue
+            if abs(a.position.y - b.position.y) > 15 or abs(a.position.x - b.position.x) > 40:
+                continue
+            h1, h0, p0 = n[(i - 1) % N], n[(i - 2) % N], n[(i - 3) % N]
+            h2, h3, p1 = n[(i + 2) % N], n[(i + 3) % N], n[(i + 4) % N]
+            if not (h1.type == h0.type == h2.type == h3.type == "offcurve"):
+                continue
+            if h1.position.y > a.position.y - 30 or h2.position.y > b.position.y - 30:
+                continue
+            target = max(p0.position.y, p1.position.y) + KAF_FOOT_DENT
+            if target >= min(a.position.y, b.position.y):
+                continue
+            for on, h in ((a, h1), (b, h2)):
+                depth = on.position.y - h.position.y
+                on.position = Point(on.position.x, target)
+                h.position = Point(h.position.x, round(target - 0.3 * depth))
+            return True
+    return False
+
+
+def step_kaf_foot(font):
+    for g in font.glyphs:
+        if re.match(r"^[KG]AF(m|msd)\d+$", g.name):
+            layer = master_layer(font, g)
+            decompose_components(font, layer)
+            smooth_notch(layer)
+
+
+# ---------------------------------------------------------------------------
+# Step 3j: final kaf entry
+# ---------------------------------------------------------------------------
+
+# In تک the te sits on the hook of the final kaf, level with the kaf's base;
+# calligraphers join it a little higher. The hook (and so the letters before
+# it) is lifted, fading out into the body and up the upright of the kaf.
+# The spacing rules group letters by the height of their joins, and were
+# tuned to Gulzar's; the build keeps grouping these by their original height
+# (see sources/rise-pins.json, read by sitecustomize.py).
+FINAL_KAF_LIFT = 40
+FINAL_KAFS = ("KAFf1", "GAFf1", "KAFfs1", "GAFfs1")
+RISE_PINS = {}
+
+
+def step_final_kaf_entry(font):
+    for name in FINAL_KAFS:
+        layer = master_layer(font, font.glyphs[name])
+        decompose_components(font, layer)
+        en = anchor(layer, "entry").position
+        RISE_PINS[name] = en.y
+        ex, ey = en.x, en.y
+
+        def field(x, y, ex=ex, ey=ey):
+            u = min(max((x - (ex - 205)) / 120, 0.0), 1.0)
+            v = min(max(1 - (y - (ey + 40)) / 160, 0.0), 1.0)
+            w = u * u * (3 - 2 * u) * v * v * (3 - 2 * v)
+            return (0, FINAL_KAF_LIFT * w)
+
+        warp_strokes(layer, field)
+
+
+# ---------------------------------------------------------------------------
+# Step 3k: smooth joins
 # ---------------------------------------------------------------------------
 
 # A few medial be forms rise just after their entry, which leaves a dip in
@@ -986,6 +1066,8 @@ STEPS = [
     ("sarkash", step_sarkash),
     ("sarkash-length", step_sarkash_length),
     ("flat-entry", step_flat_entry),
+    ("kaf-foot", step_kaf_foot),
+    ("final-kaf-entry", step_final_kaf_entry),
     ("ascenders", step_ascenders),
     ("re-neck", step_re_neck),
     ("dal-size", step_dal_size),
@@ -1016,7 +1098,13 @@ def main():
         fn(font)
         done.append(name)
     font.userData[STAMP] = done
-    font.save(args.output or args.glyphsfile)
+    out = args.output or args.glyphsfile
+    font.save(out)
+    if RISE_PINS:
+        pins = os.path.join(os.path.dirname(os.path.abspath(out)), "rise-pins.json")
+        with open(pins, "w") as fh:
+            json.dump(RISE_PINS, fh, indent=1, sort_keys=True)
+            fh.write("\n")
 
 
 if __name__ == "__main__":

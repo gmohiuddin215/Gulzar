@@ -47,6 +47,15 @@ Feature kern {
     Position /^(BE|TE)(i|m)/ ([sda dda tda sda.one dda.one tda.one sda.two dda.two tda.two] <xPlacement=40>) /^[KG]AF(msd|f|u)/;
   } UseMarkFilteringSet [sda dda tda sda.one dda.one tda.one sda.two dda.two tda.two];
 
+  # A final kaf/gaf is joined a little higher up its hook (تک), which lifts
+  # the letter before it into the sarkash; vowel marks and three dots above
+  # that letter keep their old height (بُک, شُک).
+  Routine MarksBeforeFinalKaf {
+    Position @inits ([DAMMA FATHA tda tda.one tda.two] <yPlacement=-40>) /^[KG]AFfs?1$/;
+    Position @inits ([tda tda.one tda.two] <yPlacement=-40>) [DAMMA FATHA] /^[KG]AFfs?1$/;
+    Position @inits [tda tda.one tda.two] ([DAMMA FATHA] <yPlacement=-40>) /^[KG]AFfs?1$/;
+  } UseMarkFilteringSet [DAMMA FATHA tda tda.one tda.two];
+
   # Dots below a letter before do-chashmi he hang into the loop of the he
   # (پھر, بھی): drop them a little.
   Routine DotsBeforeHaya {
