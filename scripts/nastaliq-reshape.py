@@ -1507,6 +1507,87 @@ def step_ends(font):
 
 
 # ---------------------------------------------------------------------------
+# Step 4b: honorifics
+# ---------------------------------------------------------------------------
+
+# Books set رضی اللہ عنہ and رحمۃ اللہ علیہ after a name as small stacked
+# ligatures, raised off the line, rather than as the tiny ر-ض / ر-ح marks.
+# scripts/honorific-layouts.py writes them from the font's own words to
+# sources/honorifics.json; here they are drawn as outlines (scaled copies of
+# the letters) into new spacing glyphs that take over the code points of the
+# marks. The marks themselves stay in the font, unencoded.
+HONORIFICS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "sources", "honorifics.json")
+
+# The durood ligatures hung far below the line (to -0.7 em) beside the name
+# they follow; they are set smaller and raised so they sit on the line.
+DUROOD = ("uniFDFA", "uniFD4C")
+DUROOD_SCALE = 0.55
+DUROOD_BOTTOM = 40
+DUROOD_SIDE = 60
+
+
+def _glyph_paths(font, name, transform):
+    """Paths of a glyph with its components flattened, as lists of (x, y, type)."""
+    a, b, c, d, e, f = transform
+    layer = master_layer(font, font.glyphs[name])
+    out = []
+    for path in layer.paths:
+        out.append([(a * n.position.x + c * n.position.y + e, b * n.position.x + d * n.position.y + f, n.type)
+                    for n in path.nodes])
+    for comp in layer.components:
+        ca, cb, cc, cd, ce, cf = comp.transform
+        out += _glyph_paths(font, comp.name, (a * ca + c * cb, b * ca + d * cb, a * cc + c * cd,
+                                              b * cc + d * cd, a * ce + c * cf + e, b * ce + d * cf + f))
+    return out
+
+
+def _set_paths(layer, paths):
+    from glyphsLib.classes import GSNode, GSPath
+
+    layer.paths = []
+    for pts in paths:
+        p = GSPath()
+        p.nodes = [GSNode(Point(round(x), round(y)), t) for x, y, t in pts]
+        p.closed = True
+        layer.paths.append(p)
+
+
+def step_honorifics(font):
+    from glyphsLib.classes import GSGlyph, GSLayer
+
+    with open(HONORIFICS) as fh:
+        layouts = json.load(fh)
+    master = font.masters[0]
+    for name, spec in layouts.items():
+        codes = set(spec["unicodes"])
+        for g in font.glyphs:
+            if codes & set(g.unicodes or []):
+                g.unicodes = [u for u in g.unicodes if u not in codes]
+        s = spec["scale"]
+        paths = []
+        for comp, x, y in spec["components"]:
+            paths += _glyph_paths(font, comp, (s, 0, 0, s, x, y))
+        glyph = GSGlyph(name)
+        glyph.unicodes = spec["unicodes"]
+        glyph.category, glyph.subCategory = "Symbol", "Other"
+        font.glyphs.append(glyph)
+        layer = GSLayer()
+        layer.layerId = layer.associatedMasterId = master.id
+        glyph.layers.append(layer)
+        _set_paths(layer, paths)
+        layer.width = spec["width"]
+    for name in DUROOD:
+        layer = master_layer(font, font.glyphs[name])
+        paths = _glyph_paths(font, name, (DUROOD_SCALE, 0, 0, DUROOD_SCALE, 0, 0))
+        xs = [x for p in paths for x, _, t in p if t != "offcurve"]
+        ys = [y for p in paths for _, y, t in p if t != "offcurve"]
+        dx, dy = DUROOD_SIDE - min(xs), DUROOD_BOTTOM - min(ys)
+        _set_paths(layer, [[(x + dx, y + dy, t) for x, y, t in p] for p in paths])
+        layer.components = []
+        layer.width = round(max(xs) - min(xs) + 2 * DUROOD_SIDE)
+
+
+# ---------------------------------------------------------------------------
 # Step 5: line metrics
 # ---------------------------------------------------------------------------
 
@@ -1574,6 +1655,7 @@ STEPS = [
     ("dot-positions", step_dot_positions),
     ("tips", step_tips),
     ("ends", step_ends),
+    ("honorifics", step_honorifics),
     ("line-metrics", step_line_metrics),
     ("naming", step_naming),
 ]
