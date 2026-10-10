@@ -658,9 +658,9 @@ def step_final_kaf_entry(font):
 
 # The base of isolated kaf/gaf is short for Nastaliq: it runs ~3.1 nuqta to
 # the left of the upright, against ~4.4 in the calligraphic form. It is
-# lengthened part of the way (to ~3.8); the rest of the letter keeps its
+# lengthened most of the way (to ~4.2); the rest of the letter keeps its
 # shape.
-ISOLATED_KAF_BASE = 1.22
+ISOLATED_KAF_BASE = 1.35
 
 
 def step_isolated_kaf(font):
