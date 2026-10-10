@@ -590,8 +590,6 @@ ASCENDERS = {
     ("LAM", "i"): 0.30, ("LAM", "isd"): 0.30, ("LAM", "m"): 0.30,
     ("LAM", "f"): 0.23, ("LAM", "u"): 0.23,
     ("LAM_ALIF", "u"): 0.50, ("LAM_ALIF", "f"): 0.50,
-    # The head of qaf stands on a taller neck in Nastaliq.
-    ("QAF", "u"): 0.50, ("QAF", "f"): 0.50,
 }
 # Individual forms which need a different stretch: LAMi2 is the laam of
 # لیکن, which runs up into the kaf sarkash above it.
@@ -615,8 +613,10 @@ def step_ascenders(font):
         y0 = 0.35 * top  # stretch between 35% and 65% of the height
         y1 = 0.65 * top
         D = amount * NUQTA
-        # For qaf only the neck (the right part of the letter) is stretched,
-        # not the left arm of the bowl.
+        # For qaf (if listed) only the neck (the right part of the letter)
+        # is stretched, not the left arm of the bowl. Measured without its
+        # dots, the calligraphic qaf is no taller than Gulzar's own, so it
+        # is currently not stretched.
         xs = [nd.position.x for p in layer.paths for nd in p.nodes]
         if name.startswith("QAF"):
             xa = min(xs) + 0.5 * (max(xs) - min(xs))

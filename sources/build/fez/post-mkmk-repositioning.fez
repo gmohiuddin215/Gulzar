@@ -38,13 +38,13 @@ Feature kern {
     Position @BEm (ddb <xPlacement=-60>) /^(BE|TE|SIN|SAD|TOE|AIN|FE|KAF|GAF|LAM|MIM|HAYC|HAYA)m/;
   } UseMarkFilteringSet [ddb];
 
-  # Final qaf now sits on the line (and stands taller), which lifts the
-  # letters before it. When such a short letter group follows a dal or re,
+  # Final qaf now sits on the line, which lifts the
+  # letters before it (by 203 units). When such a short letter group follows a dal or re,
   # keep the dots below its last letter where they were, clear of the dal
   # or re (تصدیق, الرقیق): lower them by the lift of the qaf.
   Routine DotsBeforeLiftedQaf {
-    Position [@dal_like @long_re] @inits ([sdb ddb tdb sdb.one ddb.one tdb.one sdb.two ddb.two tdb.two] <yPlacement=-291>) QAFf1;
-    Position [@dal_like @long_re] @inits @medis ([sdb ddb tdb sdb.one ddb.one tdb.one sdb.two ddb.two tdb.two] <yPlacement=-291>) QAFf1;
+    Position [@dal_like @long_re] @inits ([sdb ddb tdb sdb.one ddb.one tdb.one sdb.two ddb.two tdb.two] <yPlacement=-203>) QAFf1;
+    Position [@dal_like @long_re] @inits @medis ([sdb ddb tdb sdb.one ddb.one tdb.one sdb.two ddb.two tdb.two] <yPlacement=-203>) QAFf1;
   } UseMarkFilteringSet [sdb ddb tdb sdb.one ddb.one tdb.one sdb.two ddb.two tdb.two];
 
   # Sequences like پی have problems - where is the right place to
