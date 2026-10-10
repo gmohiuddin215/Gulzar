@@ -60,6 +60,23 @@
     ["ALLAHu1", 45, 607],
     ["ALIFu1", 466, 607]
  ]},
+ "radiAllahuAnhunna": {"unicodes": ["FD45"], "scale": 0.5, "width": 1076, "components": [
+    ["SHADDA_FATHA", 135, 176],
+    ["sdi", 135, 176],
+    ["NUNf1", 15, 26],
+    ["haydb", 503, 176],
+    ["HAYCm14", 348, 330],
+    ["sda", 500, 516],
+    ["BEm6", 490, 246],
+    ["AINi2", 582, 430],
+    ["CH_YEf1", 554, 135, {"lower": [150, 0.95, 200, 320]}],
+    ["sda", 844, 614],
+    ["SADi13", 764, 404],
+    ["REu1", 840, 135],
+    ["DAMMA", 140, 519],
+    ["ALLAHu1", 165, 554],
+    ["ALIFu1", 586, 554]
+ ]},
  "rahmatullahAlayh": {"unicodes": ["0612"], "scale": 0.44, "width": 1036, "components": [
     ["HAYCf1", 17, 397],
     ["ddb", 126, 298],

@@ -68,6 +68,15 @@ LAYOUTS = {
                   ("رضی", 760, 0, {"lower": {"CH_YEf1": (150, 0.95, 200, 320)}}),
                   ("اللہُ", 60, 0, {"clear": 28})],
     },
+    # for women: the same, with عنہنَّ (shadda and zabar on the noon)
+    "radiAllahuAnhunna": {
+        "unicodes": ["FD45"],
+        "scale": 0.5,
+        "align": ("REu1", 135),  # رضی level with رضی اللہُ عنہٗ
+        "parts": [("عنہنَّ", 0, -218),
+                  ("رضی", 1079, 0, {"lower": {"CH_YEf1": (150, 0.95, 200, 320)}}),
+                  ("اللہُ", 300, 0, {"clear": 28})],
+    },
     "rahmatullahAlayh": {
         "unicodes": ["0612"],
         "scale": 0.44,
