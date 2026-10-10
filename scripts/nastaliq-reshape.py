@@ -590,8 +590,8 @@ ASCENDERS = {
     ("LAM", "i"): 0.30, ("LAM", "isd"): 0.30, ("LAM", "m"): 0.30,
     ("LAM", "f"): 0.23, ("LAM", "u"): 0.23,
     ("LAM_ALIF", "u"): 0.50, ("LAM_ALIF", "f"): 0.50,
-    # The head of qaf stands on a taller neck in Nastaliq (5-5.6 nuqta).
-    ("QAF", "u"): 1.00, ("QAF", "f"): 1.00,
+    # The head of qaf stands on a taller neck in Nastaliq.
+    ("QAF", "u"): 0.50, ("QAF", "f"): 0.50,
 }
 # Individual forms which need a different stretch: LAMi2 is the laam of
 # لیکن, which runs up into the kaf sarkash above it.
