@@ -1544,6 +1544,13 @@ def step_ends(font):
 # as wide. Main strokes, stroke ends and dots are not touched.
 JOIN_WEIGHT = 12  # font units added on each side at the join
 JOIN_REACH = 110  # font units over which it fades out
+# Near a join no stroke stays thinner than JOIN_MIN_WIDTH (the start of a
+# final ye after ض or ل is a hairline): thin parts within JOIN_MIN_REACH
+# are widened up to it, at most JOIN_MAX_EXTRA on each side.
+JOIN_MIN_WIDTH = 70
+JOIN_MIN_REACH = 160
+JOIN_MAX_EXTRA = 25
+JOIN_ENTRY_KEEP = 45  # the first units of an incoming stroke keep their width
 
 
 def step_join_weight(font):
@@ -1559,10 +1566,13 @@ def step_join_weight(font):
         joins = [(a.position.x, a.position.y) for a in layer.anchors if a.name in ("entry", "exit")]
         if not joins:
             continue
+        exits = [(a.position.x, a.position.y) for a in layer.anchors if a.name == "exit"]
+        entries = [(a.position.x, a.position.y) for a in layer.anchors if a.name == "entry"]
         clean = _to_skia(layer)
         clean.simplify()
         _from_skia(clean, layer)
         normals = outward_normals(layer)
+        segs = outline_segments(layer)
         for path, nrms in zip(layer.paths, normals):
             nodes = list(path.nodes)
             n = len(nodes)
@@ -1570,9 +1580,23 @@ def step_join_weight(font):
             for i, (nd, nrm) in enumerate(zip(nodes, nrms)):
                 if nrm is None:
                     continue
-                d = min(math.hypot(nd.position.x - jx, nd.position.y - jy) for jx, jy in joins) / JOIN_REACH
-                w = 0.0 if d >= 1 else 1 - d * d * (3 - 2 * d)
-                moves[i] = (nrm[0] * JOIN_WEIGHT * w, nrm[1] * JOIN_WEIGHT * w)
+                x, y = nd.position.x, nd.position.y
+                dist = min(math.hypot(x - jx, y - jy) for jx, jy in joins)
+                # the outgoing stroke is made heavier, so the start of the next
+                # letter stays hidden inside it (no corner poking out)
+                dexit = min((math.hypot(x - jx, y - jy) for jx, jy in exits), default=1e9) / JOIN_REACH
+                w = 0.0 if dexit >= 1 else 1 - dexit * dexit * (3 - 2 * dexit)
+                amount = JOIN_WEIGHT * w
+                # thin parts are widened, except the very start of an incoming
+                # stroke, which must stay inside the stroke it joins
+                dentry = min((math.hypot(x - jx, y - jy) for jx, jy in entries), default=1e9)
+                d2 = dist / JOIN_MIN_REACH
+                if d2 < 1 and dentry > JOIN_ENTRY_KEEP:
+                    t = ray_distance((x, y), (-nrm[0], -nrm[1]), segs)
+                    if t and 10 < t < JOIN_MIN_WIDTH:
+                        w2 = 1 - d2 * d2 * (3 - 2 * d2)
+                        amount = max(amount, min(JOIN_MAX_EXTRA, (JOIN_MIN_WIDTH - t) / 2) * w2)
+                moves[i] = (nrm[0] * amount, nrm[1] * amount)
             for i in range(n):
                 if moves[i] is None:
                     j = (i - 1) % n if nodes[(i - 1) % n].type != "offcurve" else (i + 1) % n
