@@ -812,10 +812,13 @@ def step_re_neck(font):
 # scaling them so the pen weight is unchanged; it is then shifted so the
 # gap before the next word stays the same.
 DAL_SCALE = {"DALf1": 1.20, "DALu1": 1.10}
+# Isolated do-chashmi he is small (2.8 x 1.9 nuqta, against ~3.2 x 2.3 in
+# the calligraphic form); it is enlarged the same way, keeping its shape.
+SIZE_SCALE = {"HAYAu1": 1.12}
 
 
 def step_dal_size(font):
-    for name, s in DAL_SCALE.items():
+    for name, s in list(DAL_SCALE.items()) + list(SIZE_SCALE.items()):
         layer = master_layer(font, font.glyphs[name])
         decompose_components(font, layer)
         b = layer_bounds(layer)
