@@ -51,9 +51,9 @@ LAYOUTS = {
         "unicodes": ["FD44"],
         "scale": 0.5,
         "bottom": 60,
-        "parts": [("عنہُما", 0, 0, {"nudge": {"sda": (0, -50)}}),
+        "parts": [("عنہُما", 0, 0, {"nudge": {"sda": (0, -100)}}),
                   ("رضی", 760, 0, {"lower": {"CH_YEf1": (150, 0.6, 200, 320)}}),
-                  ("اللہُ", 60, 0, {"clear": 28})],
+                  ("اللہُ", 60, 888)],
     },
     # for men: the same, with عنہم
     "radiAllahuAnhum": {
