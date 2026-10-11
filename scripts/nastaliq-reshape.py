@@ -973,6 +973,30 @@ def step_kaf_before_ye(font):
 
         warp_strokes(layer, field)
 
+# Before sad, zad and toe (مصنف، مضمون، مطلب) the initial mim's head sits
+# close against the following letter. Its connecting stroke is drawn out a
+# little: the stroke between MIM_SAD_STRETCH is stretched so the head moves
+# MIM_SAD_LONGER further from the join, which stays where it is.
+MIM_SAD_FORMS = ("MIMi10",)
+MIM_SAD_STRETCH = (60, 280)
+MIM_SAD_LONGER = 60
+
+
+def step_mim_before_sad(font):
+    for name in MIM_SAD_FORMS:
+        layer = master_layer(font, font.glyphs[name])
+        decompose_components(font, layer)
+        x0, x1 = MIM_SAD_STRETCH
+
+        def field(x, y):
+            if x <= x0:
+                return (0, 0)
+            w = min((x - x0) / (x1 - x0), 1.0)
+            return (MIM_SAD_LONGER * w * w * (3 - 2 * w), 0)
+
+        warp_strokes(layer, field)
+        layer.width += MIM_SAD_LONGER
+
 # ---------------------------------------------------------------------------
 # Step 3g: re neck
 # ---------------------------------------------------------------------------
@@ -1960,6 +1984,7 @@ STEPS = [
     ("haya-size", step_haya_size),
     ("ascenders", step_ascenders),
     ("kaf-before-ye", step_kaf_before_ye),
+    ("mim-before-sad", step_mim_before_sad),
     ("re-neck", step_re_neck),
     ("re-final-tail", step_re_final_tail),
     ("re-weight", step_re_weight),
@@ -1998,7 +2023,7 @@ JOIN_FADE = 110
 JOIN_SAFE_STEPS = {
     "proportions", "bowls", "bowl-length", "sarkash", "sarkash-length", "final-kaf-entry",
     "isolated-kaf", "tilts", "re-tail", "haya-size", "ascenders", "re-neck", "re-final-tail",
-    "re-weight", "vao-lift", "re-raise", "dal-size", "kaf-before-ye",
+    "re-weight", "vao-lift", "re-raise", "dal-size", "kaf-before-ye", "mim-before-sad",
 }
 
 

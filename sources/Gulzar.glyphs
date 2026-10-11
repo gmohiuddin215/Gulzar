@@ -76036,7 +76036,7 @@ layers = (
 anchors = (
 {
 name = bottom;
-position = "{395, 110}";
+position = "{455, 110}";
 },
 {
 name = exit;
@@ -76044,7 +76044,7 @@ position = "{0, 0}";
 },
 {
 name = top;
-position = "{389, 398}";
+position = "{449, 398}";
 }
 );
 hints = (
@@ -76064,26 +76064,26 @@ paths = (
 closed = 1;
 nodes = (
 "162 0 OFFCURVE",
-"223 68 OFFCURVE",
-"290 141 CURVE SMOOTH",
-"341 196 OFFCURVE",
-"353 204 OFFCURVE",
-"420 157 CURVE",
-"447 191 LINE SMOOTH",
-"470 225 OFFCURVE",
-"479 252 OFFCURVE",
-"479 274 CURVE SMOOTH",
-"479 307 OFFCURVE",
-"459 330 OFFCURVE",
-"436 347 CURVE SMOOTH",
-"408 367 OFFCURVE",
-"408 384 OFFCURVE",
-"403 398 CURVE",
-"403 408 OFFCURVE",
-"387 408 OFFCURVE",
-"387 398 CURVE",
-"297 244 LINE SMOOTH",
-"241 142 OFFCURVE",
+"283 68 OFFCURVE",
+"350 141 CURVE SMOOTH",
+"401 196 OFFCURVE",
+"413 204 OFFCURVE",
+"480 157 CURVE",
+"507 191 LINE SMOOTH",
+"530 225 OFFCURVE",
+"539 252 OFFCURVE",
+"539 274 CURVE SMOOTH",
+"539 307 OFFCURVE",
+"519 330 OFFCURVE",
+"496 347 CURVE SMOOTH",
+"468 367 OFFCURVE",
+"468 384 OFFCURVE",
+"463 398 CURVE",
+"463 408 OFFCURVE",
+"447 408 OFFCURVE",
+"447 398 CURVE",
+"357 244 LINE SMOOTH",
+"301 142 OFFCURVE",
 "162 48 OFFCURVE",
 "24 48 CURVE",
 "10 39 OFFCURVE",
@@ -76092,7 +76092,7 @@ nodes = (
 );
 }
 );
-width = 521;
+width = 581;
 }
 );
 note = MIMi6;
@@ -118104,6 +118104,7 @@ tilts,
 "haya-size",
 ascenders,
 "kaf-before-ye",
+"mim-before-sad",
 "re-neck",
 "re-final-tail",
 "re-weight",
