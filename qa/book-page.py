@@ -35,6 +35,8 @@ def main():
     ap.add_argument("--chapter", default="", help="running head at the left")
     ap.add_argument("--page", default="", help="page number, in the middle")
     ap.add_argument("--width", type=int, default=1600, help="image width in pixels")
+    ap.add_argument("--space", type=int, help="word space in font units (default: the font's own, "
+                    "to preview a change before rebuilding)")
     args = ap.parse_args()
 
     tt = TTFont(args.font)
@@ -52,7 +54,8 @@ def main():
             x += pos.x_advance
         return out, x
 
-    space = shape(" ")[1]
+    # the Urdu word space (a lone space would be shaped as the Latin one)
+    space = args.space if args.space is not None else hbfont.get_glyph_h_advance(hbfont.get_glyph_from_name("space.urdu"))
     lines = [[shape(w) for w in line.split()] for line in open(args.text, encoding="utf-8").read().splitlines()]
     lines = [l for l in lines if l]
     natural = [sum(w for _, w in l) + space * (len(l) - 1) for l in lines]

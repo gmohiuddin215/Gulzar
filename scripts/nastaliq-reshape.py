@@ -38,7 +38,8 @@ NEW_UPM = 1250
 
 # Gap between words. Traditional setting puts words almost touching
 # (median gap ~0.5 nuqta, often tucked under each other); Gulzar's was ~1.4.
-URDU_SPACE_WIDTH = 80
+# Set a little under the measured median after comparing a printed book page.
+URDU_SPACE_WIDTH = 65
 
 
 def step_scale_and_spacing(font):
