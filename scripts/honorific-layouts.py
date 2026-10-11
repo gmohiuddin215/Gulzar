@@ -137,40 +137,39 @@ LAYOUTS = {
         "bottom": 60,
         "parts": [("قُدِّسَ", 0, 0), ("سِرُّہٗ", 150, 0, {"clear": 30})],
     },
-    # عَلَیْہِ السَّلَام in one row, عَلَیْہِ just clear of the alif of السَّلَام;
-    # the mim's long tail is drawn up to a short one, as in عنہم, so the
-    # honorific sits no lower than the others. Also the small mark U+0611.
+    # عَلَیْہِ السَّلَام in one row, عَلَیْہِ just clear of the alif of السَّلَام,
+    # the mim with its full tail. Also the small mark U+0611.
     # The variants (علیہم، علیہما، علیہا) follow the same plan.
     "alayhiSalaam": {
         "unicodes": ["0611", "FD47"],
         "scale": 0.4,
-        "bottom": 60,
-        "parts": [("السَّلَام", 0, 0, {"shorten": {"MIMu1": (100, 0.4, 150, 250)}}), ("عَلَیْہِ", 1700, 0)],
+        "align": ("MIMu1", 200),  # the mim of السَّلَام on one line in every variant
+        "parts": [("السَّلَام", 0, 0), ("عَلَیْہِ", 1700, 0)],
     },
     "alayhimSalaam": {
         "unicodes": ["FD48"],
         "scale": 0.4,
-        "bottom": 60,
-        "parts": [("السَّلَام", 0, 0, {"shorten": {"MIMu1": (100, 0.4, 150, 250)}}), ("عَلَیْہِمُ", 1770, 0, {"shorten": {"MIMf1": (150, 0.35, 200, 300)}})],
+        "align": ("MIMu1", 200),  # the mim of السَّلَام on one line in every variant
+        "parts": [("السَّلَام", 0, 0), ("عَلَیْہِمُ", 1770, 0)],
     },
     "alayhimaaSalaam": {
         "unicodes": ["FD49"],
         "scale": 0.4,
-        "bottom": 60,
-        "parts": [("السَّلَام", 0, 0, {"shorten": {"MIMu1": (100, 0.4, 150, 250)}}), ("عَلَیْہِمَا", 1760, 0)],
+        "align": ("MIMu1", 200),  # the mim of السَّلَام on one line in every variant
+        "parts": [("السَّلَام", 0, 0), ("عَلَیْہِمَا", 1760, 0)],
     },
     "alayhaaSalaam": {
         "unicodes": ["FD4D"],
         "scale": 0.4,
-        "bottom": 60,
-        "parts": [("السَّلَام", 0, 0, {"shorten": {"MIMu1": (100, 0.4, 150, 250)}}), ("عَلَیْہَا", 1760, 0)],
+        "align": ("MIMu1", 200),  # the mim of السَّلَام on one line in every variant
+        "parts": [("السَّلَام", 0, 0), ("عَلَیْہَا", 1760, 0)],
     },
     # عَلَیْہِ الصَّلٰوۃُ وَالسَّلَام in two rows: عَلَیْہِ الصَّلٰوۃُ above وَالسَّلَام
     "alayhiSalaatuWasSalaam": {
         "unicodes": ["FD4A"],
         "scale": 0.4,
-        "bottom": 60,
-        "parts": [("وَالسَّلَام", 0, 0, {"shorten": {"MIMu1": (100, 0.4, 150, 250)}}), ("الصَّلٰوۃُ", 200, 0, {"clear": 30}), ("عَلَیْہِ", 1830, 0, {"clear": 30})],
+        "align": ("MIMu1", 200),  # the mim of السَّلَام on one line in every variant
+        "parts": [("وَالسَّلَام", 0, 0), ("الصَّلٰوۃُ", 200, 0, {"clear": 30}), ("عَلَیْہِ", 1830, 0, {"clear": 30})],
     },
 }
 SIDE_BEARING = 40

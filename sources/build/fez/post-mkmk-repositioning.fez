@@ -164,6 +164,8 @@ Feature kern {
     # Position ALIFu1 MADDA ( /[ui](sd)?\d/ <xAdvance=+0> ) [@dal_like @vao_like /SINi/];
     Position ALIFu1 MADDA ( /[ui](sd)?\d/ <xAdvance=+150> ) /[KG]AFm/;
     Position ALIFu1 MADDA ( /[ui](sd)?\d/ <xAdvance=+75> );
+    # the toe/zoe loop sits low, clear of the hamza: no extra space (مؤطا)
+    Position @vao_like HAMZA_ABOVE ( /^TOEi/ <xAdvance=+0> );
     Position [@alif_like @vao_like] HAMZA_ABOVE ( /[ui](sd)?\d/ <xAdvance=+50> );
 
     # Heh Alif
