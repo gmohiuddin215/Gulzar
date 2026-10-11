@@ -102,7 +102,8 @@ Feature rlig {
 
 # Before kaf and gaf the laam is drawn a little lower (لکھا، لگا، ملک، الگ);
 # the medial kaf and gaf before re likewise (مگر، دیگر), but not where dots
-# stand above the letters before it, under its sarkash (فنگر، شکر، کنفیگر).
+# or vowel marks stand above the letters before it, under its sarkash (فنگر،
+# شکر، کنفیگر، جُکر).
 # See step_lowered_copies in scripts/nastaliq-reshape.py.
 Feature rlig {
   Routine LamBeforeKaf {
@@ -115,9 +116,9 @@ Feature rlig {
     Substitute GAFm16 -> GAFm96;
   };
   Routine KafUnderDots {
-    Substitute [sda dda tda toeda] (KAFm96) -> KAFm16;
-    Substitute [sda dda tda toeda] (GAFm96) -> GAFm16;
-    Substitute [sda dda tda toeda] /^[A-Z_]+[im]\d+$/ (KAFm96) -> KAFm16;
-    Substitute [sda dda tda toeda] /^[A-Z_]+[im]\d+$/ (GAFm96) -> GAFm16;
-  } UseMarkFilteringSet [sda dda tda toeda];
+    Substitute [sda dda tda toeda DAMMA FATHA] (KAFm96) -> KAFm16;
+    Substitute [sda dda tda toeda DAMMA FATHA] (GAFm96) -> GAFm16;
+    Substitute [sda dda tda toeda DAMMA FATHA] /^[A-Z_]+[im]\d+$/ (KAFm96) -> KAFm16;
+    Substitute [sda dda tda toeda DAMMA FATHA] /^[A-Z_]+[im]\d+$/ (GAFm96) -> GAFm16;
+  } UseMarkFilteringSet [sda dda tda toeda DAMMA FATHA];
 };
