@@ -373,4 +373,16 @@ Feature kern {
     Position [REf1] [sda tda toeda] (/SAD[ui]/ <xAdvance=+250>); # فزض
 
   };
+  # The dot of an initial nun/be/te raised one position to clear the dots
+  # of a following fe/qaf (نقل) goes the full 200 units; it needs much less.
+  Routine RaisedDotBeforeQaf {
+    Position /^[BT]Ei/ (sda.one <yPlacement=-150>) /^FEm/;
+  } UseMarkFilteringSet [sda.one];
+
+  # The two dots of a medial ye after a jim-family letter, set under a final
+  # ye's bowl (یحیی), are dropped further than elsewhere; bring them up level
+  # with the dots under the bowl in نبی، جی.
+  Routine YbDotsAfterJim {
+    Position /^JIMm/ /^[BT]Em13$/ (ddb.yb <yPlacement=+110>) /^CH_YEf/;
+  } UseMarkFilteringSet [ddb.yb];
 };
