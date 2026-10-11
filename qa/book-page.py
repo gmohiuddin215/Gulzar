@@ -39,6 +39,8 @@ def main():
                     "to preview a change before rebuilding)")
     ap.add_argument("--wrap", type=float, help="treat each line as a paragraph and break it to this "
                     "measure (font units) instead of keeping the given line breaks")
+    ap.add_argument("--check-lines", action="store_true",
+                    help="report any ink of one line touching the line above or below it")
     ap.add_argument("--source", help="draw the letters from this .glyphs source instead of the font "
                     "(positions still come from the font), to preview outline changes before rebuilding")
     args = ap.parse_args()
@@ -135,7 +137,9 @@ def main():
              f"<rect x='{margin}' y='{rule + pitch * 0.08}' width='{measure}' height='{pitch * 0.012}'/>")
 
     y = rule + pitch * 1.15
+    line_spans = []
     for line, nat in zip(lines, natural):
+        start = len(paths)
         words = sum(w for _, w in line)
         gap = space if nat < SHORT_LINE * measure or len(line) == 1 else (measure - words) / (len(line) - 1)
         x = page_w - margin
@@ -143,8 +147,31 @@ def main():
             x -= w
             draw(shaped, x, y)
             x -= gap
+        line_spans.append((start, len(paths), [w for w in line]))
         y += pitch
     page_h = max(page_h, y + pitch * 0.2)
+
+    if args.check_lines:
+        import re
+        import pathops
+        from fontTools.svgLib.path import parse_path
+
+        def ink(a, b):
+            pen_path = pathops.Path()
+            for svg in paths[a:b]:
+                parse_path(re.search("d='([^']*)'", svg).group(1), pen_path.getPen())
+            pen_path.simplify()
+            return pen_path
+
+        inks = [ink(a, b) for a, b, _ in line_spans]
+        touching = 0
+        for i in range(len(inks) - 1):
+            both = pathops.op(inks[i], inks[i + 1], pathops.PathOp.INTERSECTION)
+            if list(both.segments):
+                touching += 1
+                b = both.bounds
+                print(f"lines {i + 1} and {i + 2} touch, at x {b[0]:.0f}-{b[2]:.0f} from the left edge")
+        print(f"line check: {touching} of {len(inks) - 1} line pairs touch")
 
     scale = args.width / page_w
     svg = (f"<svg xmlns='http://www.w3.org/2000/svg' width='{page_w * scale}' height='{page_h * scale}' "
