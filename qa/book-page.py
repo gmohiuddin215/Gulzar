@@ -37,6 +37,8 @@ def main():
     ap.add_argument("--width", type=int, default=1600, help="image width in pixels")
     ap.add_argument("--space", type=int, help="word space in font units (default: the font's own, "
                     "to preview a change before rebuilding)")
+    ap.add_argument("--source", help="draw the letters from this .glyphs source instead of the font "
+                    "(positions still come from the font), to preview outline changes before rebuilding")
     args = ap.parse_args()
 
     tt = TTFont(args.font)
@@ -67,11 +69,39 @@ def main():
 
     paths = []
 
+    source = None
+    if args.source:
+        import glyphsLib
+        source = glyphsLib.GSFont(args.source)
+        master = source.masters[0].id
+
+    def draw_source(name, pen):
+        layer = next(l for l in source.glyphs[name].layers if l.layerId == master)
+        for path in layer.paths:
+            nodes = path.nodes
+            pen.moveTo(tuple(nodes[-1].position))
+            buf = []
+            for n in nodes:
+                if n.type == "offcurve":
+                    buf.append(tuple(n.position))
+                elif buf:
+                    pen.curveTo(*buf, tuple(n.position))
+                    buf = []
+                else:
+                    pen.lineTo(tuple(n.position))
+            pen.closePath()
+        for comp in layer.components:
+            draw_source(comp.name, TransformPen(pen, comp.transform))
+
     def draw(shaped, x0, base, s=1.0):
         for name, gx, gy in shaped:
             pen = SVGPathPen(glyphs)
-            glyphs[name].draw(TransformPen(pen, (s, 0, 0, -s, x0 + gx * s, base - gy * s)))
-            paths.append(f"<path d='{pen.getCommands()}'/>")
+            tpen = TransformPen(pen, (s, 0, 0, -s, x0 + gx * s, base - gy * s))
+            if source is not None and name in source.glyphs:
+                draw_source(name, tpen)
+            else:
+                glyphs[name].draw(tpen)
+            paths.append(f"<path d='{pen.getCommands()}' fill-rule='nonzero'/>")
 
     # running head and double rule
     head = page_h * 0.06

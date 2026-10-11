@@ -945,6 +945,27 @@ def step_ascenders(font):
         warp_strokes(layer, field)
 
 
+# Before ye (کی، کے، گی، گے، لکی، سکے) the kaf and gaf rise higher than in
+# their other forms, and in running text the sarkash stands well above the
+# line. Everything above KAF_YE_FROM is brought down towards it by
+# KAF_YE_SCALE, the stroke keeping its width; the joins stay where they are.
+KAF_YE_FORMS = re.compile(r"^(KAF|GAF)(i|m)(11|13)$")
+KAF_YE_FROM = 250
+KAF_YE_SCALE = 0.88
+
+
+def step_kaf_before_ye(font):
+    for g in font.glyphs:
+        if not KAF_YE_FORMS.match(g.name):
+            continue
+        layer = master_layer(font, g)
+        decompose_components(font, layer)
+
+        def field(x, y):
+            return (0, -(y - KAF_YE_FROM) * (1 - KAF_YE_SCALE)) if y > KAF_YE_FROM else (0, 0)
+
+        warp_strokes(layer, field)
+
 # ---------------------------------------------------------------------------
 # Step 3g: re neck
 # ---------------------------------------------------------------------------
@@ -1931,6 +1952,7 @@ STEPS = [
     ("re-tail", step_re_tail),
     ("haya-size", step_haya_size),
     ("ascenders", step_ascenders),
+    ("kaf-before-ye", step_kaf_before_ye),
     ("re-neck", step_re_neck),
     ("re-final-tail", step_re_final_tail),
     ("re-weight", step_re_weight),
@@ -1969,7 +1991,7 @@ JOIN_FADE = 110
 JOIN_SAFE_STEPS = {
     "proportions", "bowls", "bowl-length", "sarkash", "sarkash-length", "final-kaf-entry",
     "isolated-kaf", "tilts", "re-tail", "haya-size", "ascenders", "re-neck", "re-final-tail",
-    "re-weight", "vao-lift", "re-raise", "dal-size",
+    "re-weight", "vao-lift", "re-raise", "dal-size", "kaf-before-ye",
 }
 
 
