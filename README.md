@@ -1,6 +1,45 @@
 # Gulzar Nastaliq
 
-Gulzar Nastaliq is a modified version of [Gulzar](https://github.com/googlefonts/gulzar), reshaped towards the proportions of traditional Nastaliq: lower, rounder bowls, a lower, shorter kaf sarkash, taller ascenders, rounded stroke ends and tighter word spacing. Every outline is Gulzar's own, transformed geometrically by `scripts/nastaliq-reshape.py`; the shaping engine is Gulzar's. It is released, like Gulzar, under the SIL Open Font License 1.1.
+Gulzar Nastaliq is a modified version of [Gulzar](https://github.com/googlefonts/gulzar), reworked to look more like traditional Urdu Nastaliq as it is written and printed in books. Every outline is Gulzar's own, reshaped by `scripts/nastaliq-reshape.py`, and the shaping engine is Gulzar's. It is released, like Gulzar, under the SIL Open Font License 1.1.
+
+## What has changed
+
+### A more traditional Nastaliq style
+
+* Proportions closer to traditional Urdu Nastaliq: lower, rounder bowls, taller ascenders, a heavier pen with more thick-and-thin contrast, and tighter word spacing.
+* Shorter kaf and gaf where they used to stand too tall (کی، گی، کیے، گئے، اگر، مگر، کم، گھنٹوں), with the upright stem shortened and the sarkash keeping its length. A medial kaf or gaf comes down only where no dots or vowel marks sit under its sarkash (فنگر، شکر), and کیا، گیا keep a taller kaf.
+* A slightly lower laam before kaf and gaf (لکھا، لگا، ملک، الگ), so it no longer towers over the kaf.
+* Smoother joins between letters: into laam, dal and ye, and the sad and zad joins (صحیح، صل).
+* Rounded pen cuts and stroke ends instead of hard straight edges, including the flat side of the fe and qaf heads.
+* Better spacing after letters that do not join (د ذ ر ز و), so words such as ذخیرہ، دین، مؤطا، دیہی read as one word.
+
+### Dots and marks
+
+* Many dots placed closer to their letters and clear of each other, for example in نقل، یحیی، آغاز، ادیبوں، نشیبی، مستقبل، کابینہ، بست، تربیت، نئی، تقریباً.
+* Each dot change is checked against the shaping and collision tests, so dots that move closer do not run into other letters, dots or words.
+
+### Honorifics
+
+Fifteen honorific ligatures, drawn from the font's own letters with full harakat and sized to match each other:
+
+| Honorific | Code points |
+|---|---|
+| صلی اللہ علیہ وسلم | U+FDFA |
+| صلی اللہ علیہ وآلہٖ وسلم | U+FD4C |
+| رضی اللہ عنہ / عنہا / عنہما / عنہم / عنہن | U+0613, U+FD41, U+FD42, U+FD44, U+FD43, U+FD45 |
+| رحمۃ اللہ علیہ | U+0612 |
+| عزوجل | U+FDFF |
+| قدس سرہ | U+FD4B |
+| علیہ السلام / علیہم / علیہما / علیہا السلام | U+0611, U+FD47, U+FD48, U+FD49, U+FD4D |
+| علیہ الصلوۃ والسلام | U+FD4A |
+
+Typed phrases turn into these glyphs automatically: write صلی اللہ علیہ وسلم (with or without harakat, with or without spaces between the words, with Urdu or Arabic ye and he) and it is shown as the single honorific. A phrase that is only part of a longer word (سلمان، اللہیار) is left alone.
+
+### Optimised and tested
+
+* Shaping and collision tests run over the regression suite, a large Urdu word corpus and full book pages.
+* `qa/book-page.py` sets a page of text like a printed book page (justified lines, running head, verse centred), and can report lines whose ink touches, to judge the font for book printing.
+* `qa/shaping-report.py` prints collision counts so two builds can be compared.
 
 The rest of this file is Gulzar's original documentation.
 
@@ -31,7 +70,7 @@ Don't try exporting from Glyphs! It's not going to work!
 * `make release` produces a version of the font suitable for release.
 * `make test-shaping` checks the shaping rules and produces a report in `qa/shaping_tests/report.html`.
 * `make test` runs a full fontbakery check on the font.
-* `make proof` produces `urdu-john.pdf`, a comparison between Noto Nastaliq and GS Nastaliq.
+* `make proof` produces `urdu-john.pdf`, a proof of the font.
 * `make testproof` produces `test-failures.pdf`, PDF containing words with collisions.
 
 ## Fixing dot collisions

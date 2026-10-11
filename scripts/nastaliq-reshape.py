@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Reshape Gulzar towards a more calligraphic Nastaliq.
 
-The parameters below come from a study of the proportions of a traditional
-traditional Nastaliq: letter widths, heights, pen contrast and word spacing
-were measured in nuqta (dot) units and compared with Gulzar's. No outlines
+The parameters below come from a study of the proportions of traditional
+Urdu Nastaliq: letter widths, heights, pen contrast and word spacing were
+measured in nuqta (dot) units and compared with Gulzar's. No outlines
 are taken from any other font: every change here is a geometric transform
 of Gulzar's own outlines (scaling, shearing, directional stroke weighting).
 
