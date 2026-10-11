@@ -394,8 +394,16 @@ Feature kern {
     Position /^(DAL|RE|VAO)[uf]\d+$/ (/^[BT]Ei14$/ <xAdvance=+60>);
   } IgnoreMarks;
 
-  # The dot of ghain sits up and to the left of the ain's head.
+  # The dot of ghain sits higher over the ain's head. (Moved left as well,
+  # it runs into the letter after: پیغام، غلط، آغاز.)
   Routine GhainDot {
-    Position /^AIN[im]\d+$/ (sda <xPlacement=-40 yPlacement=+50>);
+    Position /^AIN[im]\d+$/ (sda <yPlacement=+70>);
   } UseMarkFilteringSet [sda];
+
+  # With the narrower word space, the tail of a final re reached the dots
+  # under the first letter of the next word (بہتر بنانے، ر پب); give these
+  # the old spacing back.
+  Routine ReTailBeforeLowDots {
+    Position /^RE[uf]\d+$/ (space.urdu <xAdvance=+30>) /^([BT]E|JIM)[iu]\d+$/ [sdb ddb tdb sdb.one ddb.one tdb.one];
+  } UseMarkFilteringSet [sdb ddb tdb sdb.one ddb.one tdb.one];
 };
