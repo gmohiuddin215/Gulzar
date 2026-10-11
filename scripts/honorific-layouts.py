@@ -122,6 +122,56 @@ LAYOUTS = {
         # علیہ on top, its ain drawn out to span رحمۃُ اللہ beneath it
         "parts": [("علیہ", -240, 700, {"kashida": (470, 216)}), ("اللہ", 0, 0), ("رحمۃُ", 1020, 0)],
     },
+    # عَزَّ وَجَلَّ in one row: جَلَّ on the left with its tall laam, وَ and
+    # عَزَّ beside it
+    "azzaWaJall": {
+        "unicodes": ["FDFF"],
+        "scale": 0.4,
+        "bottom": 60,
+        "parts": [("جَلَّ", 0, 0), ("وَ", 1030, 160), ("عَزَّ", 1500, 120)],
+    },
+    # قُدِّسَ سِرُّہٗ: سِرُّہٗ above the seen of قُدِّسَ
+    "quddisaSirruhu": {
+        "unicodes": ["FD4B"],
+        "scale": 0.4,
+        "bottom": 60,
+        "parts": [("قُدِّسَ", 0, 0), ("سِرُّہٗ", 150, 0, {"clear": 30})],
+    },
+    # عَلَیْہِ السَّلَام in one row, عَلَیْہِ just clear of the alif of السَّلَام;
+    # the mim's long tail is drawn up to a short one, as in عنہم, so the
+    # honorific sits no lower than the others. Also the small mark U+0611.
+    # The variants (علیہم، علیہما، علیہا) follow the same plan.
+    "alayhiSalaam": {
+        "unicodes": ["0611", "FD47"],
+        "scale": 0.4,
+        "bottom": 60,
+        "parts": [("السَّلَام", 0, 0, {"shorten": {"MIMu1": (100, 0.4, 150, 250)}}), ("عَلَیْہِ", 1700, 0)],
+    },
+    "alayhimSalaam": {
+        "unicodes": ["FD48"],
+        "scale": 0.4,
+        "bottom": 60,
+        "parts": [("السَّلَام", 0, 0, {"shorten": {"MIMu1": (100, 0.4, 150, 250)}}), ("عَلَیْہِمُ", 1770, 0, {"shorten": {"MIMf1": (150, 0.35, 200, 300)}})],
+    },
+    "alayhimaaSalaam": {
+        "unicodes": ["FD49"],
+        "scale": 0.4,
+        "bottom": 60,
+        "parts": [("السَّلَام", 0, 0, {"shorten": {"MIMu1": (100, 0.4, 150, 250)}}), ("عَلَیْہِمَا", 1760, 0)],
+    },
+    "alayhaaSalaam": {
+        "unicodes": ["FD4D"],
+        "scale": 0.4,
+        "bottom": 60,
+        "parts": [("السَّلَام", 0, 0, {"shorten": {"MIMu1": (100, 0.4, 150, 250)}}), ("عَلَیْہَا", 1760, 0)],
+    },
+    # عَلَیْہِ الصَّلٰوۃُ وَالسَّلَام in two rows: عَلَیْہِ الصَّلٰوۃُ above وَالسَّلَام
+    "alayhiSalaatuWasSalaam": {
+        "unicodes": ["FD4A"],
+        "scale": 0.4,
+        "bottom": 60,
+        "parts": [("وَالسَّلَام", 0, 0, {"shorten": {"MIMu1": (100, 0.4, 150, 250)}}), ("الصَّلٰوۃُ", 200, 0, {"clear": 30}), ("عَلَیْہِ", 1830, 0, {"clear": 30})],
+    },
 }
 SIDE_BEARING = 40
 KASHIDA_AIN = "AINi2"  # the initial ain with a long lower stroke
