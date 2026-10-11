@@ -39,6 +39,7 @@ def main():
                     "to preview a change before rebuilding)")
     ap.add_argument("--wrap", type=float, help="treat each line as a paragraph and break it to this "
                     "measure (font units) instead of keeping the given line breaks")
+    ap.add_argument("--center", action="store_true", help="centre every line (verse) instead of justifying")
     ap.add_argument("--check-lines", action="store_true",
                     help="report any ink of one line touching the line above or below it")
     ap.add_argument("--source", help="draw the letters from this .glyphs source instead of the font "
@@ -141,8 +142,8 @@ def main():
     for line, nat in zip(lines, natural):
         start = len(paths)
         words = sum(w for _, w in line)
-        gap = space if nat < SHORT_LINE * measure or len(line) == 1 else (measure - words) / (len(line) - 1)
-        x = page_w - margin
+        gap = space if args.center or nat < SHORT_LINE * measure or len(line) == 1 else (measure - words) / (len(line) - 1)
+        x = page_w - margin - ((measure - nat) / 2 if args.center else 0)
         for shaped, w in line:
             x -= w
             draw(shaped, x, y)
