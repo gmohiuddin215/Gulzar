@@ -66,7 +66,9 @@ def main():
                     marks.append(g.name)
                 elif kind.startswith("L"):
                     letters.append(g.name)
-    space = cmap[" "]
+    # the language setup turns the space into the Urdu word space before
+    # these rules run; accept either
+    space = f"[{cmap[' ']} space.urdu]" if "space.urdu" in font.glyphs else cmap[" "]
 
     def cls(ch):
         names = sorted({cmap[c] for c in ALTERNATIVES.get(ch, ch) if c in cmap})
