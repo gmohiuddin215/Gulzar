@@ -99,3 +99,13 @@ Feature rlig {
   Routine connections;
 };
 
+
+# Before kaf and gaf the laam is drawn a little lower (لکھا، لگا، ملک، الگ);
+# see step_lam_before_kaf in scripts/nastaliq-reshape.py.
+Feature rlig {
+  Routine LamBeforeKaf {
+    Substitute (LAMi3) /^[KG]AF[mf]/ -> LAMi93;
+    Substitute (LAMi8) /^[KG]AF[mf]/ -> LAMi98;
+    Substitute (LAMm3) /^[KG]AF[mf]/ -> LAMm93;
+  } IgnoreMarks;
+};
