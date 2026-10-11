@@ -945,13 +945,14 @@ def step_ascenders(font):
         warp_strokes(layer, field)
 
 
-# Before ye (کی، کے، گی، گے، لکی، سکے) the kaf and gaf rise higher than in
-# their other forms, and in running text the sarkash stands well above the
-# line. Everything above KAF_YE_FROM is brought down towards it by
-# KAF_YE_SCALE, the stroke keeping its width; the joins stay where they are.
+# Before ye (کی، کے، گی، گے، لکی، سکے) the kaf and gaf stand taller than in
+# their other forms. Their upright stem is shortened: the stem between
+# KAF_YE_STEM (as shares of the letter's height) is drawn down, and the
+# sarkash above it moves down whole by KAF_YE_LOWER of the height, keeping
+# its length and slope. The joins stay where they are.
 KAF_YE_FORMS = re.compile(r"^(KAF|GAF)(i|m)(11|13)$")
-KAF_YE_FROM = 250
-KAF_YE_SCALE = 0.88
+KAF_YE_STEM = (0.12, 0.62)
+KAF_YE_LOWER = 0.10
 
 
 def step_kaf_before_ye(font):
@@ -960,9 +961,15 @@ def step_kaf_before_ye(font):
             continue
         layer = master_layer(font, g)
         decompose_components(font, layer)
+        top = max(n.position.y for p in layer.paths for n in p.nodes)
+        y0, y1 = (f * top for f in KAF_YE_STEM)
+        drop = KAF_YE_LOWER * top
 
-        def field(x, y):
-            return (0, -(y - KAF_YE_FROM) * (1 - KAF_YE_SCALE)) if y > KAF_YE_FROM else (0, 0)
+        def field(x, y, y0=y0, y1=y1, drop=drop):
+            if y <= y0:
+                return (0, 0)
+            w = min((y - y0) / (y1 - y0), 1.0)
+            return (0, -drop * w * w * (3 - 2 * w))
 
         warp_strokes(layer, field)
 
