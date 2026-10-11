@@ -103,13 +103,17 @@ Feature rlig {
 # Before kaf and gaf the laam is drawn a little lower (لکھا، لگا، ملک، الگ);
 # the medial kaf and gaf before re likewise (مگر، دیگر), but not where dots
 # or vowel marks stand above the letters before it, under its sarkash (فنگر،
-# شکر، کنفیگر، جُکر).
+# شکر، کنفیگر، جُکر). The initial kaf and gaf of کیا، گیا stand taller.
 # See step_lowered_copies in scripts/nastaliq-reshape.py.
 Feature rlig {
   Routine LamBeforeKaf {
     Substitute (LAMi3) /^[KG]AF[mf]/ -> LAMi93;
     Substitute (LAMi8) /^[KG]AF[mf]/ -> LAMi98;
     Substitute (LAMm3) /^[KG]AF[mf]/ -> LAMm93;
+  } IgnoreMarks;
+  Routine TallKafInKiya {
+    Substitute (KAFi2) /^[BT]Em3$/ /^ALIFf/ -> KAFi92;
+    Substitute (GAFi2) /^[BT]Em3$/ /^ALIFf/ -> GAFi92;
   } IgnoreMarks;
   Routine LowKafBeforeRe {
     Substitute KAFm16 -> KAFm96;

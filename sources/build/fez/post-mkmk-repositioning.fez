@@ -385,7 +385,7 @@ Feature kern {
   # ye's bowl (یحیی), are dropped further than elsewhere; bring them up level
   # with the dots under the bowl in نبی، جی.
   Routine YbDotsAfterJim {
-    Position /^JIMm/ /^[BT]Em13$/ (ddb.yb <yPlacement=+110>) /^CH_YEf/;
+    Position /^JIMm/ /^[BT]Em13$/ (ddb.yb <yPlacement=+330>) /^CH_YEf/; # یحیی
   } UseMarkFilteringSet [ddb.yb];
   # Spacing after the letters that do not join (د ذ ر ز و). The khah before
   # ye (ذخیرہ) starts well to the left of its join and stood apart like a
@@ -394,6 +394,7 @@ Feature kern {
   Routine NonJoinerSpacing {
     Position /^(DAL|RE|VAO)[uf]\d+$/ (JIMi18 <xAdvance=-90>);
     Position /^(DAL|RE|VAO)[uf]\d+$/ (/^[BT]Ei14$/ <xAdvance=+60>);
+    Position /^(DAL|RE|VAO)[uf]\d+$/ (/^[BT]Ei6$/ <xAdvance=+150>) /^HAYCm/; # دیہی
   } IgnoreMarks;
 
   # The dot of ghain sits higher over the ain's head. (Moved left as well,
@@ -416,4 +417,27 @@ Feature kern {
     Position ([sda dda tda toeda] <xPlacement=+60 yPlacement=-40>) /^[KG]AFi(2|17)$/;
     Position ([sda dda tda toeda] <xPlacement=+60 yPlacement=-40>) [@vao_like @dal_like @alif_like] /^[KG]AFi(2|17)$/;
   } UseMarkFilteringSet [sda dda tda toeda];
+
+  # Dots placed by hand where the general rules leave them too far from
+  # their letter or against another dot (the word each rule is for is noted).
+  Routine DotFinesse {
+    # دیہی: the ye's dots below the line, the he's hook left of them
+    Position /^(DAL|RE|VAO)[uf]\d+$/ /^[BT]Ei6$/ ([ddb ddb.two] <yPlacement=-210> /^HAYCm/ <xAdvance=0> haydb <xPlacement=-110 yPlacement=-10>);
+    # ادیبوں: the ye's dots a little right, the be's dot up beside them
+    Position /^[BT]Eisd\d+$/ (ddb <xPlacement=+50> /^[BT]Em15$/ <xAdvance=0> sdb.one <xPlacement=-135 yPlacement=+340>);
+    # نشیبی: the ye's dots right, clear of the bowl; the be's dot up
+    Position /^[BT]Emsd\d+$/ (ddb <xPlacement=+90> /^[BT]Em13$/ <xAdvance=0> sdb.yb <xPlacement=+20 yPlacement=+240>) /^CH_YEf/;
+    # مستقبل: the te's dots lower, down towards the qaf's
+    Position /^[BT]Em\d+$/ (dda.two <xPlacement=+80 yPlacement=-150>) /^FEm\d+$/ dda;
+    # کابینہ: the ye's dots up beside the be's dot
+    Position /^[BT]Ei\d+$/ (sdb <xPlacement=+30> /^[BT]Emsd1$/ <xAdvance=0> ddb.two <xPlacement=-140 yPlacement=+280>) /^[BT]Em3$/;
+    # بست: the be's dot up under its letter
+    Position /^[BT]Ei24$/ (sdb <xPlacement=-20 yPlacement=+110>) /^SINm/;
+    # تربیت: the be's and ye's dots up and apart
+    Position /^RE[uf]\d+$/ /^[BT]Eisd1$/ (sdb <xPlacement=+40 yPlacement=+115> /^[BT]Em12$/ <xAdvance=0> ddb.two <xPlacement=-90 yPlacement=+170>);
+    # نئی: the noon's dot down beside the hamza
+    Position /^[BT]Eisd\d+$/ (sda.two <xPlacement=+140 yPlacement=-440>) /^[BT]Em13$/ HAMZA_ABOVE;
+    # تقریباً: the ye's and be's dots up and apart, either side of the re's tail
+    Position /^RE[uf]\d+$/ /^[BT]Eisd1$/ (ddb.one <xPlacement=+120 yPlacement=+220> /^[BT]Em3$/ <xAdvance=0> sdb.two <xPlacement=-190 yPlacement=+320>) /^ALIFf/;
+  } UseMarkFilteringSet [ddb ddb.two ddb.one haydb sdb sdb.one sdb.two sdb.yb dda dda.two sda.two HAMZA_ABOVE];
 };

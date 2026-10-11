@@ -1812,7 +1812,7 @@ def step_fe_head(font):
                 break
             path.nodes = nodes
 
-# Some letters are drawn a little lower in one context only, where the same
+# Some letters are drawn a little lower (or taller) in one context only, where the same
 # form is used elsewhere at full height: each is copied to a new glyph
 # (LOWERED_COPIES: form -> (copy, share of its height, stem)), the copy's
 # upright stem shortened as in step_kaf_before_ye, and
@@ -1822,6 +1822,8 @@ def step_fe_head(font):
 #   - The medial kaf and gaf before re (مگر، دیگر) where no dots stand above
 #     the letters before it: lower, its sarkash would run into them (فنگر،
 #     شکر، کنفیگر).
+#   - The other way: the initial kaf and gaf of کیا، گیا stand taller again
+#     (a negative share) than in کیے، گئے، کتاب, where they are shortened.
 LAM_KAF_STEM = (0.25, 0.75)
 LOWERED_COPIES = {
     "LAMi3": ("LAMi93", 0.07, LAM_KAF_STEM),
@@ -1829,6 +1831,8 @@ LOWERED_COPIES = {
     "LAMm3": ("LAMm93", 0.07, LAM_KAF_STEM),
     "KAFm16": ("KAFm96", 0.10, KAF_YE_STEM),
     "GAFm16": ("GAFm96", 0.10, KAF_YE_STEM),
+    "KAFi2": ("KAFi92", -0.15, KAF_YE_STEM),
+    "GAFi2": ("GAFi92", -0.15, KAF_YE_STEM),
 }
 
 
