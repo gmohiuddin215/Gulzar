@@ -37,6 +37,8 @@ def main():
     ap.add_argument("--width", type=int, default=1600, help="image width in pixels")
     ap.add_argument("--space", type=int, help="word space in font units (default: the font's own, "
                     "to preview a change before rebuilding)")
+    ap.add_argument("--wrap", type=float, help="treat each line as a paragraph and break it to this "
+                    "measure (font units) instead of keeping the given line breaks")
     ap.add_argument("--source", help="draw the letters from this .glyphs source instead of the font "
                     "(positions still come from the font), to preview outline changes before rebuilding")
     args = ap.parse_args()
@@ -60,8 +62,22 @@ def main():
     space = args.space if args.space is not None else hbfont.get_glyph_h_advance(hbfont.get_glyph_from_name("space.urdu"))
     lines = [[shape(w) for w in line.split()] for line in open(args.text, encoding="utf-8").read().splitlines()]
     lines = [l for l in lines if l]
+    if args.wrap:
+        broken = []
+        for para in lines:
+            line, width = [], 0
+            for word in para:
+                extra = word[1] + (space if line else 0)
+                if line and width + extra > args.wrap:
+                    broken.append(line)
+                    line, width = [], 0
+                    extra = word[1]
+                line.append(word)
+                width += extra
+            broken.append(line)
+        lines = broken
     natural = [sum(w for _, w in l) + space * (len(l) - 1) for l in lines]
-    measure = max(natural)
+    measure = args.wrap or max(natural)
     pitch = measure * PITCH_TO_MEASURE
     page_w = measure * PAGE_TO_MEASURE
     page_h = page_w * PAGE_ASPECT
