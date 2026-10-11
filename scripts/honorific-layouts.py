@@ -35,6 +35,10 @@ import uharfbuzz as hb
 # the letter before, and the listed marks move in with it.
 # Option "stretch": {glyph: (x factor, y factor)}: in this part only, that
 # glyph (a madda drawn out over a word) is drawn wider or taller.
+# Option "sweep": {glyph: (extra, dip)}: in this part only, that letter (a
+# seen) is drawn without teeth as one long stroke of the pen, `extra` longer
+# than the letter and sagging by `dip` (see _sweep in
+# scripts/nastaliq-reshape.py); the letters after it move on to make room.
 LAYOUTS = {
     "radiAllahuAnhu": {
         "unicodes": ["0613", "FD41"],
@@ -170,7 +174,7 @@ LAYOUTS = {
         "unicodes": ["FD4A"],
         "scale": 0.4,
         "align": ("AINi3", 326),  # عَلَیْہِ level with عَلَیْہِ السَّلَام
-        "parts": [("الصَّلٰوۃُ", 0, 0), ("عَلَیْہِ", 1640, 0, {"nudge": {"FATHA#1": (80, 150)}}), ("وَالسَّلَام", 290, 0, {"clear": 30})],
+        "parts": [("الصَّلٰوۃُ", 0, 0), ("عَلَیْہِ", 1640, 0, {"nudge": {"FATHA#1": (80, 150)}}), ("وَالسَّلَام", 65, 0, {"clear": 30, "sweep": {"SINm3": (450, 60)}})],
     },
 }
 SIDE_BEARING = 40
@@ -247,11 +251,22 @@ def main(path):
         comps = []
         for text, dx, dy, *opts in spec["parts"]:
             glyphs = [(g, x, y, None) for g, x, y in shape(font, text)]
+            sweeps = opts[0].get("sweep", {}) if opts else {}
+            for letter, (extra, dip) in sweeps.items():
+                # the letters after it move on by `extra`, its own marks by half
+                k = next(i for i, g in enumerate(glyphs) if g[0] == letter)
+                own = k
+                while own > 0 and source.glyphs[glyphs[own - 1][0]].category == "Mark":
+                    own -= 1
+                glyphs = [(g, x - (extra if i < own else extra / 2 if i < k else 0), y, o)
+                          for i, (g, x, y, o) in enumerate(glyphs)]
             if opts and "clear" in opts[0]:
                 # sit this part just above what is already placed, the given
                 # distance clear of it at the closest point
                 below = reshape.honorific_outline(source, comps, s)
-                trial = reshape.honorific_outline(source, [[g, (x + dx) * s, y * s] for g, x, y, _ in glyphs], s)
+                trial = reshape.honorific_outline(
+                    source, [[g, (x + dx) * s, y * s] + ([{"sweep": list(sweeps[g])}] if g in sweeps else [])
+                             for g, x, y, _ in glyphs], s)
                 dy = (opts[0]["clear"] - clearance(below, trial)) / s
             if opts and "kashida" in opts[0]:
                 glyphs = with_kashida(glyphs, source, *opts[0]["kashida"])
@@ -284,6 +299,8 @@ def main(path):
                 for kind, letters in reshapes.items():
                     if g in letters:
                         comp.append({kind: letters[g]})
+                if g in sweeps:
+                    comp.append({"sweep": list(sweeps[g])})
                 if opt:
                     lam, lx, ly = opt["kashida"][:3]
                     comp.append({"kashida": [lam, (lx + dx) * s, (ly + dy) * s]})
