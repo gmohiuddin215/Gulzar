@@ -952,12 +952,13 @@ def step_ascenders(font):
 # the letter's height) is drawn down, and the sarkash above it moves down
 # whole, keeping its length and slope; the joins stay where they are. کی/گی
 # come down most. The medial forms before ye (لکی، سکے) keep their height:
-# lower, their sarkash comes too near a laam before them; the medial form
-# before re (مگر، دیگر) comes down only a little.
+# lower, their sarkash comes too near a laam before them. The medial form
+# before re (مگر، دیگر) comes down a little only where no dots stand under
+# its sarkash (see LOWERED_COPIES).
 KAF_YE_LOWER = {"KAFi13": 0.26, "GAFi13": 0.26, "KAFi11": 0.10, "GAFi11": 0.10,
                 "KAFi24": 0.10, "GAFi24": 0.10, "KAFi5": 0.20, "GAFi5": 0.20,
                 "KAFi2": 0.18, "GAFi2": 0.18, "KAFi9": 0.18, "GAFi9": 0.18,
-                "KAFi17": 0.18, "GAFi17": 0.18, "KAFm16": 0.10, "GAFm16": 0.10}
+                "KAFi17": 0.18, "GAFi17": 0.18}
 KAF_YE_STEM = (0.12, 0.62)
 
 
@@ -1811,22 +1812,31 @@ def step_fe_head(font):
                 break
             path.nodes = nodes
 
-# Before kaf and gaf (لکھا، لگا، ملک، الگ) the laam stands a little lower, so
-# it does not tower over the shortened kaf. The laam forms used there are
-# shared with other words (لیں، حوالہ، جلد), so each is copied to a new
-# glyph (LAM_BEFORE_KAF: form -> copy), drawn LAM_KAF_LOWER of its height
-# lower (the stem shortened as for the kaf, its top keeping its shape), and
-# sources/build/fez/connections.fez puts the copy before a kaf or gaf.
-LAM_BEFORE_KAF = {"LAMi3": "LAMi93", "LAMi8": "LAMi98", "LAMm3": "LAMm93"}
-LAM_KAF_LOWER = 0.07
+# Some letters are drawn a little lower in one context only, where the same
+# form is used elsewhere at full height: each is copied to a new glyph
+# (LOWERED_COPIES: form -> (copy, share of its height, stem)), the copy's
+# upright stem shortened as in step_kaf_before_ye, and
+# sources/build/fez/connections.fez puts the copy in that context.
+#   - The laam before kaf and gaf (لکھا، لگا، ملک، الگ), so it does not tower
+#     over the shortened kaf; the forms are shared with لیں، حوالہ، جلد.
+#   - The medial kaf and gaf before re (مگر، دیگر) where no dots stand above
+#     the letters before it: lower, its sarkash would run into them (فنگر،
+#     شکر، کنفیگر).
 LAM_KAF_STEM = (0.25, 0.75)
+LOWERED_COPIES = {
+    "LAMi3": ("LAMi93", 0.07, LAM_KAF_STEM),
+    "LAMi8": ("LAMi98", 0.07, LAM_KAF_STEM),
+    "LAMm3": ("LAMm93", 0.07, LAM_KAF_STEM),
+    "KAFm16": ("KAFm96", 0.10, KAF_YE_STEM),
+    "GAFm16": ("GAFm96", 0.10, KAF_YE_STEM),
+}
 
 
-def step_lam_before_kaf(font):
+def step_lowered_copies(font):
     from glyphsLib.classes import GSAnchor, GSGlyph, GSLayer
 
     master = font.masters[0]
-    for name, copy in LAM_BEFORE_KAF.items():
+    for name, (copy, lower, stem) in LOWERED_COPIES.items():
         src = font.glyphs[name]
         layer0 = master_layer(font, src)
         glyph = GSGlyph(copy)
@@ -1840,8 +1850,8 @@ def step_lam_before_kaf(font):
         for a in layer0.anchors:
             layer.anchors.append(GSAnchor(a.name, Point(a.position.x, a.position.y)))
         top = max(n.position.y for p in layer.paths for n in p.nodes)
-        y0, y1 = (f * top for f in LAM_KAF_STEM)
-        drop = LAM_KAF_LOWER * top
+        y0, y1 = (f * top for f in stem)
+        drop = lower * top
 
         def field(x, y, y0=y0, y1=y1, drop=drop):
             if y <= y0:
@@ -2232,7 +2242,7 @@ STEPS = [
     ("sad-join", step_sad_join),
     ("corners", step_corners),
     ("fe-head", step_fe_head),
-    ("lam-before-kaf", step_lam_before_kaf),
+    ("lowered-copies", step_lowered_copies),
     ("honorifics", step_honorifics),
     ("line-metrics", step_line_metrics),
     ("naming", step_naming),

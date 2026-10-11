@@ -408,4 +408,12 @@ Feature kern {
   Routine ReTailBeforeLowDots {
     Position /^RE[uf]\d+$/ (space.urdu <xAdvance=+30>) /^([BT]E|JIM)[iu]\d+$/ [sdb ddb tdb sdb.one ddb.one tdb.one];
   } UseMarkFilteringSet [sdb ddb tdb sdb.one ddb.one tdb.one];
+
+  # The shortened initial kaf and gaf of اگر، کیا (see step_kaf_before_ye in
+  # scripts/nastaliq-reshape.py) bring the sarkash down onto the dots of the
+  # letter before (نوکر، توکیا): they move right and down, out from under it.
+  Routine DotsUnderLowKaf {
+    Position ([sda dda tda toeda] <xPlacement=+60 yPlacement=-40>) /^[KG]AFi(2|17)$/;
+    Position ([sda dda tda toeda] <xPlacement=+60 yPlacement=-40>) [@vao_like @dal_like @alif_like] /^[KG]AFi(2|17)$/;
+  } UseMarkFilteringSet [sda dda tda toeda];
 };
