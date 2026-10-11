@@ -29,9 +29,10 @@ import uharfbuzz as hb
 # in this part only, that letter's rising stroke is brought down, or its
 # falling tail drawn up (see honorific_outline in scripts/nastaliq-reshape.py).
 # Option "nudge": {glyph: (dx, dy)}: in this part only, that glyph (a dot,
-# a vowel mark) is moved by so much. Option "shrink": {glyph: (factor,
-# [marks])}: in this part only, that letter is drawn smaller about the point
-# where it joins the letter before, and the listed marks move in with it.
+# a vowel mark) is moved by so much; "glyph#k" moves only the k-th of them
+# in reading order. Option "shrink": {glyph: (factor, [marks])}: in this
+# part only, that letter is drawn smaller about the point where it joins
+# the letter before, and the listed marks move in with it.
 # Option "stretch": {glyph: (x factor, y factor)}: in this part only, that
 # glyph (a madda drawn out over a word) is drawn wider or taller.
 LAYOUTS = {
@@ -144,32 +145,32 @@ LAYOUTS = {
         "unicodes": ["0611", "FD47"],
         "scale": 0.4,
         "align": ("MIMu1", 200),  # the mim of السَّلَام on one line in every variant
-        "parts": [("السَّلَام", 0, 0), ("عَلَیْہِ", 1700, 0)],
+        "parts": [("السَّلَام", 0, 0), ("عَلَیْہِ", 1700, 0, {"nudge": {"FATHA#1": (80, 150)}})],
     },
     "alayhimSalaam": {
         "unicodes": ["FD48"],
         "scale": 0.4,
         "align": ("MIMu1", 200),  # the mim of السَّلَام on one line in every variant
-        "parts": [("السَّلَام", 0, 0), ("عَلَیْہِمُ", 1770, 0)],
+        "parts": [("السَّلَام", 0, 0), ("عَلَیْہِمُ", 1770, 0, {"nudge": {"FATHA#1": (80, 150)}})],
     },
     "alayhimaaSalaam": {
         "unicodes": ["FD49"],
         "scale": 0.4,
         "align": ("MIMu1", 200),  # the mim of السَّلَام on one line in every variant
-        "parts": [("السَّلَام", 0, 0), ("عَلَیْہِمَا", 1760, 0)],
+        "parts": [("السَّلَام", 0, 0), ("عَلَیْہِمَا", 1760, 0, {"nudge": {"FATHA#1": (80, 150)}})],
     },
     "alayhaaSalaam": {
         "unicodes": ["FD4D"],
         "scale": 0.4,
         "align": ("MIMu1", 200),  # the mim of السَّلَام on one line in every variant
-        "parts": [("السَّلَام", 0, 0), ("عَلَیْہَا", 1760, 0)],
+        "parts": [("السَّلَام", 0, 0), ("عَلَیْہَا", 1760, 0, {"nudge": {"FATHA#1": (80, 150)}})],
     },
-    # عَلَیْہِ الصَّلٰوۃُ وَالسَّلَام in two rows: عَلَیْہِ الصَّلٰوۃُ above وَالسَّلَام
+    # عَلَیْہِ الصَّلٰوۃُ وَالسَّلَام in two rows: وَالسَّلَام above عَلَیْہِ الصَّلٰوۃُ
     "alayhiSalaatuWasSalaam": {
         "unicodes": ["FD4A"],
         "scale": 0.4,
-        "align": ("MIMu1", 200),  # the mim of السَّلَام on one line in every variant
-        "parts": [("وَالسَّلَام", 0, 0), ("الصَّلٰوۃُ", 200, 0, {"clear": 30}), ("عَلَیْہِ", 1830, 0, {"clear": 30})],
+        "align": ("AINi3", 326),  # عَلَیْہِ level with عَلَیْہِ السَّلَام
+        "parts": [("الصَّلٰوۃُ", 0, 0), ("عَلَیْہِ", 1640, 0, {"nudge": {"FATHA#1": (80, 150)}}), ("وَالسَّلَام", 290, 0, {"clear": 30})],
     },
 }
 SIDE_BEARING = 40
@@ -269,8 +270,14 @@ def main(path):
                           for g, x, y, o in glyphs]
                 size[letter] = f
             size.update(opts[0].get("stretch", {}) if opts else {})
-            for g, x, y, opt in glyphs:
-                nx, ny = nudge.get(g, (0, 0))
+            # "name#k" in a nudge picks the k-th such glyph in reading order
+            seen, nth = {}, []
+            for g, *_ in reversed(glyphs):
+                seen[g] = seen.get(g, 0) + 1
+                nth.append(f"{g}#{seen[g]}")
+            nth.reverse()
+            for (g, x, y, opt), gk in zip(glyphs, nth):
+                nx, ny = nudge.get(gk, nudge.get(g, (0, 0)))
                 comp = [g, (x + dx + nx) * s, (y + dy + ny) * s]
                 if g in size:
                     comp.append({"size": size[g]})
