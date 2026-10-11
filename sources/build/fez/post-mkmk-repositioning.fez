@@ -428,7 +428,7 @@ Feature kern {
     # نشیبی: the ye's dots right, clear of the bowl; the be's dot up
     Position /^[BT]Emsd\d+$/ (ddb <xPlacement=+90> /^[BT]Em13$/ <xAdvance=0> sdb.yb <xPlacement=+20 yPlacement=+240>) /^CH_YEf/;
     # مستقبل: the te's dots lower, down towards the qaf's
-    Position /^[BT]Em\d+$/ (dda.two <xPlacement=+80 yPlacement=-150>) /^FEm\d+$/ dda;
+    Position /^SIN[im]\d+$/ /^[BT]Em\d+$/ (dda.two <xPlacement=+80 yPlacement=-150>) /^FEm\d+$/ dda;
     # کابینہ: the ye's dots up beside the be's dot
     Position /^[BT]Ei\d+$/ (sdb <xPlacement=+30> /^[BT]Emsd1$/ <xAdvance=0> ddb.two <xPlacement=-140 yPlacement=+280>) /^[BT]Em3$/;
     # بست: the be's dot up under its letter
@@ -439,5 +439,8 @@ Feature kern {
     Position /^[BT]Eisd\d+$/ (sda.two <xPlacement=+140 yPlacement=-440>) /^[BT]Em13$/ HAMZA_ABOVE;
     # تقریباً: the ye's and be's dots up and apart, either side of the re's tail
     Position /^RE[uf]\d+$/ /^[BT]Eisd1$/ (ddb.one <xPlacement=+120 yPlacement=+220> /^[BT]Em3$/ <xAdvance=0> sdb.two <xPlacement=-190 yPlacement=+320>) /^ALIFf/;
-  } UseMarkFilteringSet [ddb ddb.two ddb.one haydb sdb sdb.one sdb.two sdb.yb dda dda.two sda.two HAMZA_ABOVE];
+  } UseMarkFilteringSet [ddb ddb.two ddb.one haydb sdb sdb.one sdb.two sdb.yb dda dda.two sda.two HAMZA_ABOVE KASRA];
+  # (KASRA is in the set so that none of these fire where a zer stands
+  # between the letters, as in دِیہات، قرِیباً: there the dots stay put.)
+
 };

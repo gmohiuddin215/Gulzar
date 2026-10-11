@@ -112,9 +112,14 @@ Feature rlig {
     Substitute (LAMm3) /^[KG]AF[mf]/ -> LAMm93;
   } IgnoreMarks;
   Routine TallKafInKiya {
-    Substitute (KAFi2) /^[BT]Em3$/ /^ALIFf/ -> KAFi92;
-    Substitute (GAFi2) /^[BT]Em3$/ /^ALIFf/ -> GAFi92;
-  } IgnoreMarks;
+    Substitute (KAFi2) TEm3 ddb /^ALIFf/ -> KAFi92;
+    Substitute (GAFi2) TEm3 ddb /^ALIFf/ -> GAFi92;
+  } UseMarkFilteringSet [ddb KASRA]; # not under a zer (کِیا), which the short kaf makes room for
+  Routine ShortKafAfterMadda {
+    # after آ the madda reaches over the word space into the taller kaf (آ گیا)
+    Substitute MADDA [space space.urdu] (KAFi92) -> KAFi2;
+    Substitute MADDA [space space.urdu] (GAFi92) -> GAFi2;
+  } UseMarkFilteringSet [MADDA];
   Routine LowKafBeforeRe {
     Substitute KAFm16 -> KAFm96;
     Substitute GAFm16 -> GAFm96;
