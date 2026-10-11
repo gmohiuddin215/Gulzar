@@ -2032,6 +2032,44 @@ def _kashida(font, ain, lam, lam_pos):
     return out, trim
 
 
+# A letter drawn as one long toothless sweep (the seen of السلام in an
+# honorific): it starts on the cut where the letter before it ends, which for
+# the laam is a shorter cut than the standard one (SWEEP_ENTRY_CUT), leaving
+# it down and to the left in SWEEP_ENTRY_TURN.
+SWEEP_ENTRY_CUT = (-33, -88)
+SWEEP_ENTRY_TURN = ((-1, -0.3), (-1, -0.05))  # top edge, bottom edge
+
+
+def _sweep(font, name, extra, dip):
+    """The letter drawn instead as one long sweep of the pen, without teeth:
+    from where it joins the letter before (its entry) to where the next one
+    joins it (its exit, carried `extra` further on), sagging by `dip` on the
+    way. Both ends sit on the cuts of the neighbouring letters, so the stroke
+    runs on from one into the other."""
+    import pathops
+
+    layer = master_layer(font, font.glyphs[name])
+    e, x = anchor(layer, "entry").position, anchor(layer, "exit").position
+    e0 = (e.x, e.y)
+    e1 = (e.x + SWEEP_ENTRY_CUT[0], e.y + SWEEP_ENTRY_CUT[1])
+    x0 = (x.x - extra, x.y)
+    x1 = (x0[0] + JOIN_CUT[0], x0[1] + JOIN_CUT[1])
+    span = e0[0] - x0[0]
+    (dt, db), level = SWEEP_ENTRY_TURN, (1, 0)
+
+    def handle(p, d, share):
+        length = math.hypot(*d)
+        return (p[0] + d[0] / length * share * span, p[1] + d[1] / length * share * span - dip)
+
+    sk = pathops.Path()
+    sk.moveTo(*e0)
+    sk.cubicTo(*handle(e0, dt, 0.3), *handle(x0, level, 0.4), *x0)
+    sk.lineTo(*x1)
+    sk.cubicTo(*handle(x1, level, 0.4), *handle(e1, db, 0.3), *e1)
+    sk.close()
+    return sk
+
+
 def honorific_outline(font, components, scale):
     """All the letters of a stacked honorific as one outline (a pathops Path)."""
     import pathops
@@ -2063,6 +2101,8 @@ def honorific_outline(font, components, scale):
             f = opts[0]["size"]
             fx, fy = f if isinstance(f, (list, tuple)) else (f, f)
             piece = _skia(_glyph_paths(font, comp, (fx, 0, 0, fy, 0, 0)))
+        elif opts and "sweep" in opts[0]:
+            piece = _sweep(font, comp, *opts[0]["sweep"])
         elif opts and "kashida" in opts[0]:
             lam, lx, ly = opts[0]["kashida"]
             piece, trim = _kashida(font, comp, lam, ((lx - x) / scale, (ly - y) / scale))
