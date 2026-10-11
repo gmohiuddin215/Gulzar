@@ -945,13 +945,15 @@ def step_ascenders(font):
         warp_strokes(layer, field)
 
 
-# Before ye the initial kaf and gaf stand taller than in their other forms.
+# Before ye (and before seen and do-chashmi he: کسی، کھی، کھے) the initial kaf
+# and gaf stand taller than in their other forms.
 # Their upright stem is shortened: the stem between KAF_YE_STEM (as shares of
 # the letter's height) is drawn down, and the sarkash above it moves down
 # whole, keeping its length and slope; the joins stay where they are. کی/گی
 # come down more than کے/گے. The medial forms (لکی، سکے) keep their height:
 # lower, their sarkash comes too near a laam before them.
-KAF_YE_LOWER = {"KAFi13": 0.16, "GAFi13": 0.16, "KAFi11": 0.10, "GAFi11": 0.10}
+KAF_YE_LOWER = {"KAFi13": 0.16, "GAFi13": 0.16, "KAFi11": 0.10, "GAFi11": 0.10,
+                "KAFi24": 0.10, "GAFi24": 0.10, "KAFi5": 0.10, "GAFi5": 0.10}
 KAF_YE_STEM = (0.12, 0.62)
 
 

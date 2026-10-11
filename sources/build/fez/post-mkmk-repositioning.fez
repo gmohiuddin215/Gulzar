@@ -385,4 +385,17 @@ Feature kern {
   Routine YbDotsAfterJim {
     Position /^JIMm/ /^[BT]Em13$/ (ddb.yb <yPlacement=+110>) /^CH_YEf/;
   } UseMarkFilteringSet [ddb.yb];
+  # Spacing after the letters that do not join (د ذ ر ز و). The khah before
+  # ye (ذخیرہ) starts well to the left of its join and stood apart like a
+  # separate word; the initial ye before noon (دین، تدوین، مزین) came so close
+  # that its dots touched the curve of the letter before.
+  Routine NonJoinerSpacing {
+    Position /^(DAL|RE|VAO)[uf]\d+$/ (JIMi18 <xAdvance=-90>);
+    Position /^(DAL|RE|VAO)[uf]\d+$/ (/^[BT]Ei14$/ <xAdvance=+60>);
+  } IgnoreMarks;
+
+  # The dot of ghain sits up and to the left of the ain's head.
+  Routine GhainDot {
+    Position /^AIN[im]\d+$/ (sda <xPlacement=-40 yPlacement=+50>);
+  } UseMarkFilteringSet [sda];
 };
