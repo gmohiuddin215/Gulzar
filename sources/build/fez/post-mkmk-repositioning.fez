@@ -423,6 +423,8 @@ Feature kern {
   Routine DotFinesse {
     # دیہی: the ye's dots below the line, the he's hook left of them
     Position /^(DAL|RE|VAO)[uf]\d+$/ /^[BT]Ei6$/ ([ddb ddb.two] <yPlacement=-210> /^HAYCm/ <xAdvance=0> haydb <xPlacement=-110 yPlacement=-10>);
+    # دِیہات: the same with a zer under the dal, the dots less far down
+    Position /^(DAL|RE|VAO)[uf]\d+$/ KASRA /^[BT]Ei6$/ ([ddb ddb.two] <xPlacement=-50 yPlacement=-110> /^HAYCm/ <xAdvance=0> haydb <xPlacement=-80 yPlacement=-10>);
     # ادیبوں: the ye's dots a little right, the be's dot up beside them
     Position /^[BT]Eisd\d+$/ (ddb <xPlacement=+50> /^[BT]Em15$/ <xAdvance=0> sdb.one <xPlacement=-135 yPlacement=+340>);
     # نشیبی: the ye's dots right, clear of the bowl; the be's dot up
