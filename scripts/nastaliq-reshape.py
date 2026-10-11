@@ -1517,6 +1517,97 @@ def step_ends(font):
                 round_ends(layer)
 
 
+# The sad before hah (صح، صحیح، مصحف) comes in on a slanting stroke whose
+# square-cut end peaks just left of where the hairline of the loop rises,
+# leaving a small ear and a notch at the join. The notch is filled with a
+# curve that leaves the top of the stroke along its own direction and runs
+# into the hairline along its own, so the stroke flows straight into the
+# loop. The curve becomes the top edge there: the notch is filled and the
+# tip of the peak above the curve is cut away.
+SAD_JOIN = ("SADi7", "SADm7")
+SAD_JOIN_LEAVE = 130  # how far back along the stroke the curve leaves it
+SAD_JOIN_ARRIVE = 100  # how far up the hairline the curve meets it
+SAD_JOIN_HANDLE = 0.5  # handle length, as a share of the chord
+
+
+def _bez(p, t):
+    """Point and derivative of a cubic at t."""
+    (x0, y0), (x1, y1), (x2, y2), (x3, y3) = p
+    u = 1 - t
+    pt = (u ** 3 * x0 + 3 * u * u * t * x1 + 3 * u * t * t * x2 + t ** 3 * x3,
+          u ** 3 * y0 + 3 * u * u * t * y1 + 3 * u * t * t * y2 + t ** 3 * y3)
+    d = (3 * u * u * (x1 - x0) + 6 * u * t * (x2 - x1) + 3 * t * t * (x3 - x2),
+         3 * u * u * (y1 - y0) + 6 * u * t * (y2 - y1) + 3 * t * t * (y3 - y2))
+    return pt, d
+
+
+def _bez_at_distance(p, dist):
+    """Parameter where a cubic is first `dist` (straight line) from its start."""
+    t = 0.0
+    while t < 1 and math.dist(_bez(p, t)[0], p[0]) < dist:
+        t += 0.002
+    return min(t, 1.0)
+
+
+def _bez_split(p, t):
+    """The two halves of a cubic split at t."""
+    lerp = lambda a, b: (a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t)
+    a, b, c = lerp(p[0], p[1]), lerp(p[1], p[2]), lerp(p[2], p[3])
+    d, e = lerp(a, b), lerp(b, c)
+    f = lerp(d, e)
+    return (p[0], a, d, f), (f, e, c, p[3])
+
+
+def sad_join(layer):
+    import pathops
+
+    paths = [[(n.position.x, n.position.y, n.type) for n in p.nodes] for p in layer.paths]
+    stroke, bowl = sorted(paths, key=len)
+    # the top corner of the stroke's square end, and the stroke's top edge
+    # running back from it
+    i = next(k for k, n in enumerate(stroke) if n[2] == "line")
+    top = [stroke[(i + k) % len(stroke)][:2] for k in range(4)]
+    # the foot of the hairline: two on-curve points a few units apart (its
+    # tiny cap), the first reached down the hairline's outer edge
+    m = len(bowl)
+    j = next(k for k in range(m) if bowl[k][2] != "offcurve" and bowl[(k + 3) % m][2] != "offcurve"
+             and math.dist(bowl[k][:2], bowl[(k + 3) % m][:2]) < 30
+             and bowl[(k + 1) % m][2] == bowl[(k + 2) % m][2] == "offcurve")
+    hair = [bowl[(j - 3 + k) % m][:2] for k in range(4)][::-1]  # from the foot upward
+    corner, foot = top[0], hair[0]
+    ta, tb = _bez_at_distance(top, SAD_JOIN_LEAVE), _bez_at_distance(hair, SAD_JOIN_ARRIVE)
+    (a, da), (b, db) = _bez(top, ta), _bez(hair, tb)
+    da, db = _unit(-da[0], -da[1]), _unit(*db)  # toward the corner; up the hairline
+    h = SAD_JOIN_HANDLE * math.dist(a, b)
+    patch = pathops.Path()
+    patch.moveTo(*a)
+    patch.cubicTo(a[0] + da[0] * h, a[1] + da[1] * h, b[0] - db[0] * h, b[1] - db[1] * h, *b)
+    _, p1, p2, p3 = _bez_split(hair, tb)[0][::-1]  # back down the hairline to its foot
+    patch.cubicTo(*p1, *p2, *p3)
+    # and home through the ink: under the foot, under the corner, under the
+    # point where the curve left the stroke
+    for x, y in ((foot[0], foot[1] - 20), (corner[0] - 10, corner[1] - 30), (a[0], a[1] - 25)):
+        patch.lineTo(x, y)
+    patch.close()
+    # everything above the curve, left of the hairline: the peak
+    cap = pathops.Path()
+    cap.moveTo(*a)
+    cap.cubicTo(a[0] + da[0] * h, a[1] + da[1] * h, b[0] - db[0] * h, b[1] - db[1] * h, *b)
+    cap.lineTo(b[0], b[1] + 200)
+    cap.lineTo(a[0], b[1] + 200)
+    cap.close()
+    sk = _skia(paths)
+    sk = pathops.op(sk, cap, pathops.PathOp.DIFFERENCE)
+    sk = pathops.op(sk, patch, pathops.PathOp.UNION)
+    _from_skia(sk, layer)
+
+
+def step_sad_join(font):
+    for name in SAD_JOIN:
+        if name in font.glyphs:
+            sad_join(master_layer(font, font.glyphs[name]))
+
+
 # ---------------------------------------------------------------------------
 # Step 4b: honorifics
 # ---------------------------------------------------------------------------
@@ -1840,6 +1931,7 @@ STEPS = [
     ("dot-positions", step_dot_positions),
     ("tips", step_tips),
     ("ends", step_ends),
+    ("sad-join", step_sad_join),
     ("honorifics", step_honorifics),
     ("line-metrics", step_line_metrics),
     ("naming", step_naming),
