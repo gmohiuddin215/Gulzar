@@ -97075,6 +97075,170 @@ width = 284;
 );
 },
 {
+glyphname = KAFi92;
+layers = (
+{
+anchors = (
+{
+name = bottom;
+position = "{120, -100}";
+},
+{
+name = exit;
+position = "{30, 0}";
+},
+{
+name = ngtop;
+position = "{115, 593}";
+},
+{
+name = top;
+position = "{420, 814}";
+}
+);
+layerId = "6E34CE51-C086-4FF0-804E-D019E96D60E0";
+paths = (
+{
+closed = 1;
+nodes = (
+"98 -103 OFFCURVE",
+"158 -52 OFFCURVE",
+"183 15 CURVE",
+"208 81 OFFCURVE",
+"222 128 OFFCURVE",
+"222 263 CURVE",
+"222 466 LINE",
+"220 474 OFFCURVE",
+"208 450 OFFCURVE",
+"217 453 CURVE",
+"527 640 LINE",
+"580 677 OFFCURVE",
+"605 683 OFFCURVE",
+"628 727 CURVE",
+"662 779 LINE",
+"664 785 OFFCURVE",
+"652 792 OFFCURVE",
+"646 790 CURVE",
+"364 639 LINE",
+"303 596 OFFCURVE",
+"247 573 OFFCURVE",
+"216 513 CURVE",
+"175 420 LINE",
+"158 387 OFFCURVE",
+"156 365 OFFCURVE",
+"156 299 CURVE",
+"156 129 LINE",
+"156 39 OFFCURVE",
+"114 -15 OFFCURVE",
+"58 -15 CURVE",
+"46 -15 OFFCURVE",
+"36 -10 OFFCURVE",
+"30 0 CURVE",
+"16 -27 OFFCURVE",
+"8 -62 OFFCURVE",
+"0 -88 CURVE",
+"16 -99 OFFCURVE",
+"31 -103 OFFCURVE",
+"45 -103 CURVE"
+);
+}
+);
+width = 310;
+}
+);
+},
+{
+glyphname = GAFi92;
+layers = (
+{
+anchors = (
+{
+name = bottom;
+position = "{108, -145}";
+},
+{
+name = exit;
+position = "{30, 0}";
+},
+{
+name = top;
+position = "{405, 900}";
+}
+);
+layerId = "6E34CE51-C086-4FF0-804E-D019E96D60E0";
+paths = (
+{
+closed = 1;
+nodes = (
+"98 -103 OFFCURVE",
+"158 -52 OFFCURVE",
+"183 15 CURVE",
+"208 81 OFFCURVE",
+"222 136 OFFCURVE",
+"222 271 CURVE",
+"222 452 LINE",
+"220 459 OFFCURVE",
+"208 436 OFFCURVE",
+"216 439 CURVE",
+"527 634 LINE",
+"580 671 OFFCURVE",
+"605 677 OFFCURVE",
+"628 721 CURVE",
+"662 773 LINE",
+"664 779 OFFCURVE",
+"652 786 OFFCURVE",
+"646 784 CURVE",
+"364 633 LINE",
+"303 590 OFFCURVE",
+"247 556 OFFCURVE",
+"216 496 CURVE",
+"175 414 LINE",
+"158 381 OFFCURVE",
+"156 374 OFFCURVE",
+"156 308 CURVE",
+"156 129 LINE",
+"156 39 OFFCURVE",
+"114 -15 OFFCURVE",
+"58 -15 CURVE",
+"46 -15 OFFCURVE",
+"36 -10 OFFCURVE",
+"30 0 CURVE",
+"16 -27 OFFCURVE",
+"8 -62 OFFCURVE",
+"0 -88 CURVE",
+"16 -99 OFFCURVE",
+"31 -103 OFFCURVE",
+"45 -103 CURVE"
+);
+},
+{
+closed = 1;
+nodes = (
+"270 651 OFFCURVE",
+"291 653 OFFCURVE",
+"312 668 CURVE",
+"543 791 LINE",
+"564 806 OFFCURVE",
+"579 812 OFFCURVE",
+"584 821 CURVE",
+"591 837 OFFCURVE",
+"595 869 OFFCURVE",
+"583 866 CURVE",
+"322 727 LINE",
+"272 693 OFFCURVE",
+"247 667 OFFCURVE",
+"240 644 CURVE",
+"240 636 OFFCURVE",
+"255 630 OFFCURVE",
+"261 635 CURVE"
+);
+}
+);
+width = 310;
+}
+);
+},
+{
 glyphname = radiAllahuAnhu;
 layers = (
 {
