@@ -37,7 +37,7 @@ import uharfbuzz as hb
 LAYOUTS = {
     "radiAllahuAnhu": {
         "unicodes": ["0613", "FD41"],
-        "scale": 0.5,
+        "scale": 0.4,
         "bottom": 60,
         # رضی and عنہٗ side by side, اللہُ above them in the middle
         "parts": [("عنہٗ", 0, 0), ("رضی", 860, 0), ("اللہُ", 320, 760)],
@@ -46,8 +46,8 @@ LAYOUTS = {
     # in رضی اللہُ عنہٗ
     "radiAllahuAnhaa": {
         "unicodes": ["FD42"],
-        "scale": 0.5,
-        "align": ("REu1", 135),  # رضی level with رضی اللہُ عنہٗ
+        "scale": 0.4,
+        "align": ("REu1", 120),  # رضی level with رضی اللہُ عنہٗ
         "parts": [("عنہا", 0, 0, {"nudge": {"haydb": (-40, 70)}}), ("رضی", 1019, 0),
                   ("اللہُ", 417, 0, {"clear": 51})],
     },
@@ -55,8 +55,8 @@ LAYOUTS = {
     # brought down just enough to end inside the ain's stroke; اللہُ sits above ہما
     "radiAllahuAnhumaa": {
         "unicodes": ["FD44"],
-        "scale": 0.5,
-        "align": ("REu1", 135),  # رضی level with رضی اللہُ عنہٗ
+        "scale": 0.4,
+        "align": ("REu1", 120),  # رضی level with رضی اللہُ عنہٗ
         "parts": [("عنہُما", 0, 0, {"nudge": {"sda": (0, -100)}}),
                   ("رضی", 760, 0, {"lower": {"CH_YEf1": (150, 0.95, 200, 320)}}),
                   ("اللہُ", 60, 888)],
@@ -64,8 +64,8 @@ LAYOUTS = {
     # for men: the same, with عنہم
     "radiAllahuAnhum": {
         "unicodes": ["FD43"],
-        "scale": 0.5,
-        "align": ("REu1", 135),  # رضی level with رضی اللہُ عنہٗ
+        "scale": 0.4,
+        "align": ("REu1", 120),  # رضی level with رضی اللہُ عنہٗ
         # its mim's long tail is drawn up to a short one, as in Quranic
         # hands, so the honorific isn't taller than the others
         "parts": [("عنہم", 0, -324, {"shorten": {"MIMf1": (150, 0.35, 200, 300)}}),
@@ -75,8 +75,8 @@ LAYOUTS = {
     # for women: the same, with عنہنَّ (shadda and zabar on the noon)
     "radiAllahuAnhunna": {
         "unicodes": ["FD45"],
-        "scale": 0.5,
-        "align": ("REu1", 135),  # رضی level with رضی اللہُ عنہٗ
+        "scale": 0.4,
+        "align": ("REu1", 120),  # رضی level with رضی اللہُ عنہٗ
         # its final noon is drawn smaller, nearer the size of the ye, with its
         # dot and shadda-zabar; the first noon's dot sits nearer its tooth
         # and the he hook under the he
@@ -95,10 +95,10 @@ LAYOUTS = {
         "scale": 0.4,
         "align": ("CH_YEf1", 120),  # the ye's foot level with the ye of رضی
         "parts": [("صَلَّی", 2872, -178, {"lower": {"CH_YEf1": (150, 0.85, 200, 320)}}),
-                  ("عَلیْہِ", 2100, -90, {"nudge": {"KASRA": (-150, 100), "FATHA": (70, 0)}}), ("و", 2030, 90),
-                  ("اللہ", 2250, 0, {"clear": 20}),
-                  ("سَلَّم", 1650, 210, {"lower": {"LAMm9": (250, 0.8, 400, 500)},
-                                        "nudge": {"FATHA": (-80, 0), "SHADDA_FATHA": (0, -160)}})],
+                  ("عَلیْہِ", 2030, -90, {"nudge": {"KASRA": (-150, 100), "FATHA": (70, 0)}}),
+                  ("و", 1960, 90),
+                  ("اللہ", 2150, 0, {"clear": 20}),
+                  ("سَلَّم", 1550, 210, {"lower": {"LAMm9": (250, 0.8, 400, 500)}, "nudge": {"FATHA": (-80, 0), "SHADDA_FATHA": (0, -160)}})],
     },
     # the durood with وآلہ (﵌), as ﷺ with وآلہ set in the middle: و above the
     # he of علیہ, آلہ beside it with its madda drawn out long over the word,
@@ -117,7 +117,7 @@ LAYOUTS = {
     },
     "rahmatullahAlayh": {
         "unicodes": ["0612"],
-        "scale": 0.44,
+        "scale": 0.4,
         "bottom": 60,
         # علیہ on top, its ain drawn out to span رحمۃُ اللہ beneath it
         "parts": [("علیہ", -240, 700, {"kashida": (470, 216)}), ("اللہ", 0, 0), ("رحمۃُ", 1020, 0)],
