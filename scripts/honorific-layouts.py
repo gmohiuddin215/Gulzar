@@ -149,32 +149,32 @@ LAYOUTS = {
         "unicodes": ["0611", "FD47"],
         "scale": 0.4,
         "align": ("MIMu1", 200),  # the mim of السَّلَام on one line in every variant
-        "parts": [("السَّلَام", 0, 0), ("عَلَیْہِ", 1700, 0, {"nudge": {"FATHA#1": (80, 150)}})],
+        "parts": [("السَّلَام", 0, 0), ("عَلَیْہِ", 1700, 0, {"nudge": {"FATHA#1": (80, 150), "KASRA": (-180, 40)}})],
     },
     "alayhimSalaam": {
         "unicodes": ["FD48"],
         "scale": 0.4,
         "align": ("MIMu1", 200),  # the mim of السَّلَام on one line in every variant
-        "parts": [("السَّلَام", 0, 0), ("عَلَیْہِمُ", 1770, 0, {"nudge": {"FATHA#1": (80, 150)}})],
+        "parts": [("السَّلَام", 0, 0), ("عَلَیْہِمُ", 1770, 0, {"nudge": {"FATHA#1": (80, 150), "ddb": (130, 0)}})],
     },
     "alayhimaaSalaam": {
         "unicodes": ["FD49"],
         "scale": 0.4,
         "align": ("MIMu1", 200),  # the mim of السَّلَام on one line in every variant
-        "parts": [("السَّلَام", 0, 0), ("عَلَیْہِمَا", 1760, 0, {"nudge": {"FATHA#1": (80, 150)}})],
+        "parts": [("السَّلَام", 0, 0), ("عَلَیْہِمَا", 1760, 0, {"nudge": {"FATHA#1": (80, 150), "ddb": (130, 0)}})],
     },
     "alayhaaSalaam": {
         "unicodes": ["FD4D"],
         "scale": 0.4,
         "align": ("MIMu1", 200),  # the mim of السَّلَام on one line in every variant
-        "parts": [("السَّلَام", 0, 0), ("عَلَیْہَا", 1760, 0, {"nudge": {"FATHA#1": (80, 150)}})],
+        "parts": [("السَّلَام", 0, 0), ("عَلَیْہَا", 1760, 0, {"nudge": {"FATHA#1": (80, 150), "ddb": (130, 0)}})],
     },
     # عَلَیْہِ الصَّلٰوۃُ وَالسَّلَام in two rows: وَالسَّلَام above عَلَیْہِ الصَّلٰوۃُ
     "alayhiSalaatuWasSalaam": {
         "unicodes": ["FD4A"],
         "scale": 0.4,
         "align": ("AINi3", 326),  # عَلَیْہِ level with عَلَیْہِ السَّلَام
-        "parts": [("الصَّلٰوۃُ", 0, 0), ("عَلَیْہِ", 1640, 0, {"nudge": {"FATHA#1": (80, 150)}}), ("وَالسَّلَام", 65, 0, {"clear": 30, "sweep": {"SINm3": (450, 60)}})],
+        "parts": [("الصَّلٰوۃُ", 0, 0), ("عَلَیْہِ", 1640, 0, {"nudge": {"FATHA#1": (80, 150), "KASRA": (-180, 40)}}), ("وَالسَّلَام", 65, 0, {"clear": 30, "sweep": {"SINm3": (450, 60)}})],
     },
 }
 SIDE_BEARING = 40
