@@ -96723,6 +96723,194 @@ width = 225;
 );
 },
 {
+glyphname = LAMi93;
+layers = (
+{
+anchors = (
+{
+name = bar;
+position = "{171, 273}";
+},
+{
+name = bottom;
+position = "{104, -135}";
+},
+{
+name = exit;
+position = "{47, 0}";
+},
+{
+name = top;
+position = "{189, 449}";
+}
+);
+layerId = "6E34CE51-C086-4FF0-804E-D019E96D60E0";
+paths = (
+{
+closed = 1;
+nodes = (
+"2 -135 LINE",
+"55 -135 OFFCURVE",
+"110 -96 OFFCURVE",
+"152 -3 CURVE",
+"173 44 OFFCURVE",
+"199 115 OFFCURVE",
+"201 204 CURVE",
+"210 476 LINE",
+"208 483 OFFCURVE",
+"191 486 OFFCURVE",
+"187 479 CURVE",
+"148 370 OFFCURVE",
+"135 370 OFFCURVE",
+"137 251 CURVE",
+"139 167 LINE",
+"141 44 OFFCURVE",
+"94 0 OFFCURVE",
+"49 0 CURVE",
+"47 0 LINE",
+"26 -30 OFFCURVE",
+"2 -100 OFFCURVE",
+"0 -135 CURVE"
+);
+}
+);
+width = 280;
+}
+);
+},
+{
+glyphname = LAMi98;
+layers = (
+{
+anchors = (
+{
+name = bar;
+position = "{318, 305}";
+},
+{
+name = bottom;
+position = "{335, -8}";
+},
+{
+name = exit;
+position = "{0, 0}";
+},
+{
+name = top;
+position = "{449, 574}";
+}
+);
+layerId = "6E34CE51-C086-4FF0-804E-D019E96D60E0";
+paths = (
+{
+closed = 1;
+nodes = (
+"83 0 OFFCURVE",
+"197 64 OFFCURVE",
+"234 91 CURVE",
+"322 154 OFFCURVE",
+"347 212 OFFCURVE",
+"350 287 CURVE",
+"361 555 LINE",
+"359 562 OFFCURVE",
+"342 565 OFFCURVE",
+"338 558 CURVE",
+"307 466 LINE",
+"290 415 OFFCURVE",
+"287 388 OFFCURVE",
+"288 303 CURVE",
+"289 256 LINE",
+"289 209 OFFCURVE",
+"287 191 OFFCURVE",
+"240 149 CURVE",
+"164 81 OFFCURVE",
+"59 51 OFFCURVE",
+"41 46 CURVE",
+"20 36 OFFCURVE",
+"6 14 OFFCURVE",
+"0 0 CURVE"
+);
+}
+);
+width = 431;
+}
+);
+},
+{
+glyphname = LAMm93;
+layers = (
+{
+anchors = (
+{
+name = bar;
+position = "{162, 211}";
+},
+{
+name = bottom;
+position = "{163, -167}";
+},
+{
+name = entry;
+position = "{280, 27}";
+},
+{
+name = exit;
+position = "{47, 0}";
+},
+{
+name = top;
+position = "{173, 413}";
+}
+);
+layerId = "6E34CE51-C086-4FF0-804E-D019E96D60E0";
+paths = (
+{
+closed = 1;
+nodes = (
+"2 -135 LINE",
+"76 -135 OFFCURVE",
+"135 -54 OFFCURVE",
+"150 30 CURVE",
+"149 39 OFFCURVE",
+"129 42 OFFCURVE",
+"127 33 CURVE",
+"140 -54 OFFCURVE",
+"177 -108 OFFCURVE",
+"231 -108 CURVE",
+"233 -108 LINE",
+"264 -89 OFFCURVE",
+"284 -26 OFFCURVE",
+"280 27 CURVE",
+"278 27 LINE",
+"211 27 OFFCURVE",
+"185 75 OFFCURVE",
+"185 149 CURVE",
+"185 253 OFFCURVE",
+"192 389 OFFCURVE",
+"195 435 CURVE",
+"192 444 OFFCURVE",
+"172 447 OFFCURVE",
+"168 438 CURVE",
+"144 348 LINE",
+"137 323 OFFCURVE",
+"122 301 OFFCURVE",
+"122 239 CURVE",
+"123 139 LINE",
+"123 74 OFFCURVE",
+"108 0 OFFCURVE",
+"49 0 CURVE",
+"47 0 LINE",
+"34 -16 OFFCURVE",
+"5 -91 OFFCURVE",
+"0 -135 CURVE"
+);
+}
+);
+width = 280;
+}
+);
+},
+{
 glyphname = radiAllahuAnhu;
 layers = (
 {
@@ -118225,6 +118413,7 @@ ends,
 "sad-join",
 corners,
 "fe-head",
+"lam-before-kaf",
 honorifics,
 "line-metrics",
 naming

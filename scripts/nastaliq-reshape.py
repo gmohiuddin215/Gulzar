@@ -1811,6 +1811,50 @@ def step_fe_head(font):
                 break
             path.nodes = nodes
 
+# Before kaf and gaf (لکھا، لگا، ملک، الگ) the laam stands a little lower, so
+# it does not tower over the shortened kaf. The laam forms used there are
+# shared with other words (لیں، حوالہ، جلد), so each is copied to a new
+# glyph (LAM_BEFORE_KAF: form -> copy), drawn LAM_KAF_LOWER of its height
+# lower (the stem shortened as for the kaf, its top keeping its shape), and
+# sources/build/fez/connections.fez puts the copy before a kaf or gaf.
+LAM_BEFORE_KAF = {"LAMi3": "LAMi93", "LAMi8": "LAMi98", "LAMm3": "LAMm93"}
+LAM_KAF_LOWER = 0.07
+LAM_KAF_STEM = (0.25, 0.75)
+
+
+def step_lam_before_kaf(font):
+    from glyphsLib.classes import GSAnchor, GSGlyph, GSLayer
+
+    master = font.masters[0]
+    for name, copy in LAM_BEFORE_KAF.items():
+        src = font.glyphs[name]
+        layer0 = master_layer(font, src)
+        glyph = GSGlyph(copy)
+        glyph.category, glyph.subCategory = src.category, src.subCategory
+        font.glyphs.append(glyph)
+        layer = GSLayer()
+        layer.layerId = layer.associatedMasterId = master.id
+        glyph.layers.append(layer)
+        _set_paths(layer, _glyph_paths(font, name, (1, 0, 0, 1, 0, 0)))
+        layer.width = layer0.width
+        for a in layer0.anchors:
+            layer.anchors.append(GSAnchor(a.name, Point(a.position.x, a.position.y)))
+        top = max(n.position.y for p in layer.paths for n in p.nodes)
+        y0, y1 = (f * top for f in LAM_KAF_STEM)
+        drop = LAM_KAF_LOWER * top
+
+        def field(x, y, y0=y0, y1=y1, drop=drop):
+            if y <= y0:
+                return (0, 0)
+            w = min((y - y0) / (y1 - y0), 1.0)
+            return (0, -drop * w * w * (3 - 2 * w))
+
+        warp_strokes(layer, field)
+        for a in layer.anchors:
+            dx, dy = field(a.position.x, a.position.y)
+            a.position = Point(a.position.x, round(a.position.y + dy))
+
+
 # ---------------------------------------------------------------------------
 # Step 4b: honorifics
 # ---------------------------------------------------------------------------
@@ -2148,6 +2192,7 @@ STEPS = [
     ("sad-join", step_sad_join),
     ("corners", step_corners),
     ("fe-head", step_fe_head),
+    ("lam-before-kaf", step_lam_before_kaf),
     ("honorifics", step_honorifics),
     ("line-metrics", step_line_metrics),
     ("naming", step_naming),
