@@ -1531,7 +1531,7 @@ HONORIFICS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "sou
 
 # The durood ligatures hung far below the line (to -0.7 em) beside the name
 # they follow; they are set smaller and raised so they sit on the line.
-DUROOD = ("uniFD4C",)  # ﷺ itself is now drawn by the honorifics step
+DUROOD = ()  # both durood ligatures are now drawn by the honorifics step
 DUROOD_SCALE = 0.55
 DUROOD_BOTTOM = 40
 DUROOD_SIDE = 60
@@ -1723,7 +1723,8 @@ def honorific_outline(font, components, scale):
         elif opts and "size" in opts[0]:
             # a letter drawn smaller within the honorific
             f = opts[0]["size"]
-            piece = _skia(_glyph_paths(font, comp, (f, 0, 0, f, 0, 0)))
+            fx, fy = f if isinstance(f, (list, tuple)) else (f, f)
+            piece = _skia(_glyph_paths(font, comp, (fx, 0, 0, fy, 0, 0)))
         elif opts and "kashida" in opts[0]:
             lam, lx, ly = opts[0]["kashida"]
             piece, trim = _kashida(font, comp, lam, ((lx - x) / scale, (ly - y) / scale))

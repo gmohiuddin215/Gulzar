@@ -32,6 +32,8 @@ import uharfbuzz as hb
 # a vowel mark) is moved by so much. Option "shrink": {glyph: (factor,
 # [marks])}: in this part only, that letter is drawn smaller about the point
 # where it joins the letter before, and the listed marks move in with it.
+# Option "stretch": {glyph: (x factor, y factor)}: in this part only, that
+# glyph (a madda drawn out over a word) is drawn wider or taller.
 LAYOUTS = {
     "radiAllahuAnhu": {
         "unicodes": ["0613", "FD41"],
@@ -97,6 +99,21 @@ LAYOUTS = {
                   ("اللہ", 2250, 0, {"clear": 20}),
                   ("سَلَّم", 1650, 210, {"lower": {"LAMm9": (250, 0.8, 400, 500)},
                                         "nudge": {"FATHA": (-80, 0), "SHADDA_FATHA": (0, -160)}})],
+    },
+    # the durood with وآلہ (﵌), as ﷺ with وآلہ set in the middle: و above the
+    # he of علیہ, آلہ beside it with its madda drawn out long over the word,
+    # then و and سلم on the left
+    "sallallahuAlayhiWaAalihiWasallam": {
+        "unicodes": ["FD4C"],
+        "scale": 0.4,
+        "align": ("CH_YEf1", 120),  # the ye's foot level with the ye of رضی
+        "parts": [("صَلَّی", 2872, -178, {"lower": {"CH_YEf1": (150, 0.85, 200, 320)}}),
+                  ("عَلیْہِ", 2100, -90, {"nudge": {"KASRA": (-150, 100), "FATHA": (70, 0)}}), ("و", 2030, 90),
+                  ("اللہ", 2250, 0, {"clear": 20}),
+                  ("آلہ", 1284, -90, {"stretch": {"MADDA": (1.3, 1.0)}, "nudge": {"MADDA": (-170, -20)}}),
+                  ("و", 1004, -60),
+                  ("سَلَّم", 650, 100, {"lower": {"LAMm9": (250, 0.8, 400, 500)},
+                                       "nudge": {"FATHA": (-80, 0), "SHADDA_FATHA": (0, -160)}})],
     },
     "rahmatullahAlayh": {
         "unicodes": ["0612"],
@@ -202,6 +219,7 @@ def main(path):
                           (g, cx + f * (x - cx), cy + f * (y - cy), o) if g in marks else (g, x, y, o)
                           for g, x, y, o in glyphs]
                 size[letter] = f
+            size.update(opts[0].get("stretch", {}) if opts else {})
             for g, x, y, opt in glyphs:
                 nx, ny = nudge.get(g, (0, 0))
                 comp = [g, (x + dx + nx) * s, (y + dy + ny) * s]
