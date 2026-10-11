@@ -270,9 +270,9 @@ Feature kern {
 
     # طنز / پینڑا
     Position @long_re ([sda toeda] <xPlacement=0>) ALIFu1;
-    Position BEm16 @long_re ([sda toeda] <xPlacement=-250>);
-    Position BEm16 [sda] @long_re ([sda toeda] <xPlacement=-200>);
-    Position TEm16 [dda tda] @long_re ([sda toeda] <xPlacement=-200>);
+    Position BEm16 @long_re ([sda toeda] <xPlacement=+150>); # سبز: over the zay's head, not out over the next word
+    Position BEm16 [sda] @long_re ([sda toeda] <xPlacement=-100>); # کنکشنز: just left of the noon's dot
+    Position TEm16 [dda tda] @long_re ([sda toeda] <xPlacement=+150>);
 
     # ربطة
     Position /(TOE|LAM)[mi]/ HAYCf1 (dda <xPlacement=-50>);
@@ -395,7 +395,16 @@ Feature kern {
     Position /^(DAL|RE|VAO)[uf]\d+$/ (JIMi18 <xAdvance=-90>);
     Position /^(DAL|RE|VAO)[uf]\d+$/ (/^[BT]Ei14$/ <xAdvance=+60>);
     Position /^(DAL|RE|VAO)[uf]\d+$/ (/^[BT]Ei6$/ <xAdvance=+150>) /^HAYCm/; # دیہی
+    Position /^DAL[uf]\d+$/ (/^[BT]Eisd1$/ <xAdvance=+150>) /^[BT]Em13$/; # دیتی (not after re: قریبی)
+    Position /^VAO[uf]\d+$/ (FEi2 <xAdvance=+120>) /^[BT]Em15$/; # توفیق
+    Position /^VAO[uf]\d+$/ (/^HAYCi13$/ <xAdvance=+80>) /^CH_YEf/; # وہی
+    Position /^VAO[uf]\d+$/ (/^JIMi5$/ <xAdvance=+80>) /^HAYA/; # پوچھا
   } IgnoreMarks;
+
+  # The dots of te/the just after alif reach back to the alif's stem (داتا).
+  Routine TehDotsAfterAlif {
+    Position /^ALIF[uf]\d+$/ (TEi3 <xAdvance=+50>) [dda tda];
+  } UseMarkFilteringSet [dda tda];
 
   # The dot of ghain sits higher over the ain's head. (Moved left as well,
   # it runs into the letter after: پیغام، غلط، آغاز.)
@@ -425,6 +434,22 @@ Feature kern {
     Position /^(DAL|RE|VAO)[uf]\d+$/ /^[BT]Ei6$/ ([ddb ddb.two] <yPlacement=-210> /^HAYCm/ <xAdvance=0> haydb <xPlacement=-110 yPlacement=-10>);
     # دِیہات: the same with a zer under the dal, the dots less far down
     Position /^(DAL|RE|VAO)[uf]\d+$/ KASRA /^[BT]Ei6$/ ([ddb ddb.two] <xPlacement=-50 yPlacement=-110> /^HAYCm/ <xAdvance=0> haydb <xPlacement=-80 yPlacement=-10>);
+    # دیتی: the ye's dots down and in, under the ye (the dal moves away)
+    Position /^DAL[uf]\d+$/ /^[BT]Eisd1$/ (ddb <xPlacement=-30 yPlacement=-60>) /^[BT]Em13$/;
+    # توفیق: the ye's dots a little left, clear of the vao (which moves away)
+    Position /^VAO[uf]\d+$/ FEi2 sda /^[BT]Em15$/ (ddb <xPlacement=-30>);
+    # وہی: the he's hook a little left of the vao
+    Position /^VAO[uf]\d+$/ /^HAYCi13$/ (haydb <xPlacement=-40>) /^CH_YEf/;
+    # پوچھا: the che's dots left and the pe's right, either side of the vao
+    Position /^[BT]Ei\d+$/ (tdb <xPlacement=+40>) /^VAO[uf]\d+$/ /^JIMi5$/;
+    Position /^VAO[uf]\d+$/ /^JIMi5$/ (tdb.one <xPlacement=-50 yPlacement=-30>) /^HAYA/;
+    # سائنس: the noon's dot left and down, clear of the hamza
+    Position /^[BT]Ei\d+$/ HAMZA_ABOVE.one /^[BT]Emsd\d+$/ (sda <xPlacement=-100 yPlacement=-60>);
+    # قرآن: the qaf's dots right of the madda, the madda a little left
+    Position /^FEi\d+$/ (dda <xPlacement=+90>) /^RE[uf]\d+$/ ALIFu1 MADDA;
+    Position /^FEi\d+$/ dda /^RE[uf]\d+$/ ALIFu1 (MADDA <xPlacement=-40>);
+    # سیکھ، سیکھنا: the ye's dots right and down, clear of the do-chashmi he
+    Position /^SINi\d+$/ /^[BT]Em3$/ (ddb <xPlacement=+80 yPlacement=-60>) /^KAFm/;
     # ادیبوں: the ye's dots a little right, the be's dot up beside them
     Position /^[BT]Eisd\d+$/ (ddb <xPlacement=+50> /^[BT]Em15$/ <xAdvance=0> sdb.one <xPlacement=-135 yPlacement=+340>);
     # نشیبی: the ye's dots right, clear of the bowl; the be's dot up
@@ -441,7 +466,7 @@ Feature kern {
     Position /^[BT]Eisd\d+$/ (sda.two <xPlacement=+140 yPlacement=-440>) /^[BT]Em13$/ HAMZA_ABOVE;
     # تقریباً: the ye's and be's dots up and apart, either side of the re's tail
     Position /^RE[uf]\d+$/ /^[BT]Eisd1$/ (ddb.one <xPlacement=+120 yPlacement=+220> /^[BT]Em3$/ <xAdvance=0> sdb.two <xPlacement=-190 yPlacement=+320>) /^ALIFf/;
-  } UseMarkFilteringSet [ddb ddb.two ddb.one haydb sdb sdb.one sdb.two sdb.yb dda dda.two sda.two HAMZA_ABOVE KASRA];
+  } UseMarkFilteringSet [ddb ddb.two ddb.one haydb sdb sdb.one sdb.two sdb.yb dda dda.two sda sda.two tdb tdb.one HAMZA_ABOVE HAMZA_ABOVE.one MADDA KASRA];
   # (KASRA is in the set so that none of these fire where a zer stands
   # between the letters, as in دِیہات، قرِیباً: there the dots stay put.)
 
