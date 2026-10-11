@@ -2018,17 +2018,32 @@ def _join_restore(font, snap):
             if a is not None:
                 moved.append((a0, b0, (a.position.x - a0[0], a.position.y - a0[1])))
         for path, pts in zip(layer.paths, before):
-            for node, p in zip(path.nodes, pts):
+            nodes = path.nodes
+            n = len(nodes)
+            hold = []  # (weight, dx, dy) per point
+            for p in pts:
                 best = None
                 for a0, b0, (dx, dy) in moved:
                     d = _seg_distance(p, a0, b0)
                     if d < JOIN_FADE and (best is None or d < best[0]):
                         best = (d, dx, dy)
                 if best is None:
+                    hold.append((0.0, 0, 0))
                     continue
                 d, dx, dy = best
                 w = 1.0 if d <= JOIN_HOLD else 1 - (d - JOIN_HOLD) / (JOIN_FADE - JOIN_HOLD)
-                w = w * w * (3 - 2 * w)
+                hold.append((w * w * (3 - 2 * w), dx, dy))
+            # a handle is held at least as firmly as its own point, so the
+            # stroke still leaves the join at its original angle
+            for i in range(n):
+                if nodes[i].type != "offcurve":
+                    continue
+                j = (i - 1) % n if nodes[(i - 1) % n].type != "offcurve" else (i + 1) % n
+                if hold[j][0] > hold[i][0]:
+                    hold[i] = hold[j]
+            for node, p, (w, dx, dy) in zip(nodes, pts, hold):
+                if not w:
+                    continue
                 q = node.position
                 tx, ty = p[0] + dx, p[1] + dy
                 node.position = Point(round(q.x + w * (tx - q.x)), round(q.y + w * (ty - q.y)))
