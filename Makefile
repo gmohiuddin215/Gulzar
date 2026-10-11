@@ -1,7 +1,7 @@
 ORIGINAL_GLYPHS_FILE=sources/Gulzar.glyphs
 GLYPHS_FILE=sources/build/Gulzar.glyphs
 FINAL_FONT=fonts/ttf/GulzarNastaliq-Regular.ttf
-FEA_FILES=sources/build/fea/languagesystem.fea sources/build/featurenames.fea sources/build/fea/decomposition.fea sources/build/fea/connections.fea sources/build/fea/bariye-drop.fea sources/build/fea/bariye-drop2.fea sources/build/fea/anchor-attachment.fea  sources/build/fea/kerning.fea sources/build/fea/latin-kerning.fea sources/build/fea/post-mkmk-repositioning.fea sources/build/fea/bariye-overhang.fea
+FEA_FILES=sources/build/fea/languagesystem.fea sources/build/honorific-ligatures.fea sources/build/featurenames.fea sources/build/fea/decomposition.fea sources/build/fea/connections.fea sources/build/fea/bariye-drop.fea sources/build/fea/bariye-drop2.fea sources/build/fea/anchor-attachment.fea  sources/build/fea/kerning.fea sources/build/fea/latin-kerning.fea sources/build/fea/post-mkmk-repositioning.fea sources/build/fea/bariye-overhang.fea
 RELEASE_ARG=
 PYTHON=python3
 # kerndeterminer only ships wheels up to Python 3.11
