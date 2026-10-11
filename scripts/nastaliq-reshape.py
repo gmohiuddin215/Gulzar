@@ -1938,6 +1938,101 @@ STEPS = [
 ]
 
 
+# ---------------------------------------------------------------------------
+# Joins
+# ---------------------------------------------------------------------------
+
+# Letters join through a pen cut that is the same on both sides of the join:
+# from the entry or exit anchor to a point JOIN_CUT below it, the outgoing
+# letter's edge lies exactly on the incoming letter's. A step that reshapes a
+# letter (narrowing it, stretching its stem, resizing its bowl) moves this
+# edge with the letter while the anchor moves by its own rule, so the two
+# edges no longer meet and every join shows a small step or spur. Around
+# each step the outline at the cut is put back where it was relative to its
+# anchor: rigidly within JOIN_HOLD of the cut, fading out by JOIN_FADE, so
+# the rest of the letter keeps the step's reshaping.
+JOIN_CUT = (-47, -135)
+JOIN_HOLD = 30
+JOIN_FADE = 110
+# Steps that move points (rather than rebuild outlines); the join edge is
+# held around each of them.
+JOIN_SAFE_STEPS = {
+    "proportions", "bowls", "bowl-length", "sarkash", "sarkash-length", "final-kaf-entry",
+    "isolated-kaf", "tilts", "re-tail", "haya-size", "ascenders", "re-neck", "re-final-tail",
+    "re-weight", "vao-lift", "re-raise", "dal-size",
+}
+
+
+def _seg_distance(p, a, b):
+    ax, ay = a
+    bx, by = b
+    dx, dy = bx - ax, by - ay
+    L = dx * dx + dy * dy
+    t = 0.0 if not L else max(0.0, min(1.0, ((p[0] - ax) * dx + (p[1] - ay) * dy) / L))
+    return math.hypot(p[0] - ax - t * dx, p[1] - ay - t * dy)
+
+
+def _join_snapshot(font):
+    snap = {}
+    for g in font.glyphs:
+        if not RASM.match(g.name):
+            continue
+        layer = master_layer(font, g)
+        # composites are matched against their flattened outline: the steps
+        # decompose them before reshaping
+        flat = _glyph_paths(font, g.name, (1, 0, 0, 1, 0, 0))
+        joins = []
+        for name in ("entry", "exit"):
+            a = anchor(layer, name)
+            if a is None:
+                continue
+            ax, ay = a.position.x, a.position.y
+            on = [(x, y) for p in flat for x, y, t in p if t != "offcurve"]
+            # the full cut where the letter has one, else just the join point
+            bottom = (ax + JOIN_CUT[0], ay + JOIN_CUT[1])
+            has_cut = any(math.hypot(x - ax, y - ay) <= 4 for x, y in on) and \
+                any(math.hypot(x - bottom[0], y - bottom[1]) <= 4 for x, y in on)
+            joins.append((name, (ax, ay), bottom if has_cut else (ax, ay)))
+        if joins:
+            snap[g.name] = ([[(x, y) for x, y, _ in p] for p in flat], joins)
+    return snap
+
+
+def _join_restore(font, snap):
+    for gname, (before, joins) in snap.items():
+        layer = master_layer(font, font.glyphs[gname])
+        if layer.components or [len(p) for p in before] != [len(p.nodes) for p in layer.paths]:
+            continue  # still a composite, or the outline was rebuilt: no point-for-point match
+        moved = []
+        for name, a0, b0 in joins:
+            a = anchor(layer, name)
+            if a is not None:
+                moved.append((a0, b0, (a.position.x - a0[0], a.position.y - a0[1])))
+        for path, pts in zip(layer.paths, before):
+            for node, p in zip(path.nodes, pts):
+                best = None
+                for a0, b0, (dx, dy) in moved:
+                    d = _seg_distance(p, a0, b0)
+                    if d < JOIN_FADE and (best is None or d < best[0]):
+                        best = (d, dx, dy)
+                if best is None:
+                    continue
+                d, dx, dy = best
+                w = 1.0 if d <= JOIN_HOLD else 1 - (d - JOIN_HOLD) / (JOIN_FADE - JOIN_HOLD)
+                w = w * w * (3 - 2 * w)
+                q = node.position
+                tx, ty = p[0] + dx, p[1] + dy
+                node.position = Point(round(q.x + w * (tx - q.x)), round(q.y + w * (ty - q.y)))
+
+
+def keeping_joins(fn):
+    def step(font):
+        snap = _join_snapshot(font)
+        fn(font)
+        _join_restore(font, snap)
+    return step
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("glyphsfile")
@@ -1955,7 +2050,7 @@ def main():
             print(f"{name}: already applied, skipping")
             continue
         print(f"{name}: applying")
-        fn(font)
+        (keeping_joins(fn) if name in JOIN_SAFE_STEPS else fn)(font)
         done.append(name)
     font.userData[STAMP] = done
     out = args.output or args.glyphsfile
