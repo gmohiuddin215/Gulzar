@@ -1914,6 +1914,15 @@ def step_honorifics(font):
         glyph.layers.append(layer)
         _from_skia(honorific_outline(font, spec["components"], spec["scale"]), layer)
         layer.width = spec["width"]
+    # an empty mark that harakat typed inside an honorific phrase become (see
+    # scripts/honorific-ligatures.py)
+    mark = GSGlyph("honorificMark")
+    mark.category, mark.subCategory = "Mark", "Nonspacing"
+    font.glyphs.append(mark)
+    layer = GSLayer()
+    layer.layerId = layer.associatedMasterId = master.id
+    layer.width = 0
+    mark.layers.append(layer)
     for name in DUROOD:
         layer = master_layer(font, font.glyphs[name])
         paths = _glyph_paths(font, name, (DUROOD_SCALE, 0, 0, DUROOD_SCALE, 0, 0))
