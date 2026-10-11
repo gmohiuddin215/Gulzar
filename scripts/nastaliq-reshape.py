@@ -997,6 +997,88 @@ def step_mim_before_sad(font):
         warp_strokes(layer, field)
         layer.width += MIM_SAD_LONGER
 
+# In many forms of toe and zoe (ظر، طر، نظر، طور) the left side of the loop
+# ends in a free tip just above the base stroke, so the loop stands open.
+# The tip is carried down into the base stroke (TOE_OVERLAP into its ink),
+# its curve following, which closes the loop.
+TOE_FORMS = re.compile(r"^TOE(i|isd)\d+$")
+TOE_TIP = 45  # longest cut treated as the loop's tip
+TOE_REACH = 150  # largest gap closed
+TOE_OVERLAP = 12
+
+
+def step_toe_close(font):
+    import pathops
+
+    for g in font.glyphs:
+        if not TOE_FORMS.match(g.name):
+            continue
+        layer = master_layer(font, g)
+        if not layer.paths:
+            continue
+        segs = outline_segments(layer)
+        polys = [contour_points(p) for p in layer.paths]
+        # the upright stem is drawn on its own and reaches highest: leave it
+        stem = max(range(len(polys)), key=lambda k: max(y for _, y in polys[k]))
+        bridges = []
+        for pi, path in enumerate(layer.paths):
+            if pi == stem and len(polys) > 1:
+                continue
+            nodes = path.nodes
+            n = len(nodes)
+            for i in range(n):
+                a, b = nodes[i], nodes[(i + 1) % n]
+                if a.type == "offcurve" or b.type != "line":
+                    continue
+                A, B = a.position, b.position
+                if math.hypot(B.x - A.x, B.y - A.y) > TOE_TIP or min(A.y, B.y) < 20:
+                    continue
+                # a free tip points down: the outline rises on both sides of it
+                before, after = nodes[(i - 1) % n].position, nodes[(i + 2) % n].position
+                if before.y <= max(A.y, B.y) or after.y <= max(A.y, B.y):
+                    continue
+                mx, my = (A.x + B.x) / 2, min(A.y, B.y) - 3
+                if any(point_in_polygon(mx, my, o) for o in polys):
+                    continue  # already in the ink: the loop is closed
+                # carry the stroke on in its own direction just into the base
+                # (or, if that misses the base, down or down towards the base)
+                sx, sy, _ = _unit(mx - (before.x + after.x) / 2, (A.y + B.y) / 2 - (before.y + after.y) / 2)
+                inside = lambda x, y: any(point_in_polygon(x, y, o) for o in polys)
+                end = None
+                fan = [(math.cos(math.radians(a)), math.sin(math.radians(a))) for a in (-90, -75, -60, -45)]
+                for ux, uy in [(sx, sy)] + fan:
+                    if uy > -0.3:
+                        continue
+                    d = ray_distance((mx, my), (ux, uy), segs, skip=0.5)
+                    if d is None or d > TOE_REACH:
+                        continue
+                    reach = d + 3
+                    while reach < d + 3 + TOE_REACH and not inside(mx + ux * reach, my + uy * reach):
+                        reach += 2
+                    reach += TOE_OVERLAP
+                    if inside(mx + ux * reach, my + uy * reach):
+                        end = (ux, uy, reach)
+                        break
+                if end is None:
+                    continue
+                ux, uy, reach = end
+                # the stroke keeps its width most of the way, then tapers into the base
+                k = 0.6 * reach
+                bridges.append([(A.x, A.y), (B.x, B.y), (B.x + ux * k, B.y + uy * k),
+                                (mx + ux * reach, my + uy * reach), (A.x + ux * k, A.y + uy * k)])
+                break
+        if not bridges:
+            continue
+        sk = _skia([[(n.position.x, n.position.y, n.type) for n in p.nodes] for p in layer.paths])
+        for quad in bridges:
+            q = pathops.Path()
+            q.moveTo(*quad[0])
+            for pt in quad[1:]:
+                q.lineTo(*pt)
+            q.close()
+            sk = pathops.op(sk, q, pathops.PathOp.UNION)
+        _from_skia(sk, layer)
+
 # ---------------------------------------------------------------------------
 # Step 3g: re neck
 # ---------------------------------------------------------------------------
@@ -2139,6 +2221,7 @@ STEPS = [
     ("dal-size", step_dal_size),
     ("medial-dots", step_medial_dots),
     ("dot-positions", step_dot_positions),
+    ("toe-close", step_toe_close),
     ("tips", step_tips),
     ("ends", step_ends),
     ("sad-join", step_sad_join),
