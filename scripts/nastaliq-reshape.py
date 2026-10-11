@@ -1579,14 +1579,16 @@ def step_ends(font):
                 round_ends(layer)
 
 
-# The sad before hah (صح، صحیح، مصحف) comes in on a slanting stroke whose
+# The sad (صح، صحیح، مصحف، صل، صم) comes in on a slanting stroke whose
 # square-cut end peaks just left of where the hairline of the loop rises,
 # leaving a small ear and a notch at the join. The notch is filled with a
 # curve that leaves the top of the stroke along its own direction and runs
 # into the hairline along its own, so the stroke flows straight into the
 # loop. The curve becomes the top edge there: the notch is filled and the
 # tip of the peak above the curve is cut away.
-SAD_JOIN = ("SADi7", "SADm7")
+# the forms whose stroke and bowl are drawn the same way (others differ and
+# are left as they are)
+SAD_JOIN = ("SADi7", "SADm7", "SADi5", "SADm5", "SADi9", "SADm9", "SADi13", "SADm13")
 SAD_JOIN_LEAVE = 130  # how far back along the stroke the curve leaves it
 SAD_JOIN_ARRIVE = 100  # how far up the hairline the curve meets it
 SAD_JOIN_HANDLE = 0.5  # handle length, as a share of the chord
@@ -1669,6 +1671,141 @@ def step_sad_join(font):
         if name in font.glyphs:
             sad_join(master_layer(font, font.glyphs[name]))
 
+
+
+# A straight cut between two sharp outward corners (the left side of the
+# head of fe, the head of dal, the tip of be) reads as a flat facet in a
+# pen-drawn letter. Each corner of such a cut gets a small round, CORNER_ROUND
+# of the cut's length but no more than CORNER_ROUND_MAX, leaving the
+# straight part between. Cuts hidden inside the ink of another stroke, and
+# the cuts at joins (which must meet the next letter exactly), are left as
+# they are.
+CORNER_ROUND = 0.3
+CORNER_ROUND_MAX = 40
+CORNER_MIN_TURN = 35  # degrees: gentler corners are left sharp
+CORNER_CUT = (12, 220)  # lengths of straight segment treated as a cut
+CORNER_JOIN_CLEARANCE = 80
+
+
+def _turn(u, v):
+    return math.degrees(math.atan2(u[0] * v[1] - u[1] * v[0], u[0] * v[0] + u[1] * v[1]))
+
+
+def round_corners(layer):
+    from glyphsLib.classes import GSNode
+
+    joins = []
+    for name in ("entry", "exit"):
+        a = anchor(layer, name)
+        if a is not None:
+            joins.append(((a.position.x, a.position.y), (a.position.x + JOIN_CUT[0], a.position.y + JOIN_CUT[1])))
+    polys = [contour_points(p) for p in layer.paths]
+    for pi, path in enumerate(layer.paths):
+        others = [o for oi, o in enumerate(polys) if oi != pi]
+        pts = polys[pi]
+        orient = 1 if signed_area(pts) > 0 else -1
+        if any(point_in_polygon(pts[0][0], pts[0][1], o) for o in others):
+            orient = -orient  # a hole winds the other way
+        nodes = list(path.nodes)
+        cuts = []
+        n = len(nodes)
+        for i in range(n):
+            a, b = nodes[i], nodes[(i + 1) % n]
+            if a.type == "offcurve" or b.type != "line":
+                continue
+            A, B = (a.position.x, a.position.y), (b.position.x, b.position.y)
+            length = math.dist(A, B)
+            if not CORNER_CUT[0] <= length <= CORNER_CUT[1]:
+                continue
+            pin, pout = nodes[(i - 1) % n].position, nodes[(i + 2) % n].position
+            d = (B[0] - A[0], B[1] - A[1])
+            t1 = _turn((A[0] - pin.x, A[1] - pin.y), d) * orient
+            t2 = _turn(d, (pout.x - B[0], pout.y - B[1])) * orient
+            if t1 < CORNER_MIN_TURN or t2 < CORNER_MIN_TURN:
+                continue
+            if any(min(math.dist(A, q), math.dist(B, q), _seg_distance(q, *j)) < CORNER_JOIN_CLEARANCE
+                   for j in joins for q in (A, B, ((A[0] + B[0]) / 2, (A[1] + B[1]) / 2))):
+                continue
+            # hidden inside another stroke: nothing to see
+            if any(point_in_polygon(P[0], P[1], o) for o in others for P in (A, B)):
+                continue
+            cuts.append((i, (i + 1) % n, length))
+        if not cuts:
+            continue
+        # replace each corner (node index) by a short curve; work from the end
+        corners = {}
+        for ia, ib, length in cuts:
+            r = min(CORNER_ROUND * length, CORNER_ROUND_MAX)
+            corners[ia] = max(corners.get(ia, 0), r)
+            corners[ib] = max(corners.get(ib, 0), r)
+        for ci in sorted(corners, reverse=True):
+            r = corners[ci]
+            prev, here, nxt = nodes[ci - 1], nodes[ci], nodes[(ci + 1) % len(nodes)]
+            P, H, N = prev.position, here.position, nxt.position
+            ux, uy, lin = _unit(P.x - H.x, P.y - H.y)
+            vx, vy, lout = _unit(N.x - H.x, N.y - H.y)
+            ra, rb = min(r, 0.45 * lin), min(r, 0.45 * lout)
+            if ra < 3 or rb < 3:
+                continue
+            A2 = Point(round(H.x + ux * ra), round(H.y + uy * ra))
+            B2 = Point(round(H.x + vx * rb), round(H.y + vy * rb))
+            c1 = Point(round(H.x + ux * ra * 0.45), round(H.y + uy * ra * 0.45))
+            c2 = Point(round(H.x + vx * rb * 0.45), round(H.y + vy * rb * 0.45))
+            new = [GSNode(A2, here.type), GSNode(c1, "offcurve"), GSNode(c2, "offcurve"), GSNode(B2, "curve")]
+            if prev.type == "offcurve":
+                # the incoming curve now ends at A2: its last handle moves with it
+                prev.position = Point(round(P.x + (A2.x - H.x)), round(P.y + (A2.y - H.y)))
+            if nxt.type == "offcurve":
+                nxt.position = Point(round(N.x + (B2.x - H.x)), round(N.y + (B2.y - H.y)))
+            nodes[ci:ci + 1] = new
+        path.nodes = nodes
+
+
+def step_corners(font):
+    for g in font.glyphs:
+        if RASM.match(g.name):
+            layer = master_layer(font, g)
+            if layer.paths:
+                round_corners(layer)
+
+
+# The head of fe and qaf has a straight left side (a long pen cut, ~160
+# units), which reads as a flat facet once the letter is narrowed. It is
+# drawn as a gentle outward curve, bulging FE_HEAD_BULGE of its length.
+FE_HEAD = re.compile(r"^(FE|QAF)(i\d+|u1|f1)$")
+FE_HEAD_EDGE = (150, 175)  # length of the straight side
+FE_HEAD_BULGE = 0.08
+
+
+def step_fe_head(font):
+    from glyphsLib.classes import GSNode
+
+    for g in font.glyphs:
+        if not FE_HEAD.match(g.name):
+            continue
+        layer = master_layer(font, g)
+        polys = [contour_points(p) for p in layer.paths]
+        for pi, path in enumerate(layer.paths):
+            nodes = list(path.nodes)
+            for i in range(len(nodes)):
+                a, b = nodes[i - 1], nodes[i]
+                if b.type != "line" or a.type == "offcurve":
+                    continue
+                A, B = a.position, b.position
+                ux, uy, length = _unit(B.x - A.x, B.y - A.y)
+                if not FE_HEAD_EDGE[0] <= length <= FE_HEAD_EDGE[1] or abs(uy) < 0.9:
+                    continue
+                # outward: the side of the edge away from the ink
+                mx, my = (A.x + B.x) / 2, (A.y + B.y) / 2
+                nx, ny = uy, -ux
+                if any(point_in_polygon(mx + nx * 5, my + ny * 5, o) for o in polys):
+                    nx, ny = -nx, -ny
+                h = FE_HEAD_BULGE * length / 0.75
+                c1 = Point(round(A.x + (B.x - A.x) / 3 + nx * h), round(A.y + (B.y - A.y) / 3 + ny * h))
+                c2 = Point(round(A.x + 2 * (B.x - A.x) / 3 + nx * h), round(A.y + 2 * (B.y - A.y) / 3 + ny * h))
+                nodes[i:i + 1] = [GSNode(c1, "offcurve"), GSNode(c2, "offcurve"), GSNode(B, "curve")]
+                break
+            path.nodes = nodes
 
 # ---------------------------------------------------------------------------
 # Step 4b: honorifics
@@ -2005,6 +2142,8 @@ STEPS = [
     ("tips", step_tips),
     ("ends", step_ends),
     ("sad-join", step_sad_join),
+    ("corners", step_corners),
+    ("fe-head", step_fe_head),
     ("honorifics", step_honorifics),
     ("line-metrics", step_line_metrics),
     ("naming", step_naming),
