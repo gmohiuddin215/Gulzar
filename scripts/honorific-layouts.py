@@ -169,12 +169,14 @@ LAYOUTS = {
         "align": ("MIMu1", 200),  # the mim of السَّلَام on one line in every variant
         "parts": [("السَّلَام", 0, 0), ("عَلَیْہَا", 1760, 0, {"nudge": {"FATHA#1": (80, 150), "ddb": (130, 0)}})],
     },
-    # عَلَیْہِ الصَّلٰوۃُ وَالسَّلَام in two rows: وَالسَّلَام above عَلَیْہِ الصَّلٰوۃُ
+    # عَلَیْہِ الصَّلٰوۃُ وَالسَّلَام in two rows: وَالسَّلَام above عَلَیْہِ الصَّلٰوۃُ,
+    # the alif of الصَّلٰوۃُ lifted over the he of عَلَیْہِ and the rest of the
+    # word drawn in after it; the standing zabar left of its laam
     "alayhiSalaatuWasSalaam": {
         "unicodes": ["FD4A"],
         "scale": 0.4,
         "align": ("AINi3", 326),  # عَلَیْہِ level with عَلَیْہِ السَّلَام
-        "parts": [("الصَّلٰوۃُ", 0, 0), ("عَلَیْہِ", 1640, 0, {"nudge": {"FATHA#1": (80, 150), "KASRA": (-180, 40)}}), ("وَالسَّلَام", 65, 0, {"clear": 30, "sweep": {"SINm3": (450, 60)}})],
+        "parts": [("الصَّلٰوۃُ", 150, 0, {"nudge": {"ALIFu1": (37, 325), "LONG_A": (-140, -520)}}), ("عَلَیْہِ", 1640, 0, {"nudge": {"FATHA#1": (80, 150), "KASRA": (-180, 40)}}), ("وَالسَّلَام", 265, 0, {"clear": 15, "sweep": {"SINm3": (450, 60)}})],
     },
 }
 SIDE_BEARING = 40
