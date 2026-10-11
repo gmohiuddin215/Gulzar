@@ -127,6 +127,15 @@ def displace_nodes(layer, fn):
         for i, nrm in enumerate(normals):
             if nrm is not None:
                 deltas[i] = fn(nrm)
+                # where the outline doubles back on itself (the cut at the
+                # end of a curl, as in the head of fe) there is no outward
+                # side: moving the point pushes the curl into the stroke
+                # beside it and kinks the edge, so it stays put
+                p, q, r = nodes[(i - 1) % n].position, nodes[i].position, nodes[(i + 1) % n].position
+                a, b = (q.x - p.x, q.y - p.y), (r.x - q.x, r.y - q.y)
+                la, lb = math.hypot(*a), math.hypot(*b)
+                if la and lb and (a[0] * b[0] + a[1] * b[1]) / (la * lb) < -0.5:
+                    deltas[i] = (0, 0)
         for i in range(n):
             if deltas[i] is not None:
                 continue
