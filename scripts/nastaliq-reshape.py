@@ -1794,6 +1794,39 @@ MEDIAL_RISE = 0.7
 RISE_ORDINARY = 220
 RISE_REACH = 200
 RISE_BAND = (60, 200)
+RISE_STEEPEST = 0.8  # rise over run of the stroke leaving the exit join
+
+
+def _exit_steepness(layer, xx, xy, reach):
+    """Rise over run of the stroke leaving the exit join, measured at the
+    middle of the stretch that would be raised."""
+    x = xx + 0.5 * reach
+    ys = []
+    for (x0, y0), (x1, y1) in ((sg[0][:2], sg[1][:2]) for sg in outline_segments(layer)):
+        if (x0 - x) * (x1 - x) <= 0 and x0 != x1:
+            ys.append(y0 + (y1 - y0) * (x - x0) / (x1 - x0))
+    ys.sort()
+    centres = [(ys[i] + ys[i + 1]) / 2 for i in range(0, len(ys) - 1, 2)]
+    if not centres:
+        return float("inf")
+    c = min(centres, key=lambda c: abs(c - xy))
+    return (c - xy) / (0.5 * reach)
+
+
+def _counter_near(layer, x_max, y_max):
+    """Whether a counter (a contour inside another) reaches left of x_max
+    and below y_max."""
+    boxes = []
+    for p in layer.paths:
+        xs = [nd.position.x for nd in p.nodes]
+        ys = [nd.position.y for nd in p.nodes]
+        boxes.append((min(xs), min(ys), max(xs), max(ys)))
+    for i, b in enumerate(boxes):
+        inside = any(j != i and o[0] <= b[0] and o[1] <= b[1] and o[2] >= b[2] and o[3] >= b[3]
+                     for j, o in enumerate(boxes))
+        if inside and b[0] < x_max and b[1] < y_max:
+            return True
+    return False
 
 
 def step_medial_rise(font):
@@ -1813,8 +1846,15 @@ def step_medial_rise(font):
         if not layer.paths:
             continue
         lift = (1 - MEDIAL_RISE) * rise
-
         reach = min(RISE_REACH, 0.6 * (ex - xx)) if ex - xx > 40 else RISE_REACH
+        # a letter with a loop next to its exit join (do-chashmi he and the
+        # like) has no plain stroke there to raise; it keeps its shape and rise
+        if _counter_near(layer, xx + reach + 60, xy + RISE_BAND[1]):
+            continue
+        # nor does a letter whose stroke climbs steeply out of its exit join
+        # (raising it would bend that stroke)
+        if _exit_steepness(layer, xx, xy, reach) > RISE_STEEPEST:
+            continue
 
         def field(x, y, xx=xx, xy=xy, lift=lift, reach=reach):
             wx = min(1, max(0, 1 - (x - xx) / reach))
