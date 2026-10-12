@@ -348,14 +348,6 @@ def step_proportions(font):
 # shallower to meet both; the shallowing is an even vertical scale of the
 # whole bowl below the join (never more than 15%), so the bowl stays round
 # instead of getting a flat bottom.
-#
-# Then every bowl is brought down to one depth, BOWL_DEPTH nuqta below the
-# baseline: in the copybook rule of nashist o kursi, letters without a bowl
-# sit on the line and round letters sit one line lower, all on the same
-# line. A final form keeps its join where it is (the rest of the word stays
-# on the line) and its bowl moves down whole, keeping its round shape, with
-# the stroke from the join drawn out to meet it; an isolated form, which
-# joins nothing, is moved down whole.
 NUQTA = 176  # width of Gulzar's original dot, in font units
 BOWLS = {
     #        bottom  entry (None: lift only, keeping the bowl's own depth)
@@ -370,13 +362,6 @@ BOWLS = {
     "MIM":   (-2.59, None),
 }
 MAX_BOWL_SQUASH = 0.15
-BOWL_DEPTH = 1.5
-# families whose lowest point is not a bowl, left at their own depth
-BOWL_DEPTH_SKIP = {"MIM"}
-# how far from the join (as a share of its distance to the bowl's bottom)
-# the bowl starts to move down whole
-BOWL_REACH = 0.7
-BOWL_HOLD = 150
 
 
 def outline_segments(layer, steps=8):
@@ -509,36 +494,6 @@ def step_bowls(font):
         )
     for name, family in targets:
         warp_strokes(master_layer(font, font.glyphs[name]), fields[family])
-    # one depth for every bowl
-    target = -BOWL_DEPTH * NUQTA
-    for name, family in targets:
-        if family in BOWL_DEPTH_SKIP:
-            continue
-        layer = master_layer(font, font.glyphs[name])
-        # strokes move by the field at their centre line, a little above the
-        # bottom edge, so a bowl may need a second, small pass
-        for _ in range(3):
-            segs = outline_segments(layer)
-            bottom = min(p[0][1] for p in segs)
-            if abs(target - bottom) < 2:
-                break
-            D = target - bottom
-            if RASM.match(name).group(2) == "f":
-                # the bowl moves down whole, keeping its round shape; only
-                # the stroke from the join down to it is drawn out
-                ex, ey = anchor(layer, "entry").position
-                bx, by = min((p[0] for p in segs), key=lambda q: q[1])
-                reach = BOWL_REACH * math.hypot(bx - ex, by - ey)
-
-                def field(x, y, ex=ex, ey=ey, reach=reach, D=D):
-                    t = min(math.hypot(x - ex, y - ey) / reach, 1.0)
-                    # what stands above the join (a head, an ascender) stays
-                    u = min(max((ey + BOWL_HOLD - y) / BOWL_HOLD, 0.0), 1.0)
-                    return (0, D * t * t * (3 - 2 * t) * u * u * (3 - 2 * u))
-            else:
-                def field(x, y, D=D):
-                    return (0, D)
-            warp_strokes(layer, field)
 
 
 # ---------------------------------------------------------------------------
@@ -2221,25 +2176,68 @@ def step_honorifics(font):
 # Copybook details
 # ---------------------------------------------------------------------------
 
-# The copybook stands the alif on the line, as it does every letter without
-# a bowl; Gulzar's isolated alif hung half a nuqta above it.
-# Its numerals are about four nuqta tall, as tall as the alif or taller;
-# Gulzar's were about three. They are drawn larger by NUMERAL_SCALE about
-# their foot (on their own outlines, so the shapes they share with other
-# signs stay as they are).
-STANDING_ALIFS = ("ALIFu1", "ALIFu2")
-NUMERAL_SCALE = 1.25
+# Nashist o kursi, measured on the copybook's ruled page (four lines two qat
+# apart, the qat being the pen's width: about 160 units here, the
+# thickness of the floor of be).
+#   line 3 runs through the floor of be, fe, kaf: KURSI_LINE, from the floor
+#     of be here (its floor straddles the line, a fifth above, the rest
+#     below);
+#   the bowls (noon, seen, sad, ain, jim, qaf, laam, ye) reach line 4, two
+#     qat lower: each is moved down whole, the final forms as well (the
+#     letters joined before them come down with them), so no bowl is drawn
+#     out of its shape;
+#   dal and re hang across line 3, their foot 1 and 1.15 qat below it;
+#   the stem of toe starts at line 1, four qat above line 3.
+# This runs after the honorifics, which are laid out with the letters as they
+# were. Its numerals are four qat tall; Gulzar's were about three and a half.
+# They are drawn larger by NUMERAL_SCALE about their foot (on their own
+# outlines, so the shapes they share with other signs stay as they are).
+QAT = 160
+KURSI_LINE = 105
+BOWL_FAMILIES = ("NUN", "QAF", "SIN", "LAM", "AIN", "CH_YE", "JIM", "SAD")
+BOWL_BOTTOM = KURSI_LINE - 2.05 * QAT
+HANGING_FOOT = {"DAL": KURSI_LINE - 1.0 * QAT, "RE": KURSI_LINE - 1.15 * QAT}
+TOE_TOP = KURSI_LINE + 4 * QAT
+TOE_STEM_ZONE = 300  # the top of toe drawn out over this much of its stem
+NUMERAL_SCALE = 1.14
+
+
+def _shift_glyph(layer, dy):
+    for p in layer.paths:
+        for nd in p.nodes:
+            nd.position = Point(nd.position.x, round(nd.position.y + dy))
+    for a in layer.anchors:
+        a.position = Point(a.position.x, round(a.position.y + dy))
 
 
 def step_copybook_details(font):
-    for name in STANDING_ALIFS:
-        layer = master_layer(font, font.glyphs[name])
-        bottom = min(nd.position.y for p in layer.paths for nd in p.nodes)
-        for p in layer.paths:
-            for nd in p.nodes:
-                nd.position = Point(nd.position.x, nd.position.y - bottom)
-        for a in layer.anchors:
-            a.position = Point(a.position.x, a.position.y - bottom)
+    toe = master_layer(font, font.glyphs["TOEu1"])
+    toe_rise = TOE_TOP - max(p[0][1] for p in outline_segments(toe))
+    for g in font.glyphs:
+        m = RASM.match(g.name)
+        if not m:
+            continue
+        family, form = m.group(1), m.group(2)
+        layer = master_layer(font, g)
+        if not layer.paths:
+            continue
+        ys = [p[0][1] for p in outline_segments(layer)]
+        if family in BOWL_FAMILIES and form in ("f", "u"):
+            _shift_glyph(layer, BOWL_BOTTOM - min(ys))
+        elif family in HANGING_FOOT and form == "u":
+            _shift_glyph(layer, HANGING_FOOT[family] - min(ys))
+        elif family == "TOE" and toe_rise > 0:
+            # the stem is drawn out at its top, over TOE_STEM_ZONE
+            y0 = max(ys) - TOE_STEM_ZONE
+
+            def lift(y):
+                return round(y + toe_rise * (y - y0) / TOE_STEM_ZONE) if y > y0 else y
+
+            for p in layer.paths:
+                for nd in p.nodes:
+                    nd.position = Point(nd.position.x, lift(nd.position.y))
+            for a in layer.anchors:
+                a.position = Point(a.position.x, lift(a.position.y))
     s = NUMERAL_SCALE
     numerals = [g for g in font.glyphs
                 if any(0x660 <= int(u, 16) <= 0x669 or 0x6F0 <= int(u, 16) <= 0x6F9 for u in g.unicodes or [])]
@@ -2247,13 +2245,11 @@ def step_copybook_details(font):
     drawn = {g.name: _glyph_paths(font, g.name, (s, 0, 0, s, 0, 0)) for g in numerals}
     for g in numerals:
         layer = master_layer(font, g)
-        paths = drawn[g.name]
-        _set_paths(layer, [[(round(x), round(y), t) for x, y, t in p] for p in paths])
+        _set_paths(layer, [[(round(x), round(y), t) for x, y, t in p] for p in drawn[g.name]])
         layer.components = []
         for a in layer.anchors:
             a.position = Point(round(a.position.x * s), round(a.position.y * s))
         layer.width = round(layer.width * s)
-
 
 # ---------------------------------------------------------------------------
 # Step 5: line metrics
