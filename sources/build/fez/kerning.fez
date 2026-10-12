@@ -111,6 +111,31 @@ Feature kern {
 	Routine KarCloser {
 		Position [@isols @finas] (space.urdu <xAdvance=-120>) [KAFi17 GAFi17] REf1;
 	} UseMarkFilteringSet [sda sdb dda ddb tda tdb];
+	# ...except after bari ye, whose tail already runs in under the kaf.
+	Routine KarAfterBariYe {
+		Position @bariye (space.urdu <xAdvance=+120>) [KAFi17 GAFi17] REf1;
+	} UseMarkFilteringSet [sda sdb dda ddb tda tdb];
+
+	# The foot of re leaves open room after it that the autokerner does not
+	# take up when the next word starts low on its right (س، ص، ع، ط، ج،
+	# م ...): draw the next word in, by about three quarters of the excess
+	# over the usual gap.
+	Routine AfterReCloser {
+		Position [REu1 REf1] (space.urdu <xAdvance=-180>) /^SADi/;
+		Position [REu1 REf1] (space.urdu <xAdvance=-155>) /^(AIN|TOE)i/;
+		Position [REu1 REf1] (space.urdu <xAdvance=-145>) /^SINi/;
+		Position [REu1 REf1] (space.urdu <xAdvance=-130>) /^JIMi/;
+		Position [REu1 REf1] (space.urdu <xAdvance=-105>) /^MIMi/;
+		Position [REu1 REf1] (space.urdu <xAdvance=-85>) /^(FE|KAF)i/;
+		Position [REu1 REf1] (space.urdu <xAdvance=-65>) /^GAFi/;
+		Position [REu1 REf1] (space.urdu <xAdvance=-45>) /^(LAM|TE)i/;
+	} IgnoreMarks;
+
+	# The joined re hangs low, taking the be/pe joined to it down with it: the
+	# dots below them need more room from the word before (جس پر، طور پر).
+	Routine DotsBeforeLowRe {
+		Position (space.urdu <xAdvance=+140>) [BEi16 TEi16] [sdb ddb tdb] REf1;
+	} UseMarkFilteringSet [sdb ddb tdb];
 
 	# The rounded tail of re/zain lets the next letter come in closer; a
 	# kasra under the re then meets the dots below that letter (زِیادہ).
