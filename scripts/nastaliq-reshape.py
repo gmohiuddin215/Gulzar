@@ -1881,6 +1881,10 @@ def step_foot_reach(font):
         # the ordinary forms only
         if not m or m.group(1) not in ("VAO", "DAL") or m.group(2) not in FOOT_REACH or m.group(3) != "1":
             continue
+        # the joined dal (بد، لذت) meets the letter before it low on its
+        # right, where its foot turns; it keeps its drawn shape
+        if g.name == "DALf1":
+            continue
         k = FOOT_REACH[m.group(2)]
         layer = master_layer(font, g)
         decompose_components(font, layer)
