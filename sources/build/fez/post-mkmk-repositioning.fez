@@ -692,4 +692,181 @@ Feature kern {
   # (KASRA is in the set so that none of these fire where a zer stands
   # between the letters, as in دِیہات، قرِیباً: there the dots stay put.)
 
+
+
+  # With the bowls on their own line, a word part that ends in a bowl sits
+  # lower, and dal and re hang lower: the part after them then comes close
+  # to their foot or to their dots and vowels, or brings its own dots up to
+  # them. Each pair below was measured in the test texts (ink of the letters
+  # and their marks) and is given back the room it had before.
+  Routine RoomAfterLowerParts {
+    Position ALIFf1 (space.urdu <xAdvance=+30>) REu1 FATHA;
+    Position ALIFf1 (space.urdu <xAdvance=+10>) SINi3 tda;
+    Position ALIFf1 (KAFi3 <xAdvance=+60>);
+    Position ALIFu1 DAMMA (BEi9 <xAdvance=+40>) sda;
+    Position ALIFu1 DAMMA (SINi9 <xAdvance=+40>);
+    Position ALIFu1 FATHA (LAMi93 <xAdvance=+10>);
+    Position ALIFu1 MADDA (space.urdu <xAdvance=+20>) SINi3;
+    Position ALIFu1 MADDA (space.urdu <xAdvance=+40>) TEi6 tdb DAMMA;
+    Position ALIFu1 MADDA (BEi6 <xAdvance=+20>) sda;
+    Position ALIFu1 MADDA (TEi3 <xAdvance=+20>) HAMZA_ABOVE;
+    Position ALIFu1 MADDA (TEi3 <xAdvance=+20>) HAMZA_ABOVE KASRA;
+    Position ALIFu1 (space.urdu <xAdvance=+40>) BEi13 sda;
+    Position ALIFu1 (space.urdu <xAdvance=+20>) DALu1 FATHA;
+    Position ALIFu1 (space.urdu <xAdvance=+10>) SINi3 tda;
+    Position ALIFu1 (BEisd1 <xAdvance=+10>) sdb KASRA;
+    Position ALIFu1 (KAFi3 <xAdvance=+70>);
+    Position ALIFu1 (LAMi1 <xAdvance=+20>);
+    Position ALIFu1 (REu1 <xAdvance=+20>) toeda;
+    Position ALIFu1 (TEi16 <xAdvance=+40>) tdb;
+    Position BARI_YEf1 (JIMi24 <xAdvance=+50>) sdb KASRA;
+    Position BARI_YEu1 (HAYCi13 <xAdvance=+40>) haydb;
+    Position BEf1 sdb (space.urdu <xAdvance=+10>) TEi13 tdb.yb;
+    Position BEf1 sdb (space.urdu <xAdvance=+10>) TEi6 ddb;
+    Position BEf2 sdb (space.urdu <xAdvance=+20>) BEi8 sda KASRA;
+    Position CH_YEf1 (space.urdu <xAdvance=+20>) ALIFu1 KASRA;
+    Position CH_YEf1 (space.urdu <xAdvance=+40>) KAFisd15;
+    Position CH_YEf1 (space.urdu <xAdvance=+10>) LAMi2 KASRA;
+    Position CH_YEf1 (space.urdu <xAdvance=+20>) TEi13 tdb.yb;
+    Position CH_YEu1 (space.urdu <xAdvance=+20>) ALIFu1 KASRA;
+    Position CH_YEu1 (space.urdu <xAdvance=+180>) BEi13 sdb.yb;
+    Position DALf1 KASRA.one (TEi3 <xAdvance=+40>) ddb.one;
+    Position DALf1 (HAYAi13 <xAdvance=+40>);
+    Position DALf1 (TEi3 <xAdvance=+40>) ddb;
+    Position DALf1 (TEi3 <xAdvance=+60>) ddb.yb;
+    Position DALu1 KASRA (KAFi5 <xAdvance=+20>);
+    Position DALu1 KASRA (TEi3 <xAdvance=+40>) ddb.one;
+    Position DALu1 KASRA (TEi6 <xAdvance=+30>) ddb;
+    Position DALu1 KASRA (TEisd1 <xAdvance=+110>) ddb.one;
+    Position DALu1 toeda (SINi18 <xAdvance=+20>);
+    Position DALu1 toeda (TEi3 <xAdvance=+70>) ddb.one;
+    Position DALu1 (BEisd1 <xAdvance=+10>) sda;
+    Position DALu1 (KAFi5 <xAdvance=+20>);
+    Position DALu1 (MIMi2 <xAdvance=+30>) KASRA;
+    Position DALu1 (MIMi7 <xAdvance=+30>);
+    Position DALu1 (TEi3 <xAdvance=+20>) ddb;
+    Position DALu1 (TEi3 <xAdvance=+120>) ddb.one;
+    Position DALu1 (TEi4 <xAdvance=+140>) ddb;
+    Position DALu1 (TEisd1 <xAdvance=+170>) ddb;
+    Position HAMZAu1 (MIMi3 <xAdvance=+50>);
+    Position HAYCu1 (space.urdu <xAdvance=+20>) BEi8 sda KASRA;
+    Position HAYCu1 (space.urdu <xAdvance=+10>) SINi7;
+    Position JIMf1 sdi (space.urdu <xAdvance=+40>) KAFi16;
+    Position JIMf1 (space.urdu <xAdvance=+10>) MIMi3 KASRA;
+    Position JIMu1 sdi (space.urdu <xAdvance=+20>) REu1 FATHA;
+    Position KAFf1 (space.urdu <xAdvance=+20>) TEi6 ddb KASRA;
+    Position LAM_ALIFf1 (LAMi13 <xAdvance=+10>);
+    Position LAM_ALIFu1 (TEi4 <xAdvance=+10>) HAMZA_ABOVE;
+    Position LAMu1 (space.urdu <xAdvance=+20>) ALIFu1 KASRA;
+    Position NUNf1 sdi (space.urdu <xAdvance=+20>) ALIFu1 KASRA;
+    Position NUNf1 sdi (space.urdu <xAdvance=+10>) LAMi2 KASRA;
+    Position NUNf1 (space.urdu <xAdvance=+20>) ALIFu1 KASRA;
+    Position NUNf1 (space.urdu <xAdvance=+50>) JIMi3 tdb.yb;
+    Position NUNf1 (space.urdu <xAdvance=+10>) MIMi3 KASRA;
+    Position NUNu1 sdi (space.urdu <xAdvance=+10>) ALIFu1 KASRA;
+    Position NUNu1 sdi (space.urdu <xAdvance=+20>) JIMi13 sdb.yb;
+    Position NUNu1 sdi (space.urdu <xAdvance=+10>) LAMi2 KASRA;
+    Position NUNu1 (space.urdu <xAdvance=+10>) ALIFu1 KASRA;
+    Position QAFf1 dda (space.urdu <xAdvance=+20>) ALIFu1 KASRA;
+    Position REf1 KASRA (TEi14 <xAdvance=+20>) tdb;
+    Position REf1 sda (TEi14 <xAdvance=+50>) ddb;
+    Position REf1 toeda (TEi14 <xAdvance=+50>) ddb;
+    Position REf1 (space.urdu <xAdvance=+50>) LAMi13;
+    Position REf1 (BEisd1 <xAdvance=+80>);
+    Position REf1 (JIMi2 <xAdvance=+30>) sdb;
+    Position REf1 (MIMi15 <xAdvance=+40>);
+    Position REf1 (TEi14 <xAdvance=+50>) ddb;
+    Position REf1 (TEisd1 <xAdvance=+80>) tdb.two;
+    Position REf2 sda (TEi3 <xAdvance=+20>) ddb.one;
+    Position REf2 sda (TEi8 <xAdvance=+70>) ddb;
+    Position REf2 (space.urdu <xAdvance=+20>) DALu1 KASRA;
+    Position REf2 (space.urdu <xAdvance=+40>) REu1 sda KASRA;
+    Position REf2 (BEi3 <xAdvance=+50>) sdb.one;
+    Position REf2 (BEisd1 <xAdvance=+50>) sdb;
+    Position REf2 (TEi10 <xAdvance=+300>) ddb.two;
+    Position REf2 (TEi3 <xAdvance=+40>) ddb.one;
+    Position REf2 (TEi3 <xAdvance=+40>) tdb.one;
+    Position REf3 sda KASRA (BEi3 <xAdvance=+70>) sda;
+    Position REf3 sda KASRA (TEi3 <xAdvance=+70>) ddb.one;
+    Position REf3 sda (GAFi13 <xAdvance=+20>);
+    Position REf3 sda (GAFi3 <xAdvance=+230>);
+    Position REf3 (GAFi2 <xAdvance=+20>);
+    Position REf3 (JIMi18 <xAdvance=+10>) tdb.one;
+    Position REf3 (SINi3 <xAdvance=+40>) tda;
+    Position REf3 (TEi3 <xAdvance=+20>) ddb;
+    Position REu1 DAMMA (JIMi10 <xAdvance=+10>) sda;
+    Position REu1 DAMMA (SINi12 <xAdvance=+50>);
+    Position REu1 sda FATHA (TEisd1 <xAdvance=+280>) ddb;
+    Position REu1 sda KASRA (MIMu1 <xAdvance=+110>);
+    Position REu1 sda KASRA (TEi3 <xAdvance=+110>) ddb.one;
+    Position REu1 sda (LAMi4 <xAdvance=+30>);
+    Position REu1 sda (MIMu1 <xAdvance=+110>);
+    Position REu1 (space.urdu <xAdvance=+50>) BEi8 sda KASRA;
+    Position REu1 (space.urdu <xAdvance=+10>) JIMi5 tdb.yb FATHA;
+    Position REu1 (space.urdu <xAdvance=+90>) TEisd1 tdb;
+    Position REu1 (ALIFu1 <xAdvance=+100>) KASRA;
+    Position REu1 (BEi10 <xAdvance=+10>) sdb.one;
+    Position REu1 (BEisd1 <xAdvance=+100>) sdb KASRA;
+    Position REu1 (HAYCi10 <xAdvance=+110>) haydb.one;
+    Position REu1 (JIMi18 <xAdvance=+60>) sdb.one;
+    Position REu1 (JIMi5 <xAdvance=+290>) tdb.one;
+    Position REu1 (JIMi6 <xAdvance=+100>) tdb.one;
+    Position REu1 (MIMi2 <xAdvance=+50>);
+    Position REu1 (TEi1 <xAdvance=+220>) ddb.one;
+    Position REu1 (TEi6 <xAdvance=+130>) ddb.one;
+    Position REu1 (TEi7 <xAdvance=+90>) ddb.one;
+    Position REu1 (TEi8 <xAdvance=+190>) tdb;
+    Position REu1 (TEisd1 <xAdvance=+300>) ddb;
+    Position TEf1 dda (space.urdu <xAdvance=+10>) FEi13 sda;
+    Position TEf1 dda (space.urdu <xAdvance=+20>) TEi6 ddb KASRA;
+    Position TEf2 tdb (space.urdu <xAdvance=+10>) FEi13 sda;
+    Position TEu1 toeda (space.urdu <xAdvance=+10>) LAMi13;
+    Position VAOf1 HAMZA_ABOVE (SINisd24 <xAdvance=+90>);
+    Position VAOf1 HAMZA_ABOVE (TOEi18 <xAdvance=+50>);
+    Position VAOf1 HAMZA_ABOVE (TOEi4 <xAdvance=+80>) sda;
+    Position VAOf1 (AINi13 <xAdvance=+30>);
+    Position VAOf1 (BEi5 <xAdvance=+30>) sdb;
+    Position VAOf1 (BEi7 <xAdvance=+240>) sda;
+    Position VAOf1 (FEi2 <xAdvance=+40>) sda KASRA;
+    Position VAOf1 (JIMi18 <xAdvance=+60>) sdb.one;
+    Position VAOf1 (KAFisd15 <xAdvance=+60>);
+    Position VAOf1 (LAMi3 <xAdvance=+40>) KASRA;
+    Position VAOf1 (MIMi24 <xAdvance=+30>);
+    Position VAOf1 (SINi10 <xAdvance=+50>);
+    Position VAOf1 (SINi13 <xAdvance=+40>);
+    Position VAOf1 (SINi3 <xAdvance=+20>) tda;
+    Position VAOf1 (SINi6 <xAdvance=+80>) tda;
+    Position VAOf1 (SINisd24 <xAdvance=+80>) tda;
+    Position VAOf1 (SINisd24 <xAdvance=+300>) tda KASRA;
+    Position VAOf1 (TEi3 <xAdvance=+20>) HAMZA_ABOVE KASRA;
+    Position VAOf1 (TEi3 <xAdvance=+10>) dda;
+    Position VAOf1 (TEi7 <xAdvance=+130>) dda DAMMA;
+    Position VAOf1 (TOEi13 <xAdvance=+40>);
+    Position VAOf1 (TOEi18 <xAdvance=+50>) sda;
+    Position VAOf1 (TOEi4 <xAdvance=+40>) sda;
+    Position VAOu1 DAMMA (HAYCi2 <xAdvance=+90>) haydb;
+    Position VAOu1 FATHA (TEi24 <xAdvance=+20>) ddb.one;
+    Position VAOu1 HAMZA_ABOVE (space.urdu <xAdvance=+10>) TEi3 dda;
+    Position VAOu1 (AINi13 <xAdvance=+30>);
+    Position VAOu1 (BEi7 <xAdvance=+40>) sda;
+    Position VAOu1 (HAYCi3 <xAdvance=+80>) haydb KASRA;
+    Position VAOu1 (JIMi18 <xAdvance=+60>) sdb.one;
+    Position VAOu1 (SINi13 <xAdvance=+40>);
+    Position VAOu1 (TEi24 <xAdvance=+60>) ddb;
+    Position bullet (TEi24 <xAdvance=+60>) tdb;
+    Position sallallahuAlayhiWasallam (space.urdu <xAdvance=+80>) KAFi13;
+  } UseMarkFilteringSet [DAMMA FATHA HAMZA_ABOVE KASRA KASRA.one MADDA dda ddb ddb.one ddb.two ddb.yb haydb haydb.one sda sdb sdb.one sdb.yb sdi tda tdb tdb.one tdb.two tdb.yb toeda];
+
+
+  # A few pairs whose dots or zer already came close before and now touch.
+  Routine RoomAfterLowerPartsByHand {
+    Position VAOf1 (TEisd1 <xAdvance=+60>) tda; # توثیق
+    Position ALIFu1 (TEi16 <xAdvance=+60>) ddb; # ایران
+    Position ALIFu1 (/^JIMi\d+$/ <xAdvance=+40>) tdb; # اچم
+    Position DALu1 KASRA (TEisd1 <xAdvance=+60>) ddb.one; # دِینا
+    Position DALu1 toeda (TEi3 <xAdvance=+50>) ddb.one; # ڈیٹیکٹر
+    Position [REu1 REf2] KASRA (TEi15 <xAdvance=+60>) ddb.one; # رِیو
+    Position [REu1 REf2] KASRA (TEi3 <xAdvance=+60>) ddb.yb; # تارِیکی
+  } UseMarkFilteringSet [KASRA toeda tda ddb ddb.one ddb.yb tdb];
+
 };

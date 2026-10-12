@@ -2187,7 +2187,8 @@ def step_honorifics(font):
 #     letters joined before them come down with them), so no bowl is drawn
 #     out of its shape;
 #   dal and re hang across line 3, their foot 1 and 1.15 qat below it;
-#   the stem of toe starts just under line 1, 3.9 qat above line 3.
+#   the stem of toe (isolated and final) starts just under line 1, 3.9 qat
+#   above line 3.
 # This runs after the honorifics, which are laid out with the letters as they
 # were. Its numerals are four qat tall; Gulzar's were about three. They are
 # drawn larger by NUMERAL_SCALE about their foot (on their own outlines, so
@@ -2226,7 +2227,7 @@ def step_copybook_details(font):
             _shift_glyph(layer, BOWL_BOTTOM - min(ys))
         elif family in HANGING_FOOT and form == "u":
             _shift_glyph(layer, HANGING_FOOT[family] - min(ys))
-        elif family == "TOE" and toe_rise > 0:
+        elif family == "TOE" and form in ("u", "f") and toe_rise > 0:
             # the stem is drawn out at its top, over TOE_STEM_ZONE
             y0 = max(ys) - TOE_STEM_ZONE
 
