@@ -1,0 +1,41 @@
+# mark glyph | mark glyph | number of words | examples
+ddb | ddb | 68 | عثىمىن لعثىمىن لىمىن مىمىں
+ddb | tdb | 21 | نچىت پچىت سچىت كچىلا
+sdb | ddb | 20 | غىبتى غىبتىں غىبىہ كىبنٹ
+haydb | ddb.one | 18 | تشبىہى تنبىہى جىہى بىہقى
+sda | dda.one | 18 | ستفر متفر لمتفر ستفعا
+sda | dda | 17 | جتند فتنہ جتنا ختنہ
+sdb | tdb | 11 | پبلى چبلى چبكى پبلىكن
+sda | sda | 10 | ئننگ حنظل حنظلہ غنىمتو
+sda | toeda.one | 9 | بٹنىو نٹنىا نٹنىو چٹنىا
+tdb | ddb | 9 | چىمپئن جھىنپتى گھىنپتى كىمپو
+tdb | ddb.one | 5 | چىپلن چىپتى چىپل چىپىں
+sda | HAMZA_ABOVE.one | 4 | ئنگ ئنكس ئنگر ئنگو
+tdb.one | tdb | 4 | پپل پپىتو پپىتہ پپلىا
+ddb | sdb | 3 | ئبىر نبىر نبىڑ
+toeda | sda | 3 | جنٹىا ئنٹمنٹ چنٹس
+tdb | tdb.one | 3 | نىپچو چپچپا پچپچا
+sdb | ddb.two | 2 | بىبا بىبہ
+ddb | ddb.two | 2 | بىنىں بىتىں
+dda | tda | 2 | خشتك پشتك
+tdb | haydb | 2 | ہپتا ہپنا
+dda | HAMZA_ABOVE.one | 1 | ئتى
+ddb.one | sdb | 1 | بىٹن
+toeda.one | dda | 1 | تٹى
+tda | dda | 1 | حتشا
+ddb | tdb.one | 1 | سىپىو
+tda | sda.one | 1 | غثىا
+ddb.one | tdb | 1 | لپىٹن
+sda.one | sda | 1 | مخنثو
+tdb.yb.collides | ddb.yb | 1 | ملىچھىے
+sdb.one | tdb | 1 | پبئى
+ddb.yb | tdb.yb | 1 | پنىلے
+tdb | tdb | 1 | پنپو
+sdb.yb | ddb.yb.collides | 1 | پىجىے
+tdb.yb | ddb.two | 1 | پىپلى
+ddb.yb.collides | tdb.yb | 1 | پىپے
+ddb.yb | tdb.yb.collides | 1 | پپىہے
+tdb.yb.collides | tdb.yb | 1 | پپىہے
+tdb.yb | tdb.yb.collides | 1 | چپچپے
+tdb.yb | haydb.yb.collides | 1 | چہچہے
+sdb | haydb | 1 | ہبلى

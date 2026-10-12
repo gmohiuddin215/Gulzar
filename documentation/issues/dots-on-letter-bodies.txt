@@ -1,0 +1,62 @@
+# mark glyph | letter the mark belongs to | letter it lands on | number of words | examples
+ddb | TEmsd | CH_YEf | 43 | بنىنى حسىنى خمىنى سىنى
+ddb | TEm | CH_YEf | 34 | بہىمى تسلىمى تمىمى تنظىمى
+ddb | TEmsd | HAYAm | 32 | سىٹھو كىتھو لىتھو مىٹھو
+ddb | TEmsd | JIMm | 31 | كھىنچر تىبچى تىپچى قىنچى
+ddb | TEm | HAYCm | 29 | فىہا مىہما كىہڑ مىہر
+tda | SINi | KAFm | 28 | شكن شكمى شكر شكو
+ddb | TEmsd | MIMf | 12 | ئىٹم تھىلىئم تھىنىئم لىنتھىنم
+tda | SINi | GAFm | 11 | شگن شگو شگر شگفت
+ddb | TEmsd | JIMf | 7 | قىنچ كھىنچ بھىنج بھىنچ
+ddb | TEmsd | HAYAf | 7 | لىتھ لىٹھ ٹھىٹھ سىٹھ
+tda | SINi | KAFmsd | 6 | شكىر شكنتلا شكىبا شكىبى
+dda | TEm | LAMm | 6 | قتلے قتلو قتلہ چتلى
+ddb.one | TEm | CH_YEf | 4 | بىجى بىچى جىجى پىچى
+dda | TEm | GAFm | 4 | فتگى ختگى فتگا ستمگر
+sdb | BEm | AINf | 4 | لمبلع لمبلغ مبلع مبلغ
+toeda | TEm | JIMi | 4 | چٹكلا چٹكا چٹكلو چٹكلے
+sda | JIMm | TOEm | 3 | بطخو بطخا بطخىں
+dda | TEm | KAFf | 3 | نتھك پىتھك ختك
+dda | TEm | KAFm | 3 | متمكن ہتھكڑ ہتھكنڈ
+toeda | TEm | KAFf | 2 | بىٹھك بٹھك
+tda | SINm | KAFmsd | 2 | تشكك مشكك
+sda | JIMm | FEm | 2 | تفخىم نفخو
+ddb | TEm | MIMf | 2 | تىمم ضىغم
+HAMZA_ABOVE | TEm | JIMi | 2 | جئى حئى
+tda | TEm | ALIFf | 2 | جثا حثا
+ddb | TEmsd | MIMm | 2 | سىنما مىنما
+sda | AINi | GAFm | 2 | غنگڑ غمگسا
+sda | AINi | GAFmsd | 2 | غمگىن غمگىنى
+dda | TEm | DALf | 2 | فتد قتد
+tdb | JIMm | MIMf | 2 | پنچم پچم
+ddb.two | TEmsd | CH_YEf | 1 | بىنكى
+toeda | TEm | KAFm | 1 | بىٹھكو
+toeda | TEm | KAFmsd | 1 | بىٹھكىں
+sdb | JIMm | AINf | 1 | تشجىع
+dda.one | TEi | KAFm | 1 | تفكر
+dda.one | TEi | GAFf | 1 | تفنگ
+dda.one | TEi | GAFm | 1 | تفنگچى
+tda | TEi | KAFm | 1 | ثكىہہ
+sdb | JIMi | AINf | 1 | جىع
+tda | REf | JIMi | 1 | جژ
+sda.one | JIMi | KAFf | 1 | خٹك
+tda | SINi | KAFf | 1 | شچك
+tda | SINi | GAFmsd | 1 | شگنىا
+sda | SADi | KAFf | 1 | ضحك
+sda | AINi | KAFf | 1 | غٹك
+dda | FEm | ALIFf | 1 | فقا
+sda | FEi | KAFm | 1 | فكا
+ddb | TEm | JIMm | 1 | فىمچى
+sda | FEi | GAFm | 1 | فگا
+dda.one | FEi | KAFmsd | 1 | قتىكہ
+dda | TEm | KAFi | 1 | كتك
+dda | TEmsd | LAMi | 1 | لتنر
+sda | SADm | KAFf | 1 | مضحك
+sda | SADm | KAFmsd | 1 | مضحكہ
+sda | AINm | GAFm | 1 | نغمگى
+sda | AINm | GAFmsd | 1 | نغمگىں
+sda | BEi | KAFm | 1 | نمكخو
+sdb.one | BEm | VAOf | 1 | ىبو
+toeda | TEisd | KAFf | 1 | ٹىجك
+ddb.one | TEm | JIMf | 1 | پىكىج
+dda | TEm | KAFmsd | 1 | چتكبر
