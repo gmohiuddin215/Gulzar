@@ -1781,11 +1781,18 @@ FE_HEAD_EDGE = (150, 175)  # length of the straight side
 FE_HEAD_BULGE = 0.08
 
 
-# Middle letters lift the letters before them less: each middle letter's
-# rise from its exit to its entry is drawn MEDIAL_RISE as high, by leaning
-# the letter between the two joins (strokes keep their thickness). Words
-# then climb at a gentler slope and need less line height.
+# Middle letters lift the letters before them less: the low connecting
+# stroke that runs out to a middle letter's exit join is drawn higher, so the
+# letter's rise from exit to entry is MEDIAL_RISE of what it was. Only that
+# stroke moves (fully at the join, fading out towards the body and upwards);
+# heads, stems and the body keep their shape and size, and strokes keep their
+# thickness. Words then climb at a gentler slope and need less line height.
 MEDIAL_RISE = 0.7
+RISE_REACH = 0.5     # share of the exit-to-entry run over which the stroke eases back
+RISE_BAND = (110, 260)  # above the exit join: full raise below the first, none above the second
+# middle letters that drop further than this are the long connectors into
+# bari ye and the bowls; their drop belongs to that join and stays as drawn
+RISE_ORDINARY = 220
 
 
 def step_medial_rise(font):
@@ -1799,15 +1806,19 @@ def step_medial_rise(font):
             continue
         (ex, ey), (xx, xy) = (anchors["entry"].x, anchors["entry"].y), (anchors["exit"].x, anchors["exit"].y)
         rise = ey - xy
-        if rise <= 0 or ex - xx < 20:
+        if rise <= 0 or rise > RISE_ORDINARY or ex - xx < 20:
             continue
         decompose_components(font, layer)
         if not layer.paths:
             continue
-        drop = (1 - MEDIAL_RISE) * rise
+        lift = (1 - MEDIAL_RISE) * rise
+        reach = RISE_REACH * (ex - xx)
 
-        def field(x, y, xx=xx, span=ex - xx, drop=drop):
-            return (0, -drop * min(1, max(0, (x - xx) / span)))
+        def field(x, y, xx=xx, xy=xy, reach=reach, lift=lift):
+            wx = min(1, max(0, 1 - (x - xx) / reach))
+            wy = min(1, max(0, (xy + RISE_BAND[1] - y) / (RISE_BAND[1] - RISE_BAND[0])))
+            t = wx * wy
+            return (0, lift * t * t * (3 - 2 * t))
 
         warp_strokes(layer, field)
 
