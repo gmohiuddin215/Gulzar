@@ -1781,6 +1781,75 @@ FE_HEAD_EDGE = (150, 175)  # length of the straight side
 FE_HEAD_BULGE = 0.08
 
 
+# Middle letters lift the letters before them less: each middle letter's
+# rise from its exit to its entry is drawn MEDIAL_RISE as high, by leaning
+# the letter between the two joins (strokes keep their thickness). Words
+# then climb at a gentler slope and need less line height.
+MEDIAL_RISE = 0.7
+
+
+def step_medial_rise(font):
+    for g in font.glyphs:
+        m = RASM.match(g.name)
+        if not m or m.group(2) not in ("m", "msd"):
+            continue
+        layer = master_layer(font, g)
+        anchors = {a.name: a.position for a in layer.anchors}
+        if "entry" not in anchors or "exit" not in anchors:
+            continue
+        (ex, ey), (xx, xy) = (anchors["entry"].x, anchors["entry"].y), (anchors["exit"].x, anchors["exit"].y)
+        rise = ey - xy
+        if rise <= 0 or ex - xx < 20:
+            continue
+        decompose_components(font, layer)
+        if not layer.paths:
+            continue
+        drop = (1 - MEDIAL_RISE) * rise
+
+        def field(x, y, xx=xx, span=ex - xx, drop=drop):
+            return (0, -drop * min(1, max(0, (x - xx) / span)))
+
+        warp_strokes(layer, field)
+
+
+# The feet of vao, dal and re (and the letters drawn on them) run out further
+# to the left, in a longer, flatter tail; the upper part of the letter and
+# its join stay as they are.
+FOOT_REACH = {"u": 1.12, "f": 1.18}
+
+
+def step_foot_reach(font):
+    for g in font.glyphs:
+        m = RASM.match(g.name)
+        if not m or m.group(1) not in ("VAO", "DAL", "RE") or m.group(2) not in FOOT_REACH:
+            continue
+        k = FOOT_REACH[m.group(2)]
+        layer = master_layer(font, g)
+        decompose_components(font, layer)
+        if not layer.paths:
+            continue
+        pts = [nd.position for p in layer.paths for nd in p.nodes]
+        right = max(p.x for p in pts)
+        y0, y1 = min(p.y for p in pts), max(p.y for p in pts)
+        full, none = y0 + 0.3 * (y1 - y0), y0 + 0.65 * (y1 - y0)
+
+        def field(x, y, right=right, k=k, full=full, none=none):
+            w = min(1, max(0, (none - y) / (none - full)))
+            return ((x - right) * (k - 1) * w, 0)
+
+        left = min(p.x for p in pts)
+        warp_strokes(layer, field)
+        # the letter is set wider by what its foot gained, so the space
+        # before the next letter stays as it was
+        grown = left - min(nd.position.x for p in layer.paths for nd in p.nodes)
+        for p in layer.paths:
+            for nd in p.nodes:
+                nd.position = Point(nd.position.x + grown, nd.position.y)
+        for a in layer.anchors:
+            a.position = Point(a.position.x + grown, a.position.y)
+        layer.width = round(layer.width + grown)
+
+
 def step_fe_head(font):
     from glyphsLib.classes import GSNode
 
@@ -2325,6 +2394,8 @@ STEPS = [
     ("sad-join", step_sad_join),
     ("corners", step_corners),
     ("fe-head", step_fe_head),
+    ("medial-rise", step_medial_rise),
+    ("foot-reach", step_foot_reach),
     ("lowered-copies", step_lowered_copies),
     ("honorifics", step_honorifics),
     # after the honorifics, which are laid out with the letters as they were
