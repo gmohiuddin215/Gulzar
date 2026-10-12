@@ -341,14 +341,21 @@ def step_proportions(font):
 # Step 2b: bowls sit on the line
 # ---------------------------------------------------------------------------
 
-# In traditional Nastaliq the final bowls (noon, seen, laam, ain, ye...) dip
-# only ~0.9 nuqta below the baseline, so a line of words sits evenly on the
-# line; Gulzar's bowls hang ~2 nuqta below. For each family, the measured
-# height (in nuqta) of the bottom of the bowl and of the entry join in the
-# reference; each bowl is lifted, and if needed made a little shallower, to
-# meet both. The shallowing is an even vertical scale of the whole bowl
-# below the join (never more than 15%), so the bowl stays round instead of
-# getting a flat bottom.
+# The final bowls (noon, seen, laam, ain, ye...) are first lifted from
+# Gulzar's ~2 nuqta below the baseline so that each family's bowl starts at
+# a measured height: for each family, the height (in nuqta) of the bottom of
+# the bowl and of the entry join. If needed a bowl is made a little
+# shallower to meet both; the shallowing is an even vertical scale of the
+# whole bowl below the join (never more than 15%), so the bowl stays round
+# instead of getting a flat bottom.
+#
+# Then every bowl is brought down to one depth, BOWL_DEPTH nuqta below the
+# baseline: in the copybook rule of nashist o kursi, letters without a bowl
+# sit on the line and round letters sit one line lower, all on the same
+# line. A final form keeps its join where it is (the rest of the word stays
+# on the line) and its bowl is drawn out downwards below the join; an
+# isolated form, which joins nothing, is moved down whole and keeps its
+# shape.
 NUQTA = 176  # width of Gulzar's original dot, in font units
 BOWLS = {
     #        bottom  entry (None: lift only, keeping the bowl's own depth)
@@ -363,6 +370,9 @@ BOWLS = {
     "MIM":   (-2.59, None),
 }
 MAX_BOWL_SQUASH = 0.15
+BOWL_DEPTH = 1.5
+# families whose lowest point is not a bowl, left at their own depth
+BOWL_DEPTH_SKIP = {"MIM"}
 
 
 def outline_segments(layer, steps=8):
@@ -495,6 +505,28 @@ def step_bowls(font):
         )
     for name, family in targets:
         warp_strokes(master_layer(font, font.glyphs[name]), fields[family])
+    # one depth for every bowl
+    target = -BOWL_DEPTH * NUQTA
+    for name, family in targets:
+        if family in BOWL_DEPTH_SKIP:
+            continue
+        layer = master_layer(font, font.glyphs[name])
+        # strokes move by the field at their centre line, a little above the
+        # bottom edge, so a final bowl needs a second, small pass
+        for _ in range(3):
+            bottom = min(p[0][1] for p in outline_segments(layer))
+            if abs(target - bottom) < 2:
+                break
+            if RASM.match(name).group(2) == "f":
+                entry = anchor(layer, "entry").position.y
+                span, R = entry - bottom, target - bottom
+
+                def field(x, y, entry=entry, span=span, R=R):
+                    return (0, 0) if y >= entry else (0, R * (entry - y) / span)
+            else:
+                def field(x, y, D=target - bottom):
+                    return (0, D)
+            warp_strokes(layer, field)
 
 
 # ---------------------------------------------------------------------------

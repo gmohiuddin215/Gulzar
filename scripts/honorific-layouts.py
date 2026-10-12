@@ -42,7 +42,7 @@ import uharfbuzz as hb
 LAYOUTS = {
     "radiAllahuAnhu": {
         "unicodes": ["0613", "FD41"],
-        "scale": 0.4,
+        "scale": 0.44,
         "bottom": 60,
         # رضی and عنہٗ side by side, اللہُ above them in the middle
         "parts": [("عنہٗ", 0, 0), ("رضی", 860, 0), ("اللہُ", 320, 760)],
@@ -51,7 +51,7 @@ LAYOUTS = {
     # in رضی اللہُ عنہٗ
     "radiAllahuAnhaa": {
         "unicodes": ["FD42"],
-        "scale": 0.4,
+        "scale": 0.44,
         "align": ("REu1", 120),  # رضی level with رضی اللہُ عنہٗ
         "parts": [("عنہا", 0, 0, {"nudge": {"haydb": (-40, 70)}}), ("رضی", 1019, 0),
                   ("اللہُ", 417, 0, {"clear": 51})],
@@ -60,7 +60,7 @@ LAYOUTS = {
     # brought down just enough to end inside the ain's stroke; اللہُ sits above ہما
     "radiAllahuAnhumaa": {
         "unicodes": ["FD44"],
-        "scale": 0.4,
+        "scale": 0.44,
         "align": ("REu1", 120),  # رضی level with رضی اللہُ عنہٗ
         "parts": [("عنہُما", 0, 0, {"nudge": {"sda": (0, -100)}}),
                   ("رضی", 760, 0, {"lower": {"CH_YEf1": (150, 0.95, 200, 320)}}),
@@ -69,7 +69,7 @@ LAYOUTS = {
     # for men: the same, with عنہم
     "radiAllahuAnhum": {
         "unicodes": ["FD43"],
-        "scale": 0.4,
+        "scale": 0.44,
         "align": ("REu1", 120),  # رضی level with رضی اللہُ عنہٗ
         # its mim's long tail is drawn up to a short one, as in Quranic
         # hands, so the honorific isn't taller than the others
@@ -80,7 +80,7 @@ LAYOUTS = {
     # for women: the same, with عنہنَّ (shadda and zabar on the noon)
     "radiAllahuAnhunna": {
         "unicodes": ["FD45"],
-        "scale": 0.4,
+        "scale": 0.44,
         "align": ("REu1", 120),  # رضی level with رضی اللہُ عنہٗ
         # its final noon is drawn smaller, nearer the size of the ye, with its
         # dot and shadda-zabar; the first noon's dot sits nearer its tooth
@@ -97,7 +97,7 @@ LAYOUTS = {
     # of اللہ and its mim near the vav, the mim's tail running down.
     "sallallahuAlayhiWasallam": {
         "unicodes": ["FDFA"],
-        "scale": 0.4,
+        "scale": 0.44,
         "align": ("CH_YEf1", 120),  # the ye's foot level with the ye of رضی
         "parts": [("صَلَّی", 2872, -178, {"lower": {"CH_YEf1": (150, 0.85, 200, 320)}}),
                   ("عَلیْہِ", 2030, -90, {"nudge": {"KASRA": (-150, 100), "FATHA": (70, 0)}}),
@@ -110,7 +110,7 @@ LAYOUTS = {
     # then و and سلم on the left
     "sallallahuAlayhiWaAalihiWasallam": {
         "unicodes": ["FD4C"],
-        "scale": 0.4,
+        "scale": 0.44,
         "align": ("CH_YEf1", 120),  # the ye's foot level with the ye of رضی
         "parts": [("صَلَّی", 2872, -178, {"lower": {"CH_YEf1": (150, 0.85, 200, 320)}}),
                   ("عَلیْہِ", 2030, -90, {"nudge": {"KASRA": (-150, 100), "FATHA": (70, 0)}}),
@@ -122,7 +122,7 @@ LAYOUTS = {
     },
     "rahmatullahAlayh": {
         "unicodes": ["0612"],
-        "scale": 0.4,
+        "scale": 0.44,
         "bottom": 60,
         # علیہ on top, its ain drawn out to span رحمۃُ اللہ beneath it
         "parts": [("علیہ", -240, 700, {"kashida": (470, 216)}), ("اللہ", 0, 0), ("رحمۃُ", 1020, 0)],
@@ -131,14 +131,14 @@ LAYOUTS = {
     # عَزَّ beside it
     "azzaWaJall": {
         "unicodes": ["FDFF"],
-        "scale": 0.4,
+        "scale": 0.44,
         "bottom": 60,
         "parts": [("جَلَّ", 0, 0), ("وَ", 1030, 160), ("عَزَّ", 1500, 120)],
     },
     # قُدِّسَ سِرُّہٗ: سِرُّہٗ above the seen of قُدِّسَ
     "quddisaSirruhu": {
         "unicodes": ["FD4B"],
-        "scale": 0.4,
+        "scale": 0.44,
         "bottom": 60,
         "parts": [("قُدِّسَ", 0, 0), ("سِرُّہٗ", 150, 0, {"clear": 30})],
     },
@@ -147,25 +147,25 @@ LAYOUTS = {
     # The variants (علیہم، علیہما، علیہا) follow the same plan.
     "alayhiSalaam": {
         "unicodes": ["0611", "FD47"],
-        "scale": 0.4,
+        "scale": 0.44,
         "align": ("MIMu1", 200),  # the mim of السَّلَام on one line in every variant
         "parts": [("السَّلَام", 0, 0), ("عَلَیْہِ", 1700, 0, {"nudge": {"FATHA#1": (80, 150), "KASRA": (-180, 40)}})],
     },
     "alayhimSalaam": {
         "unicodes": ["FD48"],
-        "scale": 0.4,
+        "scale": 0.44,
         "align": ("MIMu1", 200),  # the mim of السَّلَام on one line in every variant
         "parts": [("السَّلَام", 0, 0), ("عَلَیْہِمُ", 1770, 0, {"nudge": {"FATHA#1": (80, 150), "ddb": (130, 0)}})],
     },
     "alayhimaaSalaam": {
         "unicodes": ["FD49"],
-        "scale": 0.4,
+        "scale": 0.44,
         "align": ("MIMu1", 200),  # the mim of السَّلَام on one line in every variant
         "parts": [("السَّلَام", 0, 0), ("عَلَیْہِمَا", 1760, 0, {"nudge": {"FATHA#1": (80, 150), "ddb": (130, 0)}})],
     },
     "alayhaaSalaam": {
         "unicodes": ["FD4D"],
-        "scale": 0.4,
+        "scale": 0.44,
         "align": ("MIMu1", 200),  # the mim of السَّلَام on one line in every variant
         "parts": [("السَّلَام", 0, 0), ("عَلَیْہَا", 1760, 0, {"nudge": {"FATHA#1": (80, 150), "ddb": (130, 0)}})],
     },
@@ -174,12 +174,15 @@ LAYOUTS = {
     # word drawn in after it; the standing zabar left of its laam
     "alayhiSalaatuWasSalaam": {
         "unicodes": ["FD4A"],
-        "scale": 0.4,
+        "scale": 0.44,
         "align": ("AINi3", 326),  # عَلَیْہِ level with عَلَیْہِ السَّلَام
         "parts": [("الصَّلٰوۃُ", 150, 0, {"nudge": {"ALIFu1": (37, 325), "LONG_A": (-140, -520)}}), ("عَلَیْہِ", 1640, 0, {"nudge": {"FATHA#1": (80, 150), "KASRA": (-180, 40)}}), ("وَالسَّلَام", 265, 0, {"clear": 15, "sweep": {"SINm3": (450, 60)}})],
     },
 }
 SIDE_BEARING = 40
+# the right side faces the name the honorific follows: a word space still
+# separates them, but a narrower one than between words
+NAME_SIDE_BEARING = -25
 KASHIDA_AIN = "AINi2"  # the initial ain with a long lower stroke
 
 
@@ -324,7 +327,7 @@ def main(path):
         result[name] = {
             "unicodes": spec["unicodes"],
             "scale": s,
-            "width": round(x1 - x0 + 2 * SIDE_BEARING),
+            "width": round(x1 - x0 + SIDE_BEARING + NAME_SIDE_BEARING),
             "components": comps,
         }
     out = os.path.join(os.path.dirname(__file__), "..", "sources", "honorifics.json")
