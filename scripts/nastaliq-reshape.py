@@ -1795,6 +1795,10 @@ RISE_ORDINARY = 220
 RISE_REACH = 200
 RISE_BAND = (60, 200)
 RISE_STEEPEST = 0.8  # rise over run of the stroke leaving the exit join
+# the middle forms that run into the long re: like the connectors into bari
+# ye, their sweep belongs to that join and stays as drawn
+RISE_INTO_LONG_RE = {"AINm16", "BEm16", "FEm16", "HAYAm16", "HAYCm16", "JIMm17", "MIMm16",
+                     "SADm16", "SINm18", "TEm16", "TOEm16"}
 
 
 def _exit_steepness(layer, xx, xy, reach):
@@ -1832,7 +1836,7 @@ def _counter_near(layer, x_max, y_max):
 def step_medial_rise(font):
     for g in font.glyphs:
         m = RASM.match(g.name)
-        if not m or m.group(2) not in ("m", "msd"):
+        if not m or m.group(2) not in ("m", "msd") or g.name in RISE_INTO_LONG_RE:
             continue
         layer = master_layer(font, g)
         anchors = {a.name: a.position for a in layer.anchors}
@@ -1867,14 +1871,16 @@ def step_medial_rise(font):
 
 # The feet of vao, dal and re (and the letters drawn on them) run out further
 # to the left, in a longer, flatter tail; the upper part of the letter and
-# its join stay as they are.
+# its join stay as they are. The long re is left as drawn.
 FOOT_REACH = {"u": 1.12, "f": 1.18}
 
 
 def step_foot_reach(font):
     for g in font.glyphs:
         m = RASM.match(g.name)
-        if not m or m.group(1) not in ("VAO", "DAL", "RE") or m.group(2) not in FOOT_REACH:
+        # the ordinary short forms only; the long re (its tail sweeping down
+        # under the letters before it) keeps its own drawn tail
+        if not m or m.group(1) not in ("VAO", "DAL", "RE") or m.group(2) not in FOOT_REACH or m.group(3) != "1":
             continue
         k = FOOT_REACH[m.group(2)]
         layer = master_layer(font, g)
