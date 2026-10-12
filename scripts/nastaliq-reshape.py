@@ -2325,7 +2325,8 @@ KURSI_LINE = 109
 BOWL_FAMILIES = ("NUN", "QAF", "SIN", "LAM", "AIN", "CH_YE", "JIM", "SAD")
 BOWL_BOTTOM = KURSI_LINE - 2.05 * QAT
 HANGING_FOOT = {"DAL": KURSI_LINE - 1.0 * QAT, "RE": KURSI_LINE - 1.15 * QAT}
-# the feet of vao and dal end level with re's, standing alone and joined
+# the feet of vao and dal end level with re's, standing alone and joined;
+# the joined re (پر، کر) hangs on the same base as the one standing alone
 HANGING_FOOT["VAO"] = HANGING_FOOT["DAL"] = HANGING_FOOT["RE"]
 LEVEL_FEET = ("VAOf1", "DALf1")
 TOE_TOP = KURSI_LINE + 3.9 * QAT
@@ -2344,7 +2345,10 @@ def _shift_glyph(layer, dy):
 def step_copybook_details(font):
     toe = master_layer(font, font.glyphs["TOEu1"])
     toe_rise = TOE_TOP - max(p[0][1] for p in outline_segments(toe))
-    re_final_foot = min(p[0][1] for p in outline_segments(master_layer(font, font.glyphs["REf1"])))
+    re_final = master_layer(font, font.glyphs["REf1"])
+    decompose_components(font, re_final)
+    _shift_glyph(re_final, HANGING_FOOT["RE"] - min(p[0][1] for p in outline_segments(re_final)))
+    re_final_foot = min(p[0][1] for p in outline_segments(re_final))
     for name in LEVEL_FEET:
         layer = master_layer(font, font.glyphs[name])
         decompose_components(font, layer)
