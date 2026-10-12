@@ -828,7 +828,7 @@ def step_re_tail(font):
 # from them get their joins moved to match. Growing a joined letter raises
 # the join it offers the letter before it; the build keeps grouping these
 # glyphs by their original join height (see RISE_PINS).
-HAYA_SCALE = 1.12
+HAYA_SCALE = 1.06
 HAYA_JOIN_KEEP = 140  # font units around the join left unchanged
 
 
