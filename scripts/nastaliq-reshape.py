@@ -1869,18 +1869,17 @@ def step_medial_rise(font):
         warp_strokes(layer, field)
 
 
-# The feet of vao, dal and re (and the letters drawn on them) run out further
-# to the left, in a longer, flatter tail; the upper part of the letter and
-# its join stay as they are. The long re is left as drawn.
+# The feet of vao and dal (and the letters drawn on them) run out further to
+# the left, in a longer, flatter tail; the upper part of the letter and its
+# join stay as they are. Re keeps its own drawn shape in every form.
 FOOT_REACH = {"u": 1.12, "f": 1.18}
 
 
 def step_foot_reach(font):
     for g in font.glyphs:
         m = RASM.match(g.name)
-        # the ordinary short forms only; the long re (its tail sweeping down
-        # under the letters before it) keeps its own drawn tail
-        if not m or m.group(1) not in ("VAO", "DAL", "RE") or m.group(2) not in FOOT_REACH or m.group(3) != "1":
+        # the ordinary forms only
+        if not m or m.group(1) not in ("VAO", "DAL") or m.group(2) not in FOOT_REACH or m.group(3) != "1":
             continue
         k = FOOT_REACH[m.group(2)]
         layer = master_layer(font, g)
