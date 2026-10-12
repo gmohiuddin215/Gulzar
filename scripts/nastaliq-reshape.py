@@ -1999,6 +1999,57 @@ def step_lowered_copies(font):
             a.position = Point(a.position.x, round(a.position.y + dy))
 
 
+
+# Where the dots of a letter have no room under the kaf, gaf or laam that
+# follows (جتکا، جتگا), the letter is drawn out instead of the dots being moved
+# off it. sources/lengthened.json lists, for each letter, the extra
+# lengths needed; each becomes a copy of the letter named <letter>0<length>
+# (TEm8 drawn out by 120 units is TEm80120), chosen in context by
+# sources/build/fez/lengthening.fez. The stroke is drawn out between its exit
+# and its tooth, so the tooth and its dots keep their shape.
+LENGTHENED = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "sources", "lengthened.json")
+
+
+def lengthened_name(name, length):
+    return "%s0%03d" % (name, length)
+
+
+def step_lengthened_copies(font):
+    from glyphsLib.classes import GSAnchor, GSGlyph, GSLayer
+
+    if not os.path.exists(LENGTHENED):
+        return
+    with open(LENGTHENED) as fh:
+        wanted = json.load(fh)
+    master = font.masters[0]
+    for name, lengths in sorted(wanted.items()):
+        src = font.glyphs[name]
+        layer0 = master_layer(font, src)
+        exit_ = anchor(layer0, "exit")
+        marks = [a for a in (anchor(layer0, "top"), anchor(layer0, "bottom")) if a is not None]
+        if exit_ is None or not marks:
+            continue
+        tooth = min(a.position.x for a in marks)
+        x0 = exit_.position.x + 0.1 * (tooth - exit_.position.x)
+        x1 = tooth - 0.2 * (tooth - exit_.position.x)
+        for length in lengths:
+            glyph = GSGlyph(lengthened_name(name, length))
+            glyph.category, glyph.subCategory = src.category, src.subCategory
+            font.glyphs.append(glyph)
+            layer = GSLayer()
+            layer.layerId = layer.associatedMasterId = master.id
+            glyph.layers.append(layer)
+            _set_paths(layer, _glyph_paths(font, name, (1, 0, 0, 1, 0, 0)))
+            layer.width = layer0.width + length
+            for a in layer0.anchors:
+                layer.anchors.append(GSAnchor(a.name, Point(a.position.x, a.position.y)))
+
+            def field(x, y, x0=x0, x1=x1, length=length):
+                w = min(1.0, max(0.0, (x - x0) / (x1 - x0)))
+                return (length * w * w * (3 - 2 * w), 0)
+
+            warp_strokes(layer, field)
+
 # ---------------------------------------------------------------------------
 # Step 4b: honorifics
 # ---------------------------------------------------------------------------
@@ -2452,6 +2503,165 @@ def step_naming(font):
             param.value = VENDOR_ID
 
 
+
+# ---------------------------------------------------------------------------
+# Clean-ups found by setting the full word list
+# ---------------------------------------------------------------------------
+
+def _xy(n):
+    return (n.position.x, n.position.y)
+
+
+def _node(x, y, kind):
+    from glyphsLib.classes import GSNode
+    return GSNode(Point(round(x), round(y)), kind)
+
+
+def _smooth_kaf_shoulder(path):
+    """The stem of kaf and gaf runs into the sarkash through a short line and
+    a curve whose handles fold back, which leaves a facet on the stem. Draw
+    the shoulder as one curve that leaves the sarkash on its own tangent and
+    meets the stem upright."""
+    nodes = list(path.nodes)
+    N = len(nodes)
+    for i in range(N):
+        A, B, h1, h2, C = [nodes[(i + k) % N] for k in range(5)]
+        if not (A.type == "curve" and B.type == "line" and h1.type == h2.type == "offcurve"
+                and C.type == "curve"):
+            continue
+        (ax, ay), (bx, by), (cx, cy) = _xy(A), _xy(B), _xy(C)
+        if not (ay > by > cy and ax > bx and abs(h2.position.x - cx) <= 3 and ay - cy < 260 and ax - cx < 80):
+            continue
+        prev = nodes[(i - 1) % N]
+        if prev.type != "offcurve":
+            continue
+        dx, dy = ax - prev.position.x, ay - prev.position.y
+        L = math.hypot(dx, dy) or 1
+        d = math.hypot(ax - cx, ay - cy)
+        new = [_node(ax + dx / L * 0.42 * d, ay + dy / L * 0.42 * d, "offcurve"),
+               _node(cx, cy + 0.5 * (ay - cy), "offcurve")]
+        drop = {id(B), id(h1), id(h2)}
+        keep = [n for n in nodes if id(n) not in drop]
+        at = keep.index(A) + 1
+        path.nodes = keep[:at] + new + keep[at:]
+        return True
+    return False
+
+
+def _drop_small_hook(path):
+    """Where the sarkash leaves the stem or the head, the outline makes a hook
+    a few units across that shows as a nub in the corner: cut it off."""
+    nodes = list(path.nodes)
+    N = len(nodes)
+    for j in range(N):
+        P, g1, g2, Q, R = [nodes[(j + k) % N] for k in range(5)]
+        if P.type in ("line", "curve") and g1.type == g2.type == "offcurve" and Q.type == "curve" \
+                and R.type == "line" and math.hypot(P.position.x - Q.position.x, P.position.y - Q.position.y) < 25:
+            if P.type == "line":
+                path.nodes = [n for n in nodes if n is not g1 and n is not g2]
+                Q.type = "line"
+            else:
+                # the curve that ended at P now ends at Q
+                path.nodes = [n for n in nodes if n is not g1 and n is not g2 and n is not P]
+            return True
+    return False
+
+
+# Before a mim, the stem of kaf and gaf bends left into the join through a
+# dent and a small knob (from this point on the right edge of the stem).
+KAF_FOOT_KNOB = (88, 56)
+
+
+def _smooth_foot_knob(path):
+    nodes = list(path.nodes)
+    for i, n in enumerate(nodes):
+        if n.type == "curve" and _xy(n) == KAF_FOOT_KNOB:
+            j = i + 1
+            while j < len(nodes) and not (nodes[j].type != "offcurve" and nodes[j].position.x >= 115):
+                j += 1
+            if j == len(nodes):
+                return False
+            tx, ty = _xy(nodes[j])
+            kx, ky = KAF_FOOT_KNOB
+            new = [_node(kx + 12, ky + 34, "offcurve"), _node(tx, ky + 0.5 * (ty - ky), "offcurve")]
+            path.nodes = nodes[:i + 1] + new + nodes[j:]
+            return True
+    return False
+
+
+def step_kaf_stems(font):
+    for g in font.glyphs:
+        m = RASM.match(g.name)
+        if not m or m.group(1) not in ("KAF", "GAF"):
+            continue
+        layer = master_layer(font, g)
+        decompose_components(font, layer)
+        for path in layer.paths:
+            _smooth_kaf_shoulder(path)
+            _drop_small_hook(path)
+            _smooth_foot_knob(path)
+
+
+# The medial he comes into its join on a hairline leg that meets the hairline
+# end of the letter before it, so the two make a long thin spike under the
+# join. The leg is made fuller towards its end (its inner edge moved by
+# HE_LEG_WIDEN at the join, less higher up) so the point is short and solid.
+HE_LEG_WIDEN = 24
+
+
+def step_medial_he_tip(font):
+    for g in font.glyphs:
+        m = RASM.match(g.name)
+        if not m or m.group(1) != "HAYC" or m.group(2) not in ("m", "msd"):
+            continue
+        layer = master_layer(font, g)
+        entry = anchor(layer, "entry")
+        if entry is None or layer.components:
+            continue
+        ex, ey = entry.position.x, entry.position.y
+        for path in layer.paths:
+            nodes = path.nodes
+            N = len(nodes)
+            for i, nd in enumerate(nodes):
+                nxt = nodes[(i + 1) % N]
+                if nd.type == "offcurve" or _xy(nd) != (ex, ey) or nxt.type != "line" \
+                        or nxt.position.y != ey or not 10 <= nxt.position.x - ex <= 25:
+                    continue
+                handle = nodes[(i - 1) % N]
+                nd.position = Point(ex - HE_LEG_WIDEN, ey)
+                if handle.type == "offcurve":
+                    handle.position = Point(round(handle.position.x - 0.45 * HE_LEG_WIDEN), handle.position.y)
+
+
+# The tail of the joined and standalone mim drops straight as a long stem,
+# longer than any other tail. Below MIM_TAIL_FROM it is shortened to
+# MIM_TAIL_LENGTH of its length and turned gently left (MIM_TAIL_TURN at the tip).
+MIM_TAIL_FROM = 60
+MIM_TAIL_LENGTH = 0.8
+MIM_TAIL_TURN = 35
+
+
+def step_mim_tail(font):
+    for name in ("MIMf1", "MIMu1"):
+        layer = master_layer(font, font.glyphs[name])
+        decompose_components(font, layer)
+        if not layer.paths:
+            continue
+        bottom = min(nd.position.y for p in layer.paths for nd in p.nodes)
+        span = MIM_TAIL_FROM - bottom
+        for p in layer.paths:
+            for nd in p.nodes:
+                x, y = nd.position.x, nd.position.y
+                if y < MIM_TAIL_FROM:
+                    t = (MIM_TAIL_FROM - y) / span
+                    nd.position = Point(round(x - MIM_TAIL_TURN * t * t),
+                                        round(MIM_TAIL_FROM - (MIM_TAIL_FROM - y) * MIM_TAIL_LENGTH))
+        for a in layer.anchors:
+            if a.position.y < MIM_TAIL_FROM:
+                y = a.position.y
+                a.position = Point(a.position.x, round(MIM_TAIL_FROM - (MIM_TAIL_FROM - y) * MIM_TAIL_LENGTH))
+
+
 STEPS = [
     ("scale-and-spacing", step_scale_and_spacing),
     ("proportions", step_proportions),
@@ -2483,7 +2693,11 @@ STEPS = [
     ("fe-head", step_fe_head),
     ("medial-rise", step_medial_rise),
     ("foot-reach", step_foot_reach),
+    ("kaf-stems", step_kaf_stems),
+    ("medial-he-tip", step_medial_he_tip),
+    ("mim-tail", step_mim_tail),
     ("lowered-copies", step_lowered_copies),
+    ("lengthened-copies", step_lengthened_copies),
     ("honorifics", step_honorifics),
     # after the honorifics, which are laid out with the letters as they were
     ("copybook-details", step_copybook_details),
