@@ -2267,6 +2267,8 @@ KURSI_LINE = 109
 BOWL_FAMILIES = ("NUN", "QAF", "SIN", "LAM", "AIN", "CH_YE", "JIM", "SAD")
 BOWL_BOTTOM = KURSI_LINE - 2.05 * QAT
 HANGING_FOOT = {"DAL": KURSI_LINE - 1.0 * QAT, "RE": KURSI_LINE - 1.15 * QAT}
+# vao's tail ends level with re's
+HANGING_FOOT["VAO"] = HANGING_FOOT["RE"]
 TOE_TOP = KURSI_LINE + 3.9 * QAT
 TOE_STEM_ZONE = 300  # the top of toe drawn out over this much of its stem
 NUMERAL_SCALE = 1.25
