@@ -99,6 +99,12 @@ Feature kern {
 		Position REf3 sda (space.urdu <xAdvance=+60>) @inits [sda dda tda]; # آئیکنز شامل
 	} UseMarkFilteringSet [sda dda tda];
 
+	# The longer foot of dal lets the next word part tuck in over it, but
+	# the autokerner does not see the dot of zal above: give it room back.
+	Routine ZalDotBeforeWord {
+		Position [DALu1 DALf1] sda (@inits <xAdvance=+150>);
+	} UseMarkFilteringSet [sda];
+
 	# The rounded tail of re/zain lets the next letter come in closer; a
 	# kasra under the re then meets the dots below that letter (زِیادہ).
 	Routine KasraUnderRe {
