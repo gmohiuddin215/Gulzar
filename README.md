@@ -1,45 +1,77 @@
+<p align="center"><img src="documentation/readme/title.png" alt="Gulzar Nastaliq" height="110"></p>
+
 # Gulzar Nastaliq
 
-Gulzar Nastaliq is a modified version of [Gulzar](https://github.com/googlefonts/gulzar), reworked to look more like traditional Urdu Nastaliq as it is written and printed in books. Every outline is Gulzar's own, reshaped by `scripts/nastaliq-reshape.py`, and the shaping engine is Gulzar's. It is released, like Gulzar, under the SIL Open Font License 1.1.
+Gulzar Nastaliq is a modified version of Gulzar. It was forked from [Gulzar](https://github.com/googlefonts/gulzar), the original font, by Borna Izadpanah, Simon Cozens and the Gulzar team, and reworked to look more like traditional Urdu Nastaliq as it is written and printed in books. Every outline is Gulzar's own, reshaped by `scripts/nastaliq-reshape.py`, and the shaping engine is Gulzar's. It is released, like Gulzar, under the SIL Open Font License 1.1.
+
+**Download:** the latest font is attached to the [Releases](../../releases/latest) page as `GulzarNastaliq-Regular.ttf`.
+
+Urdu examples below are images set in Gulzar Nastaliq itself.
 
 ## What has changed
 
 ### A more traditional Nastaliq style
 
 * Proportions closer to traditional Urdu Nastaliq: lower, rounder bowls, taller ascenders, a heavier pen with more thick-and-thin contrast, and tighter word spacing.
-* Shorter kaf and gaf where they used to stand too tall (کی، گی، کیے، گئے، اگر، مگر، کم، گھنٹوں), with the upright stem shortened and the sarkash keeping its length. A medial kaf or gaf comes down only where no dots or vowel marks sit under its sarkash (فنگر، شکر), and کیا، گیا keep a taller kaf.
-* A slightly lower laam before kaf and gaf (لکھا، لگا، ملک، الگ), so it no longer towers over the kaf.
-* Smoother joins between letters: into laam, dal and ye, and the sad and zad joins (صحیح، صل).
-* Rounded pen cuts and stroke ends instead of hard straight edges, including the flat side of the fe and qaf heads.
-* Better spacing after letters that do not join (د ذ ر ز و), so words such as ذخیرہ، دین، مؤطا، دیہی read as one word.
+* A lower slope in joined words (نستعلیق) so lines need less height, keeping Gulzar's look. Medial letters sit a little lower and shapes are kept intact, including ھ (پھر، بھا).
+* The feet of و د ر follow the traditional kursi rule: و, د and ر end at one level, in standalone and in attached final forms, and bowl letters (ک گ ب ت ف ط ع ج ق ن ے) at the bowl line.
+* Shorter kaf and gaf where they used to stand too tall, with the upright stem shortened and the sarkash keeping its length. A medial kaf or gaf comes down only where no dots or vowel marks sit under its sarkash, and کیا، گیا keep a taller kaf.
+
+<img src="documentation/readme/kaf.png" height="60" alt="kaf and gaf">
+
+* A slightly lower laam before kaf and gaf, so it no longer towers over the kaf.
+
+<img src="documentation/readme/laam.png" height="60" alt="laam before kaf and gaf">
+
+* Smoother joins between letters: into laam, dal and ye, and the sad and zad joins.
+
+<img src="documentation/readme/joins.png" height="60" alt="joins">
+
+* Rounded pen cuts and stroke ends instead of hard straight edges, including the flat side of the fe and qaf heads. A slightly smaller ھ.
+* Better spacing after letters that do not join (د ذ ر ز و), including around کر and پر, so words read as one word.
+
+<img src="documentation/readme/spacing.png" height="60" alt="spacing">
 
 ### Dots and marks
 
-* Many dots placed closer to their letters and clear of each other, for example in نقل، یحیی، آغاز، ادیبوں، نشیبی، مستقبل، کابینہ، بست، تربیت، نئی، تقریباً.
-* Each dot change is checked against the shaping and collision tests, so dots that move closer do not run into other letters, dots or words.
+* Many dots placed closer to their letters and clear of each other. Each change is checked against the shaping and collision tests, so dots that move closer do not run into other letters, dots or words.
+
+<img src="documentation/readme/dots.png" height="60" alt="dots">
 
 ### Honorifics
 
-Fifteen honorific ligatures, drawn from the font's own letters with full harakat and sized to match each other:
+Honorific ligatures drawn from the font's own letters with full harakat and sized to match each other. Each row shows the plain text, its code point, and how it looks in Gulzar Nastaliq:
 
-| Honorific | Code points |
-|---|---|
-| صلی اللہ علیہ وسلم | U+FDFA |
-| صلی اللہ علیہ وآلہٖ وسلم | U+FD4C |
-| رضی اللہ عنہ / عنہا / عنہما / عنہم / عنہن | U+0613, U+FD41, U+FD42, U+FD44, U+FD43, U+FD45 |
-| رحمۃ اللہ علیہ | U+0612 |
-| عزوجل | U+FDFF |
-| قدس سرہ | U+FD4B |
-| علیہ السلام / علیہم / علیہما / علیہا السلام | U+0611, U+FD47, U+FD48, U+FD49, U+FD4D |
-| علیہ الصلوۃ والسلام | U+FD4A |
+| Honorific (plain text) | Code point | In Gulzar Nastaliq |
+|---|---|---|
+| صلی اللہ علیہ وسلم | U+FDFA | <img src="documentation/readme/h-fdfa.png" height="56" alt="U+FDFA"> |
+| صلی اللہ علیہ وآلہٖ وسلم | U+FD4C | <img src="documentation/readme/h-fd4c.png" height="56" alt="U+FD4C"> |
+| رضی اللہ عنہ | U+FD41 | <img src="documentation/readme/h-fd41.png" height="56" alt="U+FD41"> |
+| رضی اللہ عنہا | U+FD42 | <img src="documentation/readme/h-fd42.png" height="56" alt="U+FD42"> |
+| رضی اللہ عنہم | U+FD43 | <img src="documentation/readme/h-fd43.png" height="56" alt="U+FD43"> |
+| رضی اللہ عنہما | U+FD44 | <img src="documentation/readme/h-fd44.png" height="56" alt="U+FD44"> |
+| رضی اللہ عنہن | U+FD45 | <img src="documentation/readme/h-fd45.png" height="56" alt="U+FD45"> |
+| رضی اللہ عنہ (small sign) | U+0613 | <img src="documentation/readme/h-0613.png" height="56" alt="U+0613"> |
+| رحمۃ اللہ علیہ | U+0612 | <img src="documentation/readme/h-0612.png" height="56" alt="U+0612"> |
+| عزوجل | U+FDFF | <img src="documentation/readme/h-fdff.png" height="56" alt="U+FDFF"> |
+| قدس سرہ | U+FD4B | <img src="documentation/readme/h-fd4b.png" height="56" alt="U+FD4B"> |
+| علیہ السلام | U+FD47 | <img src="documentation/readme/h-fd47.png" height="56" alt="U+FD47"> |
+| علیہم السلام | U+FD48 | <img src="documentation/readme/h-fd48.png" height="56" alt="U+FD48"> |
+| علیہما السلام | U+FD49 | <img src="documentation/readme/h-fd49.png" height="56" alt="U+FD49"> |
+| علیہا السلام | U+FD4D | <img src="documentation/readme/h-fd4d.png" height="56" alt="U+FD4D"> |
+| علیہ السلام (small sign) | U+0611 | <img src="documentation/readme/h-0611.png" height="56" alt="U+0611"> |
+| علیہ الصلوۃ والسلام | U+FD4A | <img src="documentation/readme/h-fd4a.png" height="56" alt="U+FD4A"> |
 
-Typed phrases turn into these glyphs automatically: write صلی اللہ علیہ وسلم (with or without harakat, with or without spaces between the words, with Urdu or Arabic ye and he) and it is shown as the single honorific. A phrase that is only part of a longer word (سلمان، اللہیار) is left alone.
+Typed phrases turn into these glyphs automatically: write the phrase in plain text (with or without harakat, with or without spaces between the words, with Urdu or Arabic ye and he) and it is shown as the single honorific. A phrase that is only part of a longer word (سلمان، اللہیار) is left alone.
+
+<img src="documentation/readme/typed.png" height="70" alt="typed phrases shown as honorifics">
 
 ### Optimised and tested
 
 * Shaping and collision tests run over the regression suite, a large Urdu word corpus and full book pages.
 * `qa/book-page.py` sets a page of text like a printed book page (justified lines, running head, verse centred), and can report lines whose ink touches, to judge the font for book printing.
 * `qa/shaping-report.py` prints collision counts so two builds can be compared.
+* `scripts/readme-images.py` renders the images used in this file from the font.
 
 The rest of this file is Gulzar's original documentation.
 
