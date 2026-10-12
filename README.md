@@ -64,7 +64,8 @@ Honorific ligatures drawn from the font's own letters with full harakat and size
 
 Typed phrases turn into these glyphs automatically: write the phrase in plain text (with or without harakat, with or without spaces between the words, with Urdu or Arabic ye and he) and it is shown as the single honorific. A phrase that is only part of a longer word (سلمان، اللہیار) is left alone.
 
-<img src="documentation/readme/typed.png" height="70" alt="typed phrases shown as honorifics">
+<img src="documentation/readme/typed.png" height="70" alt="typed phrases shown as honorifics"><br>
+<img src="documentation/readme/typed2.png" height="70" alt="typed phrases shown as honorifics">
 
 ### Optimised and tested
 
