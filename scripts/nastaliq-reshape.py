@@ -1912,6 +1912,34 @@ def step_foot_reach(font):
         layer.width = round(layer.width + grown)
 
 
+# The joined final he (جگہ، وجہ، کہ) ends in a thin tail running out to the
+# left. Drawn a little short, it is drawn out here, smoothly and over the whole
+# left lobe so no stroke is pinched; the join on the right, the dot anchors and
+# the advance stay as they are. It runs after the honorifics are drawn, which
+# keep the he they were laid out with.
+HAY_TAIL = 40
+HAY_TAIL_FROM = 230
+
+
+def step_hay_tail(font):
+    # a glyph that holds this he as a component keeps the shape it was laid out with
+    for other in font.glyphs:
+        lay = master_layer(font, other)
+        if other.name != "HAYCf1" and any(c.componentName == "HAYCf1" for c in lay.components):
+            decompose_components(font, lay)
+    g = font.glyphs["HAYCf1"]
+    layer = master_layer(font, g)
+    decompose_components(font, layer)
+    left = min(nd.position.x for p in layer.paths for nd in p.nodes)
+    span = HAY_TAIL_FROM - left
+
+    def field(x, y):
+        t = min(1, max(0, (HAY_TAIL_FROM - x) / span))
+        return (-HAY_TAIL * t * t * (3 - 2 * t), 0)
+
+    warp_strokes(layer, field)
+
+
 def step_fe_head(font):
     from glyphsLib.classes import GSNode
 
@@ -2485,6 +2513,7 @@ STEPS = [
     ("foot-reach", step_foot_reach),
     ("lowered-copies", step_lowered_copies),
     ("honorifics", step_honorifics),
+    ("hay-tail", step_hay_tail),
     # after the honorifics, which are laid out with the letters as they were
     ("copybook-details", step_copybook_details),
     ("line-metrics", step_line_metrics),

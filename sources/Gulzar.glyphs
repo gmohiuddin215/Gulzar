@@ -23514,24 +23514,87 @@ color = 3;
 glyphname = "year-ar";
 layers = (
 {
-components = (
+layerId = "6E34CE51-C086-4FF0-804E-D019E96D60E0";
+paths = (
 {
-alignment = -1;
-name = BEm3;
-transform = "{1, 0, 0, 1, 348, 117}";
+closed = 1;
+nodes = (
+"350 10 LINE SMOOTH",
+"417 10 OFFCURVE",
+"494 53 OFFCURVE",
+"528 154 CURVE",
+"536 173 OFFCURVE",
+"539 200 OFFCURVE",
+"537 219 CURVE",
+"522 211 LINE",
+"485 151 OFFCURVE",
+"445 145 OFFCURVE",
+"397 145 CURVE SMOOTH",
+"395 140 LINE",
+"374 114 OFFCURVE",
+"351 27 OFFCURVE",
+"348 -3 CURVE"
+);
 },
 {
-alignment = -1;
-name = HAYCf1;
-transform = "{1, 0, 0, 1, 50, -18}";
+closed = 1;
+nodes = (
+"181 -6 OFFCURVE",
+"250 11 OFFCURVE",
+"270 11 CURVE SMOOTH",
+"291 11 OFFCURVE",
+"303 3 OFFCURVE",
+"317 -6 CURVE SMOOTH",
+"325 -11 OFFCURVE",
+"337 -18 OFFCURVE",
+"346 -18 CURVE SMOOTH",
+"348 -18 LINE",
+"373 8 OFFCURVE",
+"395 67 OFFCURVE",
+"395 117 CURVE",
+"393 117 LINE SMOOTH",
+"384 117 OFFCURVE",
+"375 123 OFFCURVE",
+"367 129 CURVE SMOOTH",
+"357 136 OFFCURVE",
+"347 144 OFFCURVE",
+"330 144 CURVE SMOOTH",
+"283 144 OFFCURVE",
+"171 82 OFFCURVE",
+"103 -75 CURVE",
+"99 -82 OFFCURVE",
+"110 -88 OFFCURVE",
+"114 -81 CURVE"
+);
 },
 {
-alignment = -1;
-name = SINi16;
-transform = "{1, 0, 0, 1, 490, 211}";
+closed = 1;
+nodes = (
+"903 28 OFFCURVE",
+"1087 192 OFFCURVE",
+"1209 322 CURVE SMOOTH",
+"1280 397 OFFCURVE",
+"1309 410 OFFCURVE",
+"1334 410 CURVE",
+"1358 500 LINE",
+"1326 519 OFFCURVE",
+"1268 498 OFFCURVE",
+"1202 427 CURVE SMOOTH",
+"1036 250 OFFCURVE",
+"912 160 OFFCURVE",
+"704 160 CURVE SMOOTH",
+"590 160 OFFCURVE",
+"553 196 OFFCURVE",
+"537 211 CURVE",
+"512 173 OFFCURVE",
+"501 139 OFFCURVE",
+"491 96 CURVE",
+"520 61 OFFCURVE",
+"599 28 OFFCURVE",
+"679 28 CURVE SMOOTH"
+);
 }
 );
-layerId = "6E34CE51-C086-4FF0-804E-D019E96D60E0";
 width = 1607;
 }
 );
@@ -60017,7 +60080,7 @@ position = "{345, 135}";
 },
 {
 name = top;
-position = "{214, 165}";
+position = "{213, 165}";
 }
 );
 hints = (
@@ -60047,7 +60110,7 @@ paths = (
 {
 closed = 1;
 nodes = (
-"131 12 OFFCURVE",
+"91 12 OFFCURVE",
 "200 29 OFFCURVE",
 "220 29 CURVE SMOOTH",
 "241 29 OFFCURVE",
@@ -60068,11 +60131,11 @@ nodes = (
 "297 162 OFFCURVE",
 "280 162 CURVE SMOOTH",
 "233 162 OFFCURVE",
-"121 100 OFFCURVE",
-"53 -57 CURVE",
-"49 -64 OFFCURVE",
-"60 -70 OFFCURVE",
-"64 -63 CURVE"
+"81 100 OFFCURVE",
+"13 -57 CURVE",
+"9 -64 OFFCURVE",
+"20 -70 OFFCURVE",
+"24 -63 CURVE"
 );
 }
 );
@@ -120877,6 +120940,7 @@ corners,
 "foot-reach",
 "lowered-copies",
 honorifics,
+"hay-tail",
 "copybook-details",
 "line-metrics",
 naming
