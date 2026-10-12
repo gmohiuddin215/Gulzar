@@ -2206,6 +2206,44 @@ def step_honorifics(font):
 
 
 # ---------------------------------------------------------------------------
+# Copybook details
+# ---------------------------------------------------------------------------
+
+# The copybook stands the alif on the line, as it does every letter without
+# a bowl; Gulzar's isolated alif hung half a nuqta above it.
+# Its numerals are about four nuqta tall, as tall as the alif or taller;
+# Gulzar's were about three. They are drawn larger by NUMERAL_SCALE about
+# their foot (on their own outlines, so the shapes they share with other
+# signs stay as they are).
+STANDING_ALIFS = ("ALIFu1", "ALIFu2")
+NUMERAL_SCALE = 1.25
+
+
+def step_copybook_details(font):
+    for name in STANDING_ALIFS:
+        layer = master_layer(font, font.glyphs[name])
+        bottom = min(nd.position.y for p in layer.paths for nd in p.nodes)
+        for p in layer.paths:
+            for nd in p.nodes:
+                nd.position = Point(nd.position.x, nd.position.y - bottom)
+        for a in layer.anchors:
+            a.position = Point(a.position.x, a.position.y - bottom)
+    s = NUMERAL_SCALE
+    numerals = [g for g in font.glyphs
+                if any(0x660 <= int(u, 16) <= 0x669 or 0x6F0 <= int(u, 16) <= 0x6F9 for u in g.unicodes or [])]
+    # outlines first: some numerals are drawn from others
+    drawn = {g.name: _glyph_paths(font, g.name, (s, 0, 0, s, 0, 0)) for g in numerals}
+    for g in numerals:
+        layer = master_layer(font, g)
+        paths = drawn[g.name]
+        _set_paths(layer, [[(round(x), round(y), t) for x, y, t in p] for p in paths])
+        layer.components = []
+        for a in layer.anchors:
+            a.position = Point(round(a.position.x * s), round(a.position.y * s))
+        layer.width = round(layer.width * s)
+
+
+# ---------------------------------------------------------------------------
 # Step 5: line metrics
 # ---------------------------------------------------------------------------
 
@@ -2280,6 +2318,8 @@ STEPS = [
     ("fe-head", step_fe_head),
     ("lowered-copies", step_lowered_copies),
     ("honorifics", step_honorifics),
+    # after the honorifics, which are laid out with the letters as they were
+    ("copybook-details", step_copybook_details),
     ("line-metrics", step_line_metrics),
     ("naming", step_naming),
 ]
