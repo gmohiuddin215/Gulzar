@@ -4,7 +4,7 @@
 
 Gulzar Nastaliq is a modified version of Gulzar. It was forked from [Gulzar](https://github.com/googlefonts/gulzar), the original font, by Borna Izadpanah, Simon Cozens and the Gulzar team, and reworked to look more like traditional Urdu Nastaliq as it is written and printed in books. Every outline is Gulzar's own, reshaped by `scripts/nastaliq-reshape.py`, and the shaping engine is Gulzar's. It is released, like Gulzar, under the SIL Open Font License 1.1.
 
-**Download:** the latest font is attached to the [Releases](../../releases/latest) page as `GulzarNastaliq-Regular.ttf`.
+**Download:** the latest font is attached to the [Releases](../../releases/latest) page as `GulzarNastaliq-Regular.ttf` (version 2.0.0). A smaller WOFF2 for websites is in [`fonts/webfonts`](fonts/webfonts).
 
 Urdu examples below are images set in Gulzar Nastaliq itself.
 
