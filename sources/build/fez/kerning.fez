@@ -118,17 +118,17 @@ Feature kern {
 
 	# The foot of re leaves open room after it that the autokerner does not
 	# take up when the next word starts low on its right (س، ص، ع، ط، ج،
-	# م ...): draw the next word in, by about three quarters of the excess
-	# over the usual gap.
+	# م ...): draw the next word in, by four fifths of the gap measured after
+	# re over the usual one, for each opening form (at most 200).
 	Routine AfterReCloser {
-		Position [REu1 REf1] (space.urdu <xAdvance=-180>) /^SADi/;
-		Position [REu1 REf1] (space.urdu <xAdvance=-155>) /^(AIN|TOE)i/;
-		Position [REu1 REf1] (space.urdu <xAdvance=-145>) /^SINi/;
-		Position [REu1 REf1] (space.urdu <xAdvance=-130>) /^JIMi/;
-		Position [REu1 REf1] (space.urdu <xAdvance=-105>) /^MIMi/;
-		Position [REu1 REf1] (space.urdu <xAdvance=-85>) /^(FE|KAF)i/;
-		Position [REu1 REf1] (space.urdu <xAdvance=-65>) /^GAFi/;
-		Position [REu1 REf1] (space.urdu <xAdvance=-45>) /^(LAM|TE)i/;
+		Position [REu1 REf1] (space.urdu <xAdvance=-200>) [AINi24 AINi9 BEi10 BEi24 BEi4 FEi10 FEi24 GAFi4 GAFi5 JIMi10 JIMi24 JIMi5 KAFi24 MIMi14 MIMi24 SADi16 SADi4 SADi7 SINi10 SINi14 SINi4 SINi6 SINi7 SINi8 SINi9 TEi1 TEi10 TEi7 TOEi16];
+		Position [REu1 REf1] (space.urdu <xAdvance=-180>) [AINi17 JIMi1 KAFi5 SINi18];
+		Position [REu1 REf1] (space.urdu <xAdvance=-160>) [AINi10 AINi2 AINi4 BEi5 FEi7 JIMi14 JIMi15 JIMi18 JIMi2 KAFi9 LAMi16 MIMi10 MIMi7 SINi12 SINi15 TEi4 TOEi15];
+		Position [REu1 REf1] (space.urdu <xAdvance=-140>) [AINi18 FEi17 SADi2 TEi5];
+		Position [REu1 REf1] (space.urdu <xAdvance=-120>) [AINi3 BEi1 BEi7 FEi14 FEi4 GAFi16 GAFi6 JIMi16 KAFi16 KAFi6 LAMi12 MIMi1 MIMi18 MIMi6 SADi15 SINi13 SINi2 TEi16 TOEi18];
+		Position [REu1 REf1] (space.urdu <xAdvance=-100>) [HAYCi9 MIMi16 MIMi2];
+		Position [REu1 REf1] (space.urdu <xAdvance=-80>) [BEi6 BEi9 GAFi17 HAYCi3 HAYCi4 KAFi17 KAFi2 KAFisd15 LAMi2 MIMi4 SINi3 TEi6 TEi9 TOEi2];
+		Position [REu1 REf1] (space.urdu <xAdvance=-60>) [LAMi1 LAMi15 SADi3];
 	} IgnoreMarks;
 
 	# The joined re hangs low, taking the be/pe joined to it down with it: the
