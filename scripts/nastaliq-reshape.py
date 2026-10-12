@@ -1917,7 +1917,7 @@ def step_foot_reach(font):
 # left lobe so no stroke is pinched; the join on the right, the dot anchors and
 # the advance stay as they are. It runs after the honorifics are drawn, which
 # keep the he they were laid out with.
-HAY_TAIL = 40
+HAY_TAIL = 15
 HAY_TAIL_FROM = 230
 
 

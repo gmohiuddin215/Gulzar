@@ -60080,7 +60080,7 @@ position = "{345, 135}";
 },
 {
 name = top;
-position = "{213, 165}";
+position = "{214, 165}";
 }
 );
 hints = (
@@ -60110,7 +60110,7 @@ paths = (
 {
 closed = 1;
 nodes = (
-"91 12 OFFCURVE",
+"116 12 OFFCURVE",
 "200 29 OFFCURVE",
 "220 29 CURVE SMOOTH",
 "241 29 OFFCURVE",
@@ -60131,11 +60131,11 @@ nodes = (
 "297 162 OFFCURVE",
 "280 162 CURVE SMOOTH",
 "233 162 OFFCURVE",
-"81 100 OFFCURVE",
-"13 -57 CURVE",
-"9 -64 OFFCURVE",
-"20 -70 OFFCURVE",
-"24 -63 CURVE"
+"106 100 OFFCURVE",
+"38 -57 CURVE",
+"34 -64 OFFCURVE",
+"45 -70 OFFCURVE",
+"49 -63 CURVE"
 );
 }
 );
