@@ -353,9 +353,9 @@ def step_proportions(font):
 # baseline: in the copybook rule of nashist o kursi, letters without a bowl
 # sit on the line and round letters sit one line lower, all on the same
 # line. A final form keeps its join where it is (the rest of the word stays
-# on the line) and its bowl is drawn out downwards below the join; an
-# isolated form, which joins nothing, is moved down whole and keeps its
-# shape.
+# on the line) and its bowl moves down whole, keeping its round shape, with
+# the stroke from the join drawn out to meet it; an isolated form, which
+# joins nothing, is moved down whole.
 NUQTA = 176  # width of Gulzar's original dot, in font units
 BOWLS = {
     #        bottom  entry (None: lift only, keeping the bowl's own depth)
@@ -373,6 +373,10 @@ MAX_BOWL_SQUASH = 0.15
 BOWL_DEPTH = 1.5
 # families whose lowest point is not a bowl, left at their own depth
 BOWL_DEPTH_SKIP = {"MIM"}
+# how far from the join (as a share of its distance to the bowl's bottom)
+# the bowl starts to move down whole
+BOWL_REACH = 0.7
+BOWL_HOLD = 150
 
 
 def outline_segments(layer, steps=8):
@@ -512,19 +516,27 @@ def step_bowls(font):
             continue
         layer = master_layer(font, font.glyphs[name])
         # strokes move by the field at their centre line, a little above the
-        # bottom edge, so a final bowl needs a second, small pass
+        # bottom edge, so a bowl may need a second, small pass
         for _ in range(3):
-            bottom = min(p[0][1] for p in outline_segments(layer))
+            segs = outline_segments(layer)
+            bottom = min(p[0][1] for p in segs)
             if abs(target - bottom) < 2:
                 break
+            D = target - bottom
             if RASM.match(name).group(2) == "f":
-                entry = anchor(layer, "entry").position.y
-                span, R = entry - bottom, target - bottom
+                # the bowl moves down whole, keeping its round shape; only
+                # the stroke from the join down to it is drawn out
+                ex, ey = anchor(layer, "entry").position
+                bx, by = min((p[0] for p in segs), key=lambda q: q[1])
+                reach = BOWL_REACH * math.hypot(bx - ex, by - ey)
 
-                def field(x, y, entry=entry, span=span, R=R):
-                    return (0, 0) if y >= entry else (0, R * (entry - y) / span)
+                def field(x, y, ex=ex, ey=ey, reach=reach, D=D):
+                    t = min(math.hypot(x - ex, y - ey) / reach, 1.0)
+                    # what stands above the join (a head, an ascender) stays
+                    u = min(max((ey + BOWL_HOLD - y) / BOWL_HOLD, 0.0), 1.0)
+                    return (0, D * t * t * (3 - 2 * t) * u * u * (3 - 2 * u))
             else:
-                def field(x, y, D=target - bottom):
+                def field(x, y, D=D):
                     return (0, D)
             warp_strokes(layer, field)
 
