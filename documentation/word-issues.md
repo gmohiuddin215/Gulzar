@@ -22,7 +22,7 @@ This list comes from setting a large list of real Urdu word forms in the font an
 | A2 | gaf joined to gaf (GAFm*, GAFisd3, GAFi8) | Two stacked top bars crowd into a double slash and a thin sliver or wedge sticks up at the join. | گگ |
 | A3 | medial ہ (HAYCm2, HAYCm3, HAYCm6) | A thin pointed spike hangs down at the cusp of the join. A sharp wedge also appears at HAYCm3 into GAFi2 and at HAYCm2 into TEm6. | کنہیا کیہل فیہا کمہا گیہا ہپہپا |
 | A4 | final mim (MIMf1) | The tail drops straight down as a long thin stem with a blunt tip, much longer and straighter than the other final tails. Seen in every word ending in mim after a joined letter. | بضم بکم بم تبسم تحکیم جم تیم سم |
-| A5 | final ہ (HAYCf1), where it joins the letter before | A tiny notch sits on the underside of the join, in every word ending in ہ. It is the bottom corner of the joining letter showing just below the ہ outline. | جگہ وجہ بہ نہ |
+| A5 | final ہ (HAYCf1), where it joins the letter before | The bottom edge of the neck rose to a crest and dipped again just before the join (reduced; the dip is now a level line). | جگہ وجہ بہ نہ |
 
 ## B. Dots and marks
 
