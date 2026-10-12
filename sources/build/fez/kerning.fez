@@ -102,8 +102,15 @@ Feature kern {
 	# The longer foot of dal lets the next word part tuck in over it, but
 	# the autokerner does not see the dot of zal above: give it room back.
 	Routine ZalDotBeforeWord {
-		Position [DALu1 DALf1] sda (@inits <xAdvance=+150>);
+		Position [DALu1 DALf1] sda (@JIMi <xAdvance=+250>); # ذخیرہ
+		Position [DALu1 DALf1] sda (@inits <xAdvance=+100>);
 	} UseMarkFilteringSet [sda];
+
+	# Kaf and gaf before re (کر، گر) lean their long top stroke over the
+	# word before, which keeps the autokerner far from it: draw the word in.
+	Routine KarCloser {
+		Position [@isols @finas] (space.urdu <xAdvance=-120>) [KAFi17 GAFi17] REf1;
+	} UseMarkFilteringSet [sda sdb dda ddb tda tdb];
 
 	# The rounded tail of re/zain lets the next letter come in closer; a
 	# kasra under the re then meets the dots below that letter (زِیادہ).
