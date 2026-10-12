@@ -2267,8 +2267,9 @@ KURSI_LINE = 109
 BOWL_FAMILIES = ("NUN", "QAF", "SIN", "LAM", "AIN", "CH_YE", "JIM", "SAD")
 BOWL_BOTTOM = KURSI_LINE - 2.05 * QAT
 HANGING_FOOT = {"DAL": KURSI_LINE - 1.0 * QAT, "RE": KURSI_LINE - 1.15 * QAT}
-# vao's tail ends level with re's
-HANGING_FOOT["VAO"] = HANGING_FOOT["RE"]
+# the feet of vao and dal end level with re's, standing alone and joined
+HANGING_FOOT["VAO"] = HANGING_FOOT["DAL"] = HANGING_FOOT["RE"]
+LEVEL_FEET = ("VAOf1", "DALf1")
 TOE_TOP = KURSI_LINE + 3.9 * QAT
 TOE_STEM_ZONE = 300  # the top of toe drawn out over this much of its stem
 NUMERAL_SCALE = 1.25
@@ -2285,6 +2286,11 @@ def _shift_glyph(layer, dy):
 def step_copybook_details(font):
     toe = master_layer(font, font.glyphs["TOEu1"])
     toe_rise = TOE_TOP - max(p[0][1] for p in outline_segments(toe))
+    re_final_foot = min(p[0][1] for p in outline_segments(master_layer(font, font.glyphs["REf1"])))
+    for name in LEVEL_FEET:
+        layer = master_layer(font, font.glyphs[name])
+        decompose_components(font, layer)
+        _shift_glyph(layer, re_final_foot - min(p[0][1] for p in outline_segments(layer)))
     for g in font.glyphs:
         m = RASM.match(g.name)
         if not m:
