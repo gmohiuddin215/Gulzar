@@ -2333,6 +2333,9 @@ HANGING_FOOT = {"DAL": KURSI_LINE - 1.0 * QAT, "RE": KURSI_LINE - 1.15 * QAT}
 # the joined re (پر، کر) hangs on the same base as the one standing alone
 HANGING_FOOT["VAO"] = HANGING_FOOT["DAL"] = HANGING_FOOT["RE"]
 LEVEL_FEET = ("VAOf1", "DALf1")
+# letters joined at the end of a word in their standalone form sit as they
+# do standing alone (the bowls, dal, re and vao above have their own rules)
+FINAL_AS_STANDALONE = ("KAF", "GAF", "BE", "TE", "FE", "TOE")
 TOE_TOP = KURSI_LINE + 3.9 * QAT
 TOE_STEM_ZONE = 300  # the top of toe drawn out over this much of its stem
 NUMERAL_SCALE = 1.25
@@ -2349,6 +2352,16 @@ def _shift_glyph(layer, dy):
 def step_copybook_details(font):
     toe = master_layer(font, font.glyphs["TOEu1"])
     toe_rise = TOE_TOP - max(p[0][1] for p in outline_segments(toe))
+    for fam in FINAL_AS_STANDALONE:
+        base = _skia(_glyph_paths(font, fam + "u1", (1, 0, 0, 1, 0, 0))).bounds[1]
+        for g in font.glyphs:
+            m = RASM.match(g.name)
+            if not m or m.group(1) != fam or m.group(2) != "f":
+                continue
+            layer = master_layer(font, g)
+            decompose_components(font, layer)
+            if layer.paths:
+                _shift_glyph(layer, base - _skia(_glyph_paths(font, g.name, (1, 0, 0, 1, 0, 0))).bounds[1])
     re_final = master_layer(font, font.glyphs["REf1"])
     decompose_components(font, re_final)
     _shift_glyph(re_final, HANGING_FOOT["RE"] - min(p[0][1] for p in outline_segments(re_final)))
