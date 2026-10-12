@@ -1912,84 +1912,6 @@ def step_foot_reach(font):
         layer.width = round(layer.width + grown)
 
 
-# The joined final he (جگہ، وجہ، کہ) starts from the letter before it with a
-# thin neck that runs out to the lobe, and ends in a thin tail to the left.
-# Three small changes bring it nearer the traditional drawing:
-#  * the top edge of the neck is redrawn as one smooth, gently rising sweep
-#    into the join; as drawn it rose to a peak and dropped again, a sudden
-#    bump at the start of the letter. The bottom edge likewise loses its crest
-#    and dip before the join;
-#  * the neck is drawn out HAY_NECK longer, smoothly between HAY_NECK_FROM and
-#    HAY_NECK_TO, so the lobe and tail sit further from the join; the join on
-#    the right stays exactly where it was and the letter is set that much
-#    wider, so the space around it is kept;
-#  * the tail is drawn out a little (HAY_TAIL), smoothly over the whole lobe.
-# It runs after the honorifics are drawn, which keep the he they were laid
-# out with.
-HAY_TAIL = 15
-HAY_TAIL_FROM = 230
-HAY_NECK = 90
-HAY_NECK_FROM = 110
-HAY_NECK_TO = 235
-HAY_TOP_EDGE = {
-    (343, 135): (343, 135),
-    (334, 135): (322, 135),
-    (325, 141): (306, 134),
-    (317, 147): (292, 133),
-    (307, 154): (278, 132),
-    (297, 162): (262, 130),
-    (280, 162): (240, 127),
-    (233, 162): (200, 118),
-    (121, 100): (121, 92),
-    # the bottom edge rose to a crest and fell to the join again, a small
-    # bump just before the letter before it; it now runs level into the join
-    (131, 12): (131, 9),
-    (200, 29): (200, 10),
-    (220, 29): (220, 10),
-    (241, 29): (241, 10),
-    (253, 21): (253, 7),
-    (267, 12): (267, 4),
-    (275, 7): (275, 3),
-}
-
-
-def step_hay_tail(font):
-    # a glyph that holds this he as a component keeps the shape it was laid out with
-    for other in font.glyphs:
-        lay = master_layer(font, other)
-        if other.name != "HAYCf1" and any(c.componentName == "HAYCf1" for c in lay.components):
-            decompose_components(font, lay)
-    g = font.glyphs["HAYCf1"]
-    layer = master_layer(font, g)
-    decompose_components(font, layer)
-    for path in layer.paths:
-        for nd in path.nodes:
-            new = HAY_TOP_EDGE.get((round(nd.position.x), round(nd.position.y)))
-            if new:
-                nd.position = Point(*new)
-    left = min(nd.position.x for p in layer.paths for nd in p.nodes)
-    span = HAY_TAIL_FROM - left
-
-    def smooth(t):
-        t = min(1, max(0, t))
-        return t * t * (3 - 2 * t)
-
-    def field(x, y):
-        tail = smooth((HAY_TAIL_FROM - x) / span)
-        neck = 1 - smooth((x - HAY_NECK_FROM) / (HAY_NECK_TO - HAY_NECK_FROM))
-        return (-(HAY_TAIL * tail + HAY_NECK * neck), 0)
-
-    warp_strokes(layer, field)
-    # the join stays where it was on the right: everything moves right by the
-    # length gained and the letter is that much wider
-    for p in layer.paths:
-        for nd in p.nodes:
-            nd.position = Point(nd.position.x + HAY_NECK, nd.position.y)
-    for a in layer.anchors:
-        a.position = Point(a.position.x + HAY_NECK, a.position.y)
-    layer.width = round(layer.width + HAY_NECK)
-
-
 def step_fe_head(font):
     from glyphsLib.classes import GSNode
 
@@ -2563,7 +2485,6 @@ STEPS = [
     ("foot-reach", step_foot_reach),
     ("lowered-copies", step_lowered_copies),
     ("honorifics", step_honorifics),
-    ("hay-tail", step_hay_tail),
     # after the honorifics, which are laid out with the letters as they were
     ("copybook-details", step_copybook_details),
     ("line-metrics", step_line_metrics),
