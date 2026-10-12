@@ -2176,30 +2176,30 @@ def step_honorifics(font):
 # Copybook details
 # ---------------------------------------------------------------------------
 
-# Nashist o kursi, measured on the copybook's ruled page (four lines two qat
-# apart, the qat being the pen's width: about 160 units here, the
-# thickness of the floor of be).
-#   line 3 runs through the floor of be, fe, kaf: KURSI_LINE, from the floor
-#     of be here (its floor straddles the line, a fifth above, the rest
-#     below);
+# Nashist o kursi, measured on the copybook's ruled page: four lines two qat
+# apart. The qat is taken from the letters' heights on that page against
+# their heights here (jim, sad, ain, seen, toe, fe, dal, re average 176
+# units), which is also the width of the dot.
+#   line 3 runs through the floor of be, fe, kaf: KURSI_LINE, measured from
+#     the floor of be (about a quarter of it above the line, the rest below);
 #   the bowls (noon, seen, sad, ain, jim, qaf, laam, ye) reach line 4, two
 #     qat lower: each is moved down whole, the final forms as well (the
 #     letters joined before them come down with them), so no bowl is drawn
 #     out of its shape;
 #   dal and re hang across line 3, their foot 1 and 1.15 qat below it;
-#   the stem of toe starts at line 1, four qat above line 3.
+#   the stem of toe starts just under line 1, 3.9 qat above line 3.
 # This runs after the honorifics, which are laid out with the letters as they
-# were. Its numerals are four qat tall; Gulzar's were about three and a half.
-# They are drawn larger by NUMERAL_SCALE about their foot (on their own
-# outlines, so the shapes they share with other signs stay as they are).
-QAT = 160
-KURSI_LINE = 105
+# were. Its numerals are four qat tall; Gulzar's were about three. They are
+# drawn larger by NUMERAL_SCALE about their foot (on their own outlines, so
+# the shapes they share with other signs stay as they are).
+QAT = 176
+KURSI_LINE = 109
 BOWL_FAMILIES = ("NUN", "QAF", "SIN", "LAM", "AIN", "CH_YE", "JIM", "SAD")
 BOWL_BOTTOM = KURSI_LINE - 2.05 * QAT
 HANGING_FOOT = {"DAL": KURSI_LINE - 1.0 * QAT, "RE": KURSI_LINE - 1.15 * QAT}
-TOE_TOP = KURSI_LINE + 4 * QAT
+TOE_TOP = KURSI_LINE + 3.9 * QAT
 TOE_STEM_ZONE = 300  # the top of toe drawn out over this much of its stem
-NUMERAL_SCALE = 1.14
+NUMERAL_SCALE = 1.25
 
 
 def _shift_glyph(layer, dy):
