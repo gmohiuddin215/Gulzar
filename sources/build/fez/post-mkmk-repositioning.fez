@@ -628,6 +628,19 @@ Feature kern {
     Position /^ALIF[uf]\d+$/ (TEi3 <xAdvance=+50>) [dda tda];
   } UseMarkFilteringSet [dda tda];
 
+  # With the alif standing on the line, the dots under the letter after it
+  # come up to its foot (ایپ، روایت، اپپ، الٰہی): a little more room there.
+  Routine DotsAfterStandingAlif {
+    Position /^ALIFu\d+$/ (/^[A-Z_]+(i|isd)\d+$/ <xAdvance=+70>) [sdb ddb tdb sdb.one ddb.one tdb.one ddb.two sdb.two sdb.yb ddb.yb haydb KASRA];
+  } UseMarkFilteringSet [sdb ddb tdb sdb.one ddb.one tdb.one ddb.two sdb.two sdb.yb ddb.yb haydb KASRA];
+
+  # and the madda of آ, lower with it, comes over a tall letter after it
+  # or a hamza over the letter after it (آدھی، آنکه، آئندہ).
+  Routine MaddaOverTallAfterAlif {
+    Position /^ALIFu\d+$/ MADDA (/^(KAF|GAF|LAM|HAYA|TOE)[A-Z_]*(i|isd|m|msd)\d+$/ <xAdvance=+70>);
+    Position /^ALIFu\d+$/ MADDA (/^[A-Z_]+(i|isd)\d+$/ <xAdvance=+70>) [HAMZA_ABOVE HAMZA_ABOVE.one];
+  } UseMarkFilteringSet [MADDA HAMZA_ABOVE HAMZA_ABOVE.one];
+
   # The dot of ghain sits higher over the ain's head. (Moved left as well,
   # it runs into the letter after: پیغام، غلط، آغاز.)
   Routine GhainDot {
