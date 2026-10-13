@@ -2464,10 +2464,14 @@ def step_naming(font):
 # drawn earlier, keep their dots as they are.
 DOT_SCALE = 0.95
 DOT_GLYPHS = ("sda", "ddb", "tda", "tda.ng", "tdb", "sdi", "ddvb", "ddvb.yb", "ddvb.yb.collides")
+# The small tah over te/dal/re (ٹ ڈ ڑ) and the small mark under the medial he
+# are drawn MARK_SCALE of their former size in the same way.
+MARK_SCALE = 0.95
+MARK_GLYPHS = ("toeda", "haydb.yb")
 
 
 def step_dot_size(font):
-    for name in DOT_GLYPHS:
+    for name, scale in [(n, DOT_SCALE) for n in DOT_GLYPHS] + [(n, MARK_SCALE) for n in MARK_GLYPHS]:
         layer = master_layer(font, font.glyphs[name])
         pts = [nd.position for p in layer.paths for nd in p.nodes]
         if not pts:
@@ -2477,7 +2481,7 @@ def step_dot_size(font):
         for p in layer.paths:
             for nd in p.nodes:
                 x, y = nd.position.x, nd.position.y
-                nd.position = Point(round(cx + (x - cx) * DOT_SCALE), round(cy + (y - cy) * DOT_SCALE))
+                nd.position = Point(round(cx + (x - cx) * scale), round(cy + (y - cy) * scale))
 
 STEPS = [
     ("scale-and-spacing", step_scale_and_spacing),
