@@ -2468,10 +2468,16 @@ DOT_GLYPHS = ("sda", "ddb", "tda", "tda.ng", "tdb", "sdi", "ddvb", "ddvb.yb", "d
 # are drawn MARK_SCALE of their former size in the same way.
 MARK_SCALE = 0.95
 MARK_GLYPHS = ("toeda", "haydb.yb")
+# The harakat (zabar, zer, pesh, tanwin, shadda, jazm, khari zabar) are drawn
+# HARAKAT_SCALE of their former size; the combined forms (shadda with a
+# vowel, zer below, ulta pesh...) are built from these and follow them.
+HARAKAT_SCALE = 0.95
+HARAKAT_GLYPHS = ("FATHA", "DAMMA", "FATHA_TANWIN", "DAMMA_TANWIN", "KASRA_TANWIN",
+                  "SHADDA", "sukun-ar", "LONG_A", "INVERTED_V")
 
 
 def step_dot_size(font):
-    for name, scale in [(n, DOT_SCALE) for n in DOT_GLYPHS] + [(n, MARK_SCALE) for n in MARK_GLYPHS]:
+    for name, scale in [(n, DOT_SCALE) for n in DOT_GLYPHS] + [(n, MARK_SCALE) for n in MARK_GLYPHS] + [(n, HARAKAT_SCALE) for n in HARAKAT_GLYPHS]:
         layer = master_layer(font, font.glyphs[name])
         pts = [nd.position for p in layer.paths for nd in p.nodes]
         if not pts:
