@@ -2452,6 +2452,33 @@ def step_naming(font):
             param.value = VENDOR_ID
 
 
+
+# ---------------------------------------------------------------------------
+# Dot size
+# ---------------------------------------------------------------------------
+
+# The nuqta dots are drawn DOT_SCALE of their former size, each around its
+# own centre, so every dot keeps its place over or under its letter. The
+# other dot glyphs (two dots above, the lowered and raised positions...) are
+# built from these as components and follow them; the honorific ligatures,
+# drawn earlier, keep their dots as they are.
+DOT_SCALE = 0.95
+DOT_GLYPHS = ("sda", "ddb", "tda", "tda.ng", "tdb", "sdi", "ddvb", "ddvb.yb", "ddvb.yb.collides")
+
+
+def step_dot_size(font):
+    for name in DOT_GLYPHS:
+        layer = master_layer(font, font.glyphs[name])
+        pts = [nd.position for p in layer.paths for nd in p.nodes]
+        if not pts:
+            continue
+        cx = (min(p.x for p in pts) + max(p.x for p in pts)) / 2
+        cy = (min(p.y for p in pts) + max(p.y for p in pts)) / 2
+        for p in layer.paths:
+            for nd in p.nodes:
+                x, y = nd.position.x, nd.position.y
+                nd.position = Point(round(cx + (x - cx) * DOT_SCALE), round(cy + (y - cy) * DOT_SCALE))
+
 STEPS = [
     ("scale-and-spacing", step_scale_and_spacing),
     ("proportions", step_proportions),
@@ -2487,6 +2514,7 @@ STEPS = [
     ("honorifics", step_honorifics),
     # after the honorifics, which are laid out with the letters as they were
     ("copybook-details", step_copybook_details),
+    ("dot-size", step_dot_size),
     ("line-metrics", step_line_metrics),
     ("naming", step_naming),
 ]
