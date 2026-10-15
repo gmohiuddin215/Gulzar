@@ -10899,4 +10899,51 @@ Feature kern {
     Position VAOu1 JIMi13 (sdb.yb <xPlacement=-25 yPlacement=+100>) CH_YEf1;
     Position JIMi13 (sdb.yb <xPlacement=+35 yPlacement=+780>) CH_YEf1;
   } UseMarkFilteringSet [sdb.yb];
+  Routine DotClearance132 {
+    Position VAOu1 ALIFu1 REu1 FEi2 TEm8 (dda <xPlacement=+35>) GAFm3 ALIFf1 NUNu1;
+    Position FEi2 dda TEm3 (dda <yPlacement=+365>) LAMm2 TEm3 ALIFf1 NUNu1;
+    Position GAFi17 REf1 FEi2 TEm8 (dda <xPlacement=+35>) GAFm3 ALIFf1 NUNu1;
+    Position REu1 FEi2 TEm8 (dda <xPlacement=+35>) GAFm3 ALIFf1 BEi13 CH_YEf1;
+    Position REu1 FEi2 TEm8 (dda <xPlacement=+35>) GAFm3 ALIFf1 NUNu1;
+    Position FEi2 dda TEm3 (dda <yPlacement=+365>) LAMm13 CH_YEf1;
+  } UseMarkFilteringSet [dda];
+  Routine DotClearance133 {
+    Position SINi3 BEm16 REf3 TEi3 TEm16 (ddb <xPlacement=-20 yPlacement=-50>) REf3 CH_YEu1;
+    Position TEi5 HAYAm15 VAOf1 TEi3 TEm16 (ddb <xPlacement=-90 yPlacement=-150>) REf3 ALIFu1;
+    Position ALIFu1 VAOu1 DALu1 TEi3 TEm16 (ddb <xPlacement=-90 yPlacement=-150>) REf3;
+    Position ALIFu1 VAOu1 TEi3 TEm16 (ddb <xPlacement=-90 yPlacement=-150>) REf3 ALIFu1;
+    Position DALu1 VAOu1 TEi3 TEm16 (ddb <xPlacement=-90 yPlacement=-150>) REf3 ALIFu1;
+    Position JIMi15 VAOf1 TEi3 TEm16 (ddb <xPlacement=-90 yPlacement=-150>) REf3 ALIFu1;
+    Position JIMi3 ALIFf1 REu1 TEi3 TEm16 (ddb <xPlacement=-90 yPlacement=-150>) REf3;
+  } UseMarkFilteringSet [ddb];
+  Routine DotClearance134 {
+    Position JIMi3 LAMm2 BEm3 TEmsd1 BEm3 (sdb.two <yPlacement=+160>) TEm14 ddb NUNf1;
+    Position JIMi3 LAMm2 BEm3 TEmsd1 BEm3 sdb.two TEm14 (ddb <yPlacement=-210>) NUNf1;
+  } UseMarkFilteringSet [ddb sdb.two];
+  Routine DotClearance135 {
+    Position TEi16 REf1 TEi7 (ddb.one <xPlacement=-10 yPlacement=+100>) JIMm17 REf2 REu1;
+    Position TEi16 REf1 TEi7 (ddb.one <xPlacement=-10 yPlacement=+100>) JIMm17 REf2;
+  } UseMarkFilteringSet [ddb.one];
+  Routine DotClearance136 {
+    Position DALu1 REu1 ALIFu1 TEisd1 BEm3 (sda <xPlacement=-30 yPlacement=-30>) GAFm15 VAOf1 NUNu1;
+    Position DALu1 REu1 ALIFu1 TEisd1 BEm3 (sda <xPlacement=-30 yPlacement=-30>) GAFm16 REf1 sda;
+    Position DALu1 REu1 ALIFu1 TEisd1 BEm3 (sda <xPlacement=-30 yPlacement=-70>) GAFmsd15 TEm14 NUNf1;
+  } UseMarkFilteringSet [sda];
+  Routine DotClearance137 {
+    Position GAFisd15 TEmsd1 (tda <yPlacement=-80>) BEm3 sda GAFm15 VAOf1 NUNu1;
+    Position GAFisd15 TEmsd1 tda BEm3 (sda <xPlacement=-40 yPlacement=-60>) GAFm15 VAOf1 NUNu1;
+    Position GAFisd15 TEmsd1 (tda <yPlacement=-80>) BEm3 sda GAFm13 CH_YEf1;
+    Position GAFisd15 TEmsd1 (tda <yPlacement=-80>) BEm3 sda GAFm15 VAOf1;
+    Position GAFisd15 TEmsd1 tda BEm3 (sda <xPlacement=-40 yPlacement=-60>) GAFm13 CH_YEf1;
+    Position GAFisd15 TEmsd1 tda BEm3 (sda <xPlacement=-40 yPlacement=-60>) GAFm15 VAOf1;
+    Position KAFisd15 TEmsd1 (tda <yPlacement=-80>) BEm3 sda GAFm13 CH_YEf1;
+    Position KAFisd15 TEmsd1 tda BEm3 (sda <xPlacement=-40 yPlacement=-60>) GAFm13 CH_YEf1;
+    Position GAFisd15 TEmsd1 (tda <yPlacement=-100>) BEm3 sda GAFf1;
+    Position GAFisd15 TEmsd1 tda BEm3 (sda <xPlacement=-40 yPlacement=-100>) GAFf1;
+    Position KAFisd15 TEmsd1 (tda <yPlacement=-100>) BEm3 sda GAFf1;
+    Position KAFisd15 TEmsd1 tda BEm3 (sda <xPlacement=-40 yPlacement=-100>) GAFf1;
+  } UseMarkFilteringSet [sda tda];
+  Routine DotClearance138 {
+    Position ALIFu1 TEisd1 BEm3 (sdb.one <xPlacement=-40>) ALIFf1 AINi2 TEm12 BEf1;
+  } UseMarkFilteringSet [sdb.one];
 };
